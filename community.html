@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>푸드소스 커뮤니티 | 식품 원료 포럼</title>
+    <title>푸드소스 커뮤니티 | 원료 문의 게시판</title>
     <meta
       name="description"
-      content="식품 원료 수배, 규격 질문, 거래처 추천, 법규와 인증 정보를 나누는 푸드소스 커뮤니티"
+      content="찾기 어려운 식품 원료를 문의하고 조건에 맞는 원료 정보를 확인하는 푸드소스 원료 문의 게시판"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -41,88 +41,40 @@
     <main class="community-page">
       <section class="community-hero" aria-labelledby="community-title">
         <div>
-          <p class="eyebrow">식품 원료 실무 포럼</p>
-          <h1 id="community-title">찾기 어려운 원료, 먼저 물어보세요</h1>
+          <p class="eyebrow">원료 문의 게시판</p>
+          <h1 id="community-title">찾기 어려운 원료를 문의하세요</h1>
           <p>
-            원료 수배, 대체 규격, 거래처 추천, 수입 서류와 인증 이슈를 나눕니다.
+            필요한 원료명, 용도, 규격, 인증 조건을 남기고 관련 정보를 확인하세요.
           </p>
-        </div>
-        <div class="community-hero-stats" aria-label="커뮤니티 현황">
-          <div>
-            <strong>18</strong>
-            <span>오늘 원료 요청</span>
-          </div>
-          <div>
-            <strong>38분</strong>
-            <span>평균 첫 답변</span>
-          </div>
-          <div>
-            <strong>1,240</strong>
-            <span>활동 실무자</span>
-          </div>
         </div>
       </section>
 
       <section class="community-section" id="community">
         <div class="section-title">
           <div>
-            <p class="eyebrow">게시판</p>
-            <h2>식품 원료 실무자들이 바로 답하는 포럼</h2>
+            <p class="eyebrow">문의 목록</p>
+            <h2>원료 문의만 모아봅니다</h2>
           </div>
-          <button class="primary-button compact" type="button" id="focusCommunityWrite">
-            <i data-lucide="square-pen"></i>
-            글쓰기
-          </button>
         </div>
 
         <div class="community-layout">
           <div class="community-main">
             <div class="community-toolbar">
-              <div class="community-tabs" aria-label="커뮤니티 게시판">
+              <div class="community-tabs" aria-label="원료 문의 분류">
                 <button class="active" type="button" data-community-tab="전체">전체</button>
-                <button type="button" data-community-tab="원료 요청">원료 요청</button>
-                <button type="button" data-community-tab="규격 질문">규격 질문</button>
-                <button type="button" data-community-tab="거래처 추천">거래처 추천</button>
-                <button type="button" data-community-tab="법규·인증">법규·인증</button>
+                <button type="button" data-community-tab="원료 수배">원료 수배</button>
+                <button type="button" data-community-tab="대체 원료">대체 원료</button>
+                <button type="button" data-community-tab="규격 문의">규격 문의</button>
+                <button type="button" data-community-tab="수입·인증">수입·인증</button>
               </div>
               <label class="community-search">
                 <i data-lucide="search"></i>
-                <input id="communitySearch" type="search" placeholder="게시글 검색" />
+                <input id="communitySearch" type="search" placeholder="원료명, 규격, 인증 검색" />
               </label>
             </div>
 
             <div class="community-list" id="communityList" aria-live="polite"></div>
           </div>
-
-          <aside class="community-aside" aria-label="커뮤니티 요약">
-            <div class="community-metric">
-              <span>오늘 등록된 원료 요청</span>
-              <strong>18건</strong>
-              <p>평균 첫 답변 38분</p>
-            </div>
-            <div class="hot-keywords">
-              <h3>많이 언급된 키워드</h3>
-              <div>
-                <button type="button">알룰로스</button>
-                <button type="button">유기농 인증</button>
-                <button type="button">비건 단백</button>
-                <button type="button">냉동 과채</button>
-                <button type="button">수입 MOQ</button>
-              </div>
-            </div>
-            <form class="community-write" id="communityWrite">
-              <h3>빠른 글쓰기</h3>
-              <select aria-label="게시판 선택" id="communityCategory">
-                <option>원료 요청</option>
-                <option>규격 질문</option>
-                <option>거래처 추천</option>
-                <option>법규·인증</option>
-              </select>
-              <input id="communityTitle" type="text" placeholder="제목을 입력하세요" aria-label="글 제목" />
-              <textarea id="communityBody" placeholder="필요 수량, 적용 제품, 원하는 인증 조건을 적어주세요" aria-label="글 내용"></textarea>
-              <button class="primary-button" type="submit">게시글 미리 등록</button>
-            </form>
-          </aside>
         </div>
       </section>
     </main>

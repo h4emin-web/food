@@ -51,47 +51,47 @@ const ingredients = [
 
 const communityPosts = [
   {
-    category: "원료 요청",
+    category: "원료 수배",
     title: "국내 재고 있는 완두 단백 80% 원료 찾습니다",
-    desc: "대체육 시제품용으로 20kg 샘플 먼저 테스트 예정입니다. HACCP 또는 FSSC 자료가 있으면 좋겠습니다.",
+    desc: "대체육 시제품용으로 20kg 샘플 테스트 예정입니다. HACCP 또는 FSSC 자료가 필요합니다.",
     author: "HMR개발팀",
     date: "방금 전",
     comments: 8,
     views: 142,
   },
   {
-    category: "규격 질문",
+    category: "규격 문의",
     title: "알룰로스 시럽 Brix 규격 비교해보신 분 있나요?",
-    desc: "음료 적용 시 점도와 후미 차이가 궁금합니다. 국내산과 수입산 적용 경험을 공유받고 싶습니다.",
+    desc: "음료 적용용으로 70 Brix 전후 규격을 찾고 있습니다. 점도와 후미 차이가 궁금합니다.",
     author: "음료R&D",
     date: "18분 전",
     comments: 5,
     views: 96,
   },
   {
-    category: "거래처 추천",
-    title: "천연 딸기향 커스텀 잘하는 향료사 추천 부탁드립니다",
-    desc: "요거트 베이스에 넣을 예정이고 산미가 강하지 않은 방향을 찾고 있습니다. MOQ 낮은 곳이면 더 좋습니다.",
+    category: "대체 원료",
+    title: "천연 딸기향을 대체할 클린라벨 원료가 있을까요?",
+    desc: "요거트 베이스에 넣을 예정입니다. 산미가 강하지 않고 표시사항이 간단한 원료를 찾습니다.",
     author: "브랜드PM",
     date: "1시간 전",
     comments: 12,
     views: 221,
   },
   {
-    category: "법규·인증",
-    title: "유기농 표시 가능한 코코아 분말 수입 서류 체크리스트",
-    desc: "수입 원료를 소분 제품에 적용하려고 합니다. 원산지 증명, 유기 인증서 외에 확인해야 할 자료가 있을까요?",
+    category: "수입·인증",
+    title: "유기농 표시 가능한 코코아 분말 원료 조건 문의",
+    desc: "수입 원료를 소분 제품에 적용하려고 합니다. 원산지 증명과 유기 인증서 조건을 확인하고 싶습니다.",
     author: "품질관리자",
     date: "2시간 전",
     comments: 4,
     views: 188,
   },
   {
-    category: "원료 요청",
-    title: "냉동 망고 다이스 10mm, B2B 납품 가능한 업체 찾습니다",
+    category: "원료 수배",
+    title: "냉동 망고 다이스 10mm 원료 찾습니다",
     desc: "디저트 토핑용으로 월 300kg 정도 예상합니다. 당도 규격과 해동 후 드립 손실 자료가 필요합니다.",
     author: "디저트제조",
-    date: "오늘",
+    date: "3시간 전",
     comments: 6,
     views: 174,
   },
@@ -105,11 +105,6 @@ const quickTags = [...document.querySelectorAll(".quick-tags button")];
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
 const communityTabs = [...document.querySelectorAll("[data-community-tab]")];
-const communityWriteForm = document.querySelector("#communityWrite");
-const communityTitle = document.querySelector("#communityTitle");
-const communityBody = document.querySelector("#communityBody");
-const communityCategory = document.querySelector("#communityCategory");
-const focusCommunityWrite = document.querySelector("#focusCommunityWrite");
 let activeCommunityTab = "전체";
 
 function renderCards(items) {
@@ -187,7 +182,7 @@ function renderCommunityPosts(posts) {
             <div class="post-meta">
               <span>${post.author}</span>
               <span>${post.date}</span>
-              <span>답변 대기 중</span>
+              <span>문의 접수</span>
             </div>
           </div>
           <div class="post-stats" aria-label="게시글 반응">
@@ -265,44 +260,6 @@ if (communityList && communitySearch) {
   });
 
   communitySearch.addEventListener("input", updateCommunityPosts);
-
-  document.querySelectorAll(".hot-keywords button").forEach((button) => {
-    button.addEventListener("click", () => {
-      communitySearch.value = button.textContent.trim();
-      updateCommunityPosts();
-    });
-  });
-
-  focusCommunityWrite.addEventListener("click", () => {
-    communityTitle.focus();
-  });
-
-  communityWriteForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    const title = communityTitle.value.trim();
-    const desc = communityBody.value.trim();
-    if (!title) {
-      communityTitle.focus();
-      return;
-    }
-
-    communityPosts.unshift({
-      category: communityCategory.value,
-      title,
-    desc: desc || "조건을 더 입력하면 실무자가 빠르게 답변할 수 있습니다.",
-      author: "나",
-      date: "지금",
-      comments: 0,
-      views: 1,
-    });
-
-    activeCommunityTab = "전체";
-    communityTabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.communityTab === "전체"));
-    communitySearch.value = "";
-    communityWriteForm.reset();
-    updateCommunityPosts();
-  });
 }
 
 if (window.lucide) {
