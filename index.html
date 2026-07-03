@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>푸드소스 | 식품 원료 중개 플랫폼</title>
+    <meta
+      name="description"
+      content="식품 원료를 빠르게 검색하고 비교하는 B2B 플랫폼"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="푸드소스 홈">
+        <span class="brand-mark">F</span>
+        <span>푸드소스</span>
+      </a>
+      <nav class="main-nav" aria-label="주요 메뉴">
+        <a href="#ingredients">원료 찾기</a>
+        <a href="community.html">커뮤니티</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" type="button" aria-label="알림">
+          <i data-lucide="bell"></i>
+        </button>
+        <button class="text-button" type="button">로그인</button>
+        <button class="primary-button compact" type="button">
+          <i data-lucide="plus"></i>
+          원료 등록
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">식품 원료 B2B 플랫폼</p>
+          <h1 id="hero-title">식품 원료를 쉽고 빠르게</h1>
+          <p class="hero-description">검색부터 샘플 요청까지 한 번에.</p>
+          <form class="search-panel" aria-label="원료 검색">
+            <label class="search-field">
+              <i data-lucide="search"></i>
+              <input
+                id="heroSearch"
+                type="search"
+                placeholder="원료명 또는 기능을 검색하세요"
+              />
+            </label>
+            <button class="primary-button" type="submit">검색</button>
+          </form>
+          <div class="quick-tags" aria-label="인기 검색어">
+            <button type="button">비건</button>
+            <button type="button">HACCP</button>
+            <button type="button">저당</button>
+            <button type="button">고단백</button>
+            <button type="button">클린라벨</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="category-strip" aria-label="원료 카테고리">
+        <button class="category active" type="button">
+          <i data-lucide="sparkles"></i>
+          기능성
+        </button>
+        <button class="category" type="button">
+          <i data-lucide="wheat"></i>
+          곡물·단백
+        </button>
+        <button class="category" type="button">
+          <i data-lucide="leaf"></i>
+          천연추출물
+        </button>
+        <button class="category" type="button">
+          <i data-lucide="droplets"></i>
+          향료·색소
+        </button>
+        <button class="category" type="button">
+          <i data-lucide="shield-check"></i>
+          인증 원료
+        </button>
+        <button class="category" type="button">
+          <i data-lucide="snowflake"></i>
+          냉동·농축
+        </button>
+      </section>
+
+      <section class="marketplace" id="ingredients">
+        <aside class="filter-panel" aria-label="원료 필터">
+          <div class="filter-heading">
+            <h2>필터</h2>
+            <button type="button" id="resetFilters">초기화</button>
+          </div>
+          <div class="filter-group">
+            <h3>사용 목적</h3>
+            <label><input type="checkbox" value="건강기능" /> 건강기능</label>
+            <label><input type="checkbox" value="대체식품" /> 대체식품</label>
+            <label><input type="checkbox" value="음료" /> 음료</label>
+            <label><input type="checkbox" value="베이커리" /> 베이커리</label>
+          </div>
+          <div class="filter-group">
+            <h3>인증</h3>
+            <label><input type="checkbox" value="HACCP" /> HACCP</label>
+            <label><input type="checkbox" value="FSSC22000" /> FSSC 22000</label>
+            <label><input type="checkbox" value="유기농" /> 유기농</label>
+            <label><input type="checkbox" value="할랄" /> 할랄</label>
+          </div>
+          <div class="filter-group">
+            <h3>공급 조건</h3>
+            <label><input type="checkbox" value="국내재고" /> 국내 재고</label>
+            <label><input type="checkbox" value="소량샘플" /> 소량 샘플</label>
+            <label><input type="checkbox" value="빠른견적" /> 24시간 견적</label>
+          </div>
+        </aside>
+
+        <div class="content-area">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">추천 원료</p>
+              <h2>자주 찾는 식품 원료</h2>
+            </div>
+            <div class="sort-control">
+              <i data-lucide="sliders-horizontal"></i>
+              <select aria-label="정렬">
+                <option>추천순</option>
+                <option>응답 빠른순</option>
+                <option>MOQ 낮은순</option>
+                <option>가격 낮은순</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="ingredient-grid" id="ingredientGrid" aria-live="polite"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>푸드소스</strong>
+        <p>식품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+        <a href="#">원료 등록</a>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
