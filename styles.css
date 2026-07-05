@@ -2,10 +2,8 @@
   --ink: #151515;
   --muted: #6d6f78;
   --line: #eceef2;
-  --soft: #f7f8fb;
+  --soft: #ffffff;
   --paper: #ffffff;
-  --yellow: #ffd84d;
-  --yellow-deep: #f4bd00;
   --green: #17845b;
   --teal: #0f766e;
   --blue: #2563eb;
@@ -94,9 +92,9 @@ img {
   height: 34px;
   place-items: center;
   border-radius: 8px;
-  background: var(--yellow);
+  border: 1px solid #111;
+  background: #fff;
   color: #111;
-  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.1);
 }
 
 .main-nav {
@@ -180,7 +178,8 @@ img {
 .primary-button.compact {
   min-height: 40px;
   padding: 0 16px;
-  background: var(--yellow);
+  border: 1px solid #111;
+  background: #fff;
   color: #111;
   box-shadow: none;
 }
@@ -197,9 +196,7 @@ img {
   align-items: center;
   min-height: auto;
   padding: clamp(44px, 7vw, 78px) clamp(20px, 5vw, 72px) 48px;
-  background:
-    linear-gradient(180deg, rgba(255, 216, 77, 0.28), rgba(255, 255, 255, 0) 54%),
-    #fff;
+  background: #fff;
 }
 
 .hero-copy {
@@ -282,9 +279,9 @@ img {
 
 .quick-tags button:hover,
 .category.active {
-  border-color: transparent;
-  background: #111;
-  color: #fff;
+  border-color: #111;
+  background: #fff;
+  color: #111;
 }
 
 .category-strip {
@@ -316,7 +313,7 @@ img {
   grid-template-columns: 280px minmax(0, 1fr);
   gap: 30px;
   padding: 46px clamp(20px, 5vw, 72px) 70px;
-  background: var(--soft);
+  background: #fff;
 }
 
 .filter-panel {
@@ -584,16 +581,14 @@ img {
 }
 
 .community-page {
-  background: var(--soft);
+  background: #fff;
 }
 
 .community-hero {
   display: grid;
   align-items: end;
   padding: clamp(44px, 7vw, 84px) clamp(20px, 5vw, 72px) 34px;
-  background:
-    linear-gradient(180deg, rgba(255, 216, 77, 0.34), rgba(247, 248, 251, 0) 70%),
-    var(--soft);
+  background: #fff;
 }
 
 .community-hero h1 {
@@ -613,7 +608,7 @@ img {
 }
 
 .community-section {
-  background: var(--soft);
+  background: #fff;
 }
 
 .community-section .section-title {
@@ -669,8 +664,8 @@ img {
 .community-tabs button.active,
 .community-tabs button:hover {
   border-color: #111;
-  background: #111;
-  color: #fff;
+  background: #fff;
+  color: #111;
 }
 
 .community-search {
