@@ -803,6 +803,10 @@ img {
   background: #fff;
 }
 
+.auth-only[hidden] {
+  display: none !important;
+}
+
 .register-hero {
   padding: clamp(44px, 7vw, 84px) clamp(20px, 5vw, 72px) 30px;
   text-align: center;
@@ -857,6 +861,40 @@ img {
   gap: 24px;
   align-items: start;
   padding: 34px clamp(20px, 5vw, 72px) 70px;
+}
+
+.auth-required {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  max-width: 520px;
+  margin: 34px auto 80px;
+  padding: 38px 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  text-align: center;
+}
+
+.auth-required[hidden] {
+  display: none;
+}
+
+.auth-required svg {
+  width: 34px;
+  height: 34px;
+  color: var(--green);
+}
+
+.auth-required h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.auth-required p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
 }
 
 .register-form,

@@ -106,8 +106,11 @@ const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
 const communityTabs = [...document.querySelectorAll("[data-community-tab]")];
 const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm");
+const registerLayout = document.querySelector("#registerLayout");
+const registerAuthRequired = document.querySelector("#registerAuthRequired");
 const signupForm = document.querySelector("#signupForm");
 const authLinks = [...document.querySelectorAll(".auth-link")];
+const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
 let activeCommunityTab = "전체";
 
 function renderCards(items) {
@@ -201,6 +204,10 @@ function setCurrentMember(member) {
 
 function updateAuthLinks() {
   const member = getCurrentMember();
+  authOnlyLinks.forEach((link) => {
+    link.hidden = !member;
+  });
+
   authLinks.forEach((link) => {
     if (member) {
       link.textContent = `${member.name}님`;
@@ -210,6 +217,14 @@ function updateAuthLinks() {
       link.href = "signup.html";
     }
   });
+}
+
+function updateRegisterAccess() {
+  if (!registerLayout || !registerAuthRequired) return;
+
+  const member = getCurrentMember();
+  registerLayout.hidden = !member;
+  registerAuthRequired.hidden = Boolean(member);
 }
 
 function renderCommunityPosts(posts) {
@@ -476,5 +491,6 @@ if (window.lucide) {
 }
 
 updateAuthLinks();
+updateRegisterAccess();
 renderCards(ingredients);
 renderCommunityPosts(communityPosts);
