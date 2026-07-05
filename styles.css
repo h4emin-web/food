@@ -194,13 +194,15 @@ img {
   display: grid;
   grid-template-columns: 1fr;
   align-items: center;
+  justify-items: center;
   min-height: auto;
-  padding: clamp(44px, 7vw, 78px) clamp(20px, 5vw, 72px) 48px;
+  padding: clamp(58px, 8vw, 96px) clamp(20px, 5vw, 72px) 52px;
   background: #fff;
 }
 
 .hero-copy {
-  max-width: 760px;
+  width: min(100%, 980px);
+  text-align: center;
 }
 
 .eyebrow {
@@ -211,8 +213,8 @@ img {
 }
 
 .hero h1 {
-  max-width: 720px;
-  margin: 0;
+  max-width: none;
+  margin: 0 auto;
   font-size: clamp(30px, 4vw, 52px);
   line-height: 1.08;
   letter-spacing: 0;
@@ -220,8 +222,8 @@ img {
 }
 
 .hero-description {
-  max-width: 640px;
-  margin: 18px 0 0;
+  max-width: none;
+  margin: 18px auto 0;
   color: #4b5563;
   font-size: 19px;
   line-height: 1.7;
@@ -231,8 +233,11 @@ img {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
-  max-width: 760px;
+  width: min(100%, 900px);
+  max-width: none;
   margin-top: 34px;
+  margin-right: auto;
+  margin-left: auto;
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -259,6 +264,7 @@ img {
 }
 
 .quick-tags {
+  justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 18px;
