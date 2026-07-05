@@ -239,16 +239,11 @@ function renderCommunityPosts(posts) {
     .map(
       (post) => `
         <article class="community-post">
-          <div>
-            <span class="post-category">${post.category}</span>
-            <h3>${post.title}</h3>
-            <p>${post.desc}</p>
-            <div class="post-meta">
-              <span>${post.author}</span>
-              <span>${post.date}</span>
-              <span>문의 접수</span>
-            </div>
-          </div>
+          <span class="post-category">${post.category}</span>
+          <h3>${post.title}</h3>
+          <span class="post-author">${post.author}</span>
+          <span class="post-date">${post.date}</span>
+          <span class="post-status">문의 접수</span>
           <div class="post-stats" aria-label="게시글 반응">
             <span><i data-lucide="message-circle"></i>${post.comments}</span>
             <span><i data-lucide="eye"></i>${post.views}</span>
@@ -257,6 +252,20 @@ function renderCommunityPosts(posts) {
       `
     )
     .join("");
+
+  communityList.insertAdjacentHTML(
+    "afterbegin",
+    `
+      <div class="community-board-head" aria-hidden="true">
+        <span>분류</span>
+        <span>제목</span>
+        <span>작성자</span>
+        <span>등록일</span>
+        <span>상태</span>
+        <span>반응</span>
+      </div>
+    `
+  );
 
   if (window.lucide) {
     window.lucide.createIcons();
