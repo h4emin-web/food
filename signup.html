@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>푸드소스 | 회원가입</title>
+    <meta
+      name="description"
+      content="푸드소스에서 원료 검색, 원료 문의, 원료 등록을 이용하기 위한 회원가입 화면"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="푸드소스 홈">
+        <span class="brand-mark">F</span>
+        <span>푸드소스</span>
+      </a>
+      <nav class="main-nav" aria-label="주요 메뉴">
+        <a href="index.html#ingredients">원료 찾기</a>
+        <a href="community.html">원료문의</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" type="button" aria-label="알림">
+          <i data-lucide="bell"></i>
+        </button>
+        <a class="text-button auth-link active-auth" href="signup.html">회원가입</a>
+        <a class="primary-button compact" href="ingredient-register.html">
+          <i data-lucide="plus"></i>
+          원료 등록
+        </a>
+      </div>
+    </header>
+
+    <main class="signup-page">
+      <section class="signup-hero" aria-labelledby="signup-title">
+        <p class="eyebrow">회원가입</p>
+        <h1 id="signup-title">푸드소스 시작하기</h1>
+        <p>가입하면 원료 문의와 원료 등록 화면에서 회원 정보를 사용할 수 있습니다.</p>
+      </section>
+
+      <section class="signup-layout" aria-label="회원가입 폼">
+        <form class="signup-form" id="signupForm">
+          <div class="form-section">
+            <h2>계정 정보</h2>
+            <div class="form-grid">
+              <label>
+                <span>이름</span>
+                <input id="signupName" type="text" placeholder="이름" required />
+              </label>
+              <label>
+                <span>이메일</span>
+                <input id="signupEmail" type="email" placeholder="name@example.com" required />
+              </label>
+              <label>
+                <span>비밀번호</span>
+                <input id="signupPassword" type="password" placeholder="6자 이상" minlength="6" required />
+              </label>
+              <label>
+                <span>비밀번호 확인</span>
+                <input id="signupPasswordConfirm" type="password" placeholder="비밀번호 재입력" minlength="6" required />
+              </label>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h2>회사 정보</h2>
+            <div class="form-grid">
+              <label>
+                <span>회사명</span>
+                <input id="signupCompany" type="text" placeholder="회사명" />
+              </label>
+              <label>
+                <span>담당 업무</span>
+                <select id="signupRole">
+                  <option>식품 개발</option>
+                  <option>구매</option>
+                  <option>품질관리</option>
+                  <option>영업</option>
+                  <option>기타</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <label class="terms-check">
+            <input id="signupTerms" type="checkbox" required />
+            <span>서비스 이용약관과 개인정보 처리방침에 동의합니다.</span>
+          </label>
+
+          <p class="form-message" id="signupMessage" aria-live="polite"></p>
+
+          <div class="form-actions">
+            <button class="outline-button" type="reset">초기화</button>
+            <button class="primary-button" type="submit">가입하기</button>
+          </div>
+        </form>
+
+        <aside class="signup-result" aria-label="가입 상태">
+          <p class="eyebrow">가입 상태</p>
+          <h2 id="memberStatusTitle">아직 가입 전입니다</h2>
+          <p id="memberStatusText">회원가입을 완료하면 이 브라우저에 회원 정보가 저장됩니다.</p>
+          <div class="member-card" id="memberCard" hidden>
+            <strong id="memberName">회원명</strong>
+            <span id="memberEmail">email@example.com</span>
+            <span id="memberCompany">회사 정보</span>
+          </div>
+          <button class="outline-button" id="logoutButton" type="button" hidden>가입 정보 지우기</button>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>푸드소스</strong>
+        <p>식품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+        <a href="signup.html">회원가입</a>
+        <a href="ingredient-register.html">원료 등록</a>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

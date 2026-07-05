@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>푸드소스 커뮤니티 | 원료 문의 게시판</title>
+    <title>푸드소스 | 원료문의</title>
     <meta
       name="description"
-      content="찾기 어려운 식품 원료를 문의하고 조건에 맞는 원료 정보를 확인하는 푸드소스 원료 문의 게시판"
+      content="식품 원료명, 용도, 규격, 인증 조건을 문의하는 푸드소스 원료 문의 게시판"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,52 +24,45 @@
       </a>
       <nav class="main-nav" aria-label="주요 메뉴">
         <a href="index.html#ingredients">원료 찾기</a>
-        <a class="active" href="community.html">커뮤니티</a>
+        <a class="active" href="community.html">원료문의</a>
       </nav>
       <div class="header-actions">
         <button class="icon-button" type="button" aria-label="알림">
           <i data-lucide="bell"></i>
         </button>
-        <button class="text-button" type="button">로그인</button>
-        <button class="primary-button compact" type="button">
+        <a class="text-button auth-link" href="signup.html">회원가입</a>
+        <a class="primary-button compact" href="ingredient-register.html">
           <i data-lucide="plus"></i>
           원료 등록
-        </button>
+        </a>
       </div>
     </header>
 
     <main class="community-page">
       <section class="community-hero" aria-labelledby="community-title">
         <div>
-          <p class="eyebrow">원료 문의 게시판</p>
-          <h1 id="community-title">찾기 어려운 원료를 문의하세요</h1>
+          <p class="eyebrow">원료문의 게시판</p>
+          <h1 id="community-title">원료문의</h1>
           <p>
-            필요한 원료명, 용도, 규격, 인증 조건을 남기고 관련 정보를 확인하세요.
+            필요한 원료명, 용도, 규격, 인증 조건을 확인하는 공간입니다.
           </p>
         </div>
       </section>
 
       <section class="community-section" id="community">
-        <div class="section-title">
-          <div>
-            <p class="eyebrow">문의 목록</p>
-            <h2>원료 문의만 모아봅니다</h2>
-          </div>
-        </div>
-
         <div class="community-layout">
           <div class="community-main">
             <div class="community-toolbar">
               <div class="community-tabs" aria-label="원료 문의 분류">
                 <button class="active" type="button" data-community-tab="전체">전체</button>
-                <button type="button" data-community-tab="원료 수배">원료 수배</button>
-                <button type="button" data-community-tab="대체 원료">대체 원료</button>
+                <button type="button" data-community-tab="원료 문의">원료 문의</button>
                 <button type="button" data-community-tab="규격 문의">규격 문의</button>
-                <button type="button" data-community-tab="수입·인증">수입·인증</button>
+                <button type="button" data-community-tab="인증 문의">인증 문의</button>
+                <button type="button" data-community-tab="수입 문의">수입 문의</button>
               </div>
               <label class="community-search">
                 <i data-lucide="search"></i>
-                <input id="communitySearch" type="search" placeholder="원료명, 규격, 인증 검색" />
+                <input id="communitySearch" type="search" placeholder="원료 문의 검색" />
               </label>
             </div>
 
@@ -87,7 +80,8 @@
       <div class="footer-links">
         <a href="#">이용약관</a>
         <a href="#">개인정보처리방침</a>
-        <a href="#">원료 등록</a>
+        <a href="signup.html">회원가입</a>
+        <a href="ingredient-register.html">원료 등록</a>
       </div>
     </footer>
 

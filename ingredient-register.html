@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>푸드소스 | 원료 등록</title>
+    <meta
+      name="description"
+      content="식품 원료명, 영문명, 규격, 인증, 샘플 가능 여부를 등록하는 푸드소스 원료 등록 화면"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="푸드소스 홈">
+        <span class="brand-mark">F</span>
+        <span>푸드소스</span>
+      </a>
+      <nav class="main-nav" aria-label="주요 메뉴">
+        <a href="index.html#ingredients">원료 찾기</a>
+        <a href="community.html">원료문의</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-button" type="button" aria-label="알림">
+          <i data-lucide="bell"></i>
+        </button>
+        <a class="text-button auth-link" href="signup.html">회원가입</a>
+        <a class="primary-button compact active-register" href="ingredient-register.html">
+          <i data-lucide="plus"></i>
+          원료 등록
+        </a>
+      </div>
+    </header>
+
+    <main class="register-page">
+      <section class="register-hero" aria-labelledby="register-title">
+        <p class="eyebrow">원료 등록</p>
+        <h1 id="register-title">식품 원료 정보를 등록하세요</h1>
+        <p>원료명, 영문명, 규격, 인증, 샘플 가능 여부를 입력하면 등록 미리보기가 생성됩니다.</p>
+      </section>
+
+      <section class="register-layout" aria-label="원료 등록 폼">
+        <form class="register-form" id="ingredientRegisterForm">
+          <div class="form-section">
+            <h2>기본 정보</h2>
+            <div class="form-grid">
+              <label>
+                <span>원료명</span>
+                <input id="registerName" type="text" placeholder="예: 완두 단백 분리물" required />
+              </label>
+              <label>
+                <span>영문명</span>
+                <input id="registerEnglishName" type="text" placeholder="예: Pea Protein Isolate" required />
+              </label>
+              <label>
+                <span>카테고리</span>
+                <select id="registerCategory" required>
+                  <option value="">선택</option>
+                  <option>기능성</option>
+                  <option>곡물·단백</option>
+                  <option>천연추출물</option>
+                  <option>향료·색소</option>
+                  <option>인증 원료</option>
+                  <option>냉동·농축</option>
+                </select>
+              </label>
+              <label>
+                <span>사용 용도</span>
+                <input id="registerUse" type="text" placeholder="예: 음료, 베이커리, HMR" />
+              </label>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h2>거래 조건</h2>
+            <div class="form-grid">
+              <label>
+                <span>인증</span>
+                <input id="registerCert" type="text" placeholder="예: HACCP, FSSC 22000" />
+              </label>
+              <label>
+                <span>MOQ</span>
+                <input id="registerMoq" type="text" placeholder="예: 10kg" />
+              </label>
+              <label>
+                <span>샘플 제공</span>
+                <select id="registerSample">
+                  <option>가능</option>
+                  <option>협의</option>
+                  <option>불가</option>
+                </select>
+              </label>
+              <label>
+                <span>응답 방식</span>
+                <select id="registerResponse">
+                  <option>샘플 요청 가능</option>
+                  <option>견적 문의 가능</option>
+                  <option>샘플·견적 모두 가능</option>
+                </select>
+              </label>
+            </div>
+            <label class="full-field">
+              <span>원료 설명</span>
+              <textarea id="registerDesc" placeholder="원료 특징, 적용 제품, 보관 조건 등을 입력하세요"></textarea>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button class="outline-button" type="reset">초기화</button>
+            <button class="primary-button" type="submit">등록 미리보기</button>
+          </div>
+        </form>
+
+        <aside class="register-preview" aria-label="등록 미리보기">
+          <p class="eyebrow">미리보기</p>
+          <article class="ingredient-card preview-card">
+            <div class="card-body">
+              <span class="badge" id="previewCategory">카테고리</span>
+              <h3 id="previewName">원료명</h3>
+              <span class="english-name" id="previewEnglishName">English Name</span>
+              <p id="previewDesc">입력한 원료 설명이 여기에 표시됩니다.</p>
+              <div class="meta-row" id="previewTags">
+                <span>인증</span>
+                <span>MOQ</span>
+                <span>샘플</span>
+              </div>
+              <div class="card-actions">
+                <div class="card-buttons">
+                  <button class="sample-button" type="button">샘플 요청</button>
+                  <button class="quote-button" type="button">견적 문의</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>푸드소스</strong>
+        <p>식품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+        <a href="signup.html">회원가입</a>
+        <a href="ingredient-register.html">원료 등록</a>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
