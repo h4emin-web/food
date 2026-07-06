@@ -397,6 +397,13 @@ function setCurrentMember(member) {
   localStorage.setItem("foodsourceCurrentMember", JSON.stringify(member));
 }
 
+function logoutCurrentMember() {
+  localStorage.removeItem("foodsourceCurrentMember");
+  updateAuthLinks();
+  updateRegisterAccess();
+  if (grid) updateGrid();
+}
+
 function updateAuthLinks() {
   const member = getCurrentMember();
   authOnlyLinks.forEach((link) => {
@@ -409,7 +416,7 @@ function updateAuthLinks() {
   authLinks.forEach((link) => {
     if (member) {
       link.textContent = `${member.name}님`;
-      link.href = "signup.html";
+      link.href = "#logout";
     } else {
       link.textContent = "회원가입";
       link.href = "signup.html";
@@ -654,6 +661,15 @@ if (communityList && communitySearch) {
   communitySearch.addEventListener("input", updateCommunityPosts);
 }
 
+authLinks.forEach((link) => {
+  link.addEventListener("click", (event) => {
+    if (!getCurrentMember()) return;
+
+    event.preventDefault();
+    logoutCurrentMember();
+  });
+});
+
 if (ingredientRegisterForm) {
   const registerFields = {
     name: document.querySelector("#registerName"),
@@ -734,6 +750,11 @@ if (signupForm) {
   }
 
   function renderMemberStatus() {
+    if (!memberStatusTitle || !memberStatusText || !memberCard || !logoutButton) {
+      updateAuthLinks();
+      return;
+    }
+
     const member = getCurrentMember();
     if (!member) {
       memberStatusTitle.textContent = "아직 가입 전입니다";
@@ -807,7 +828,7 @@ if (signupForm) {
   });
 
   logoutButton.addEventListener("click", () => {
-    localStorage.removeItem("foodsourceCurrentMember");
+    logoutCurrentMember();
     setSignupMessage("가입 상태를 지웠습니다. 저장된 회원 목록은 유지됩니다.", "success");
     renderMemberStatus();
   });
