@@ -185,6 +185,46 @@ const guestOnlyLinks = [...document.querySelectorAll(".guest-only")];
 let activeIngredientId = "";
 let activeCommunityPostId = "";
 
+function getFavoriteKey() {
+  const member = getCurrentMember();
+  return member ? `foodsourceFavorites:${member.email}` : "";
+}
+
+function getFavoriteIngredients() {
+  const key = getFavoriteKey();
+  if (!key) return [];
+
+  try {
+    return JSON.parse(localStorage.getItem(key)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function setFavoriteIngredients(items) {
+  const key = getFavoriteKey();
+  if (!key) return;
+  localStorage.setItem(key, JSON.stringify(items));
+}
+
+function isFavoriteIngredient(ingredientId) {
+  return getFavoriteIngredients().includes(ingredientId);
+}
+
+function toggleFavoriteIngredient(ingredientId) {
+  if (!getCurrentMember()) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const favorites = getFavoriteIngredients();
+  const nextFavorites = favorites.includes(ingredientId)
+    ? favorites.filter((id) => id !== ingredientId)
+    : [...favorites, ingredientId];
+  setFavoriteIngredients(nextFavorites);
+  updateGrid();
+}
+
 function renderCards(items) {
   if (!grid) return;
 
@@ -214,6 +254,13 @@ function renderCards(items) {
             <button class="sample-button" type="button">샘플 요청</button>
             <button class="quote-button" type="button">견적 문의</button>
           </div>
+          <button
+            class="favorite-button ${isFavoriteIngredient(item.id) ? "active" : ""}"
+            type="button"
+            data-favorite-id="${item.id}"
+            aria-label="${item.name} 즐겨찾기"
+            aria-pressed="${isFavoriteIngredient(item.id)}"
+          >★</button>
         </article>
         ${activeIngredientId === item.id ? getIngredientDetailMarkup(item) : ""}
       `
@@ -229,6 +276,7 @@ function renderCards(items) {
         <span>분류</span>
         <span>원산지</span>
         <span>문의</span>
+        <span>즐겨찾기</span>
       </div>
     `
   );
@@ -534,6 +582,12 @@ if (grid && searchInput) {
 
   grid.addEventListener("click", (event) => {
     if (event.target.closest(".ingredient-detail")) return;
+    const favoriteButton = event.target.closest("[data-favorite-id]");
+    if (favoriteButton) {
+      event.stopPropagation();
+      toggleFavoriteIngredient(favoriteButton.dataset.favoriteId);
+      return;
+    }
     if (event.target.closest("button")) return;
     const ingredient = event.target.closest(".ingredient-card");
     if (!ingredient) return;
