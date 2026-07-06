@@ -1,5 +1,6 @@
 const ingredients = [
   {
+    id: "pea-protein-isolate",
     name: "완두 단백 분리물",
     englishName: "Pea Protein Isolate",
     desc: "대체육, 단백질 음료, 베이커리용 단백 원료",
@@ -9,8 +10,16 @@ const ingredients = [
     image: "https://images.unsplash.com/photo-1515543904379-3d757afe72e4?auto=format&fit=crop&w=900&q=80",
     badge: "응답 빠름",
     tags: ["대체식품", "HACCP", "국내재고", "소량샘플"],
+    supplier: {
+      name: "그린프로틴코리아",
+      website: "https://example.com/green-protein",
+      email: "sales@greenprotein.co.kr",
+      contact: "원료영업팀",
+      spec: "Protein 80%, 20kg bag",
+    },
   },
   {
+    id: "collagen-peptide",
     name: "저분자 콜라겐 펩타이드",
     englishName: "Hydrolyzed Collagen Peptide",
     desc: "음료와 젤리에 쓰기 좋은 건강기능 콘셉트 원료",
@@ -20,8 +29,16 @@ const ingredients = [
     image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=900&q=80",
     badge: "인기",
     tags: ["건강기능", "FSSC22000", "빠른견적", "소량샘플"],
+    supplier: {
+      name: "뉴트라소스",
+      website: "https://example.com/nutrasource",
+      email: "contact@nutrasource.co.kr",
+      contact: "기능성원료팀",
+      spec: "Average MW 2,000Da 이하, 10kg carton",
+    },
   },
   {
+    id: "allulose-syrup",
     name: "알룰로스 시럽",
     englishName: "Allulose Syrup",
     desc: "저당 제품 개발에 쓰이는 감미 원료",
@@ -31,8 +48,16 @@ const ingredients = [
     image: "https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?auto=format&fit=crop&w=900&q=80",
     badge: "저당",
     tags: ["음료", "HACCP", "국내재고", "빠른견적"],
+    supplier: {
+      name: "스위트랩",
+      website: "https://example.com/sweetlab",
+      email: "sales@sweetlab.co.kr",
+      contact: "감미소재팀",
+      spec: "70 Brix, 25kg pail",
+    },
   },
   {
+    id: "beet-red-color",
     name: "비트 레드 천연 색소",
     englishName: "Beet Red Color",
     desc: "젤리, 음료, 디저트용 식물 유래 색소",
@@ -42,8 +67,16 @@ const ingredients = [
     image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=900&q=80",
     badge: "클린라벨",
     tags: ["음료", "베이커리", "유기농", "소량샘플"],
+    supplier: {
+      name: "컬러네이처",
+      website: "https://example.com/colornature",
+      email: "info@colornature.co.kr",
+      contact: "천연색소팀",
+      spec: "Powder, 5kg carton",
+    },
   },
   {
+    id: "oat-beta-glucan",
     name: "귀리 베타글루칸",
     englishName: "Oat Beta-Glucan",
     desc: "시리얼, 쉐이크, 건강 스낵용 식이섬유 원료",
@@ -53,8 +86,16 @@ const ingredients = [
     image: "https://images.unsplash.com/photo-1614961233913-a5113a4a34ed?auto=format&fit=crop&w=900&q=80",
     badge: "기능성",
     tags: ["건강기능", "FSSC22000", "할랄", "빠른견적"],
+    supplier: {
+      name: "오트바이오",
+      website: "https://example.com/oatbio",
+      email: "hello@oatbio.co.kr",
+      contact: "해외소싱팀",
+      spec: "Beta-glucan 70%, 15kg box",
+    },
   },
   {
+    id: "strawberry-flavor-base",
     name: "천연 딸기향 베이스",
     englishName: "Natural Strawberry Flavor Base",
     desc: "유제품, 음료, 베이커리용 향료 베이스",
@@ -64,6 +105,13 @@ const ingredients = [
     image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=900&q=80",
     badge: "커스텀",
     tags: ["음료", "베이커리", "HACCP", "국내재고"],
+    supplier: {
+      name: "플레이버웍스",
+      website: "https://example.com/flavorworks",
+      email: "rnd@flavorworks.co.kr",
+      contact: "향료개발팀",
+      spec: "Liquid base, 10kg can",
+    },
   },
 ];
 
@@ -134,6 +182,7 @@ const loginForm = document.querySelector("#loginForm");
 const authLinks = [...document.querySelectorAll(".auth-link")];
 const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
 const guestOnlyLinks = [...document.querySelectorAll(".guest-only")];
+let activeIngredientId = "";
 let activeCommunityPostId = "";
 
 function renderCards(items) {
@@ -147,7 +196,7 @@ function renderCards(items) {
   grid.innerHTML = items
     .map(
       (item) => `
-        <article class="ingredient-card">
+        <article class="ingredient-card" role="button" tabindex="0" data-ingredient-id="${item.id}">
           <div class="ingredient-name">
             <h3>${item.name} <span>(${item.englishName})</span></h3>
           </div>
@@ -166,6 +215,7 @@ function renderCards(items) {
             <button class="quote-button" type="button">견적 문의</button>
           </div>
         </article>
+        ${activeIngredientId === item.id ? getIngredientDetailMarkup(item) : ""}
       `
     )
     .join("");
@@ -182,6 +232,55 @@ function renderCards(items) {
       </div>
     `
   );
+}
+
+function getIngredientDetailMarkup(item) {
+  const supplier = item.supplier || {};
+  const website = supplier.website || "#";
+  const email = supplier.email || "확인 필요";
+
+  return `
+    <section class="ingredient-detail" data-detail-ingredient-id="${item.id}" aria-label="${item.name} 상세">
+      <article class="detail-post ingredient-detail-card">
+        <div class="detail-head">
+          <h2>${item.name} <span>(${item.englishName})</span></h2>
+          <div class="detail-meta">
+            <span>${item.type || "원료"}</span>
+            <span>${item.origin || "원산지 확인 필요"}</span>
+            <span>${supplier.spec || "규격 확인 필요"}</span>
+          </div>
+        </div>
+        <p>${item.desc}</p>
+        <div class="supplier-detail-grid">
+          <div>
+            <span>공급사</span>
+            <strong>${supplier.name || "확인 필요"}</strong>
+          </div>
+          <div>
+            <span>공급사 홈페이지</span>
+            <a href="${website}" target="_blank" rel="noreferrer">${website}</a>
+          </div>
+          <div>
+            <span>공급사 이메일</span>
+            <a href="mailto:${email}">${email}</a>
+          </div>
+          <div>
+            <span>담당</span>
+            <strong>${supplier.contact || "확인 필요"}</strong>
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button class="sample-button" type="button">샘플 요청</button>
+          <button class="quote-button" type="button">견적 문의</button>
+        </div>
+      </article>
+    </section>
+  `;
+}
+
+function openIngredientDetail(ingredientId) {
+  activeIngredientId = activeIngredientId === ingredientId ? "" : ingredientId;
+  updateGrid();
 }
 
 function getFilteredItems() {
@@ -421,6 +520,22 @@ if (grid && searchInput) {
   document.querySelector(".search-panel").addEventListener("submit", (event) => {
     event.preventDefault();
     updateGrid();
+  });
+
+  grid.addEventListener("click", (event) => {
+    if (event.target.closest(".ingredient-detail")) return;
+    if (event.target.closest("button")) return;
+    const ingredient = event.target.closest(".ingredient-card");
+    if (!ingredient) return;
+    openIngredientDetail(ingredient.dataset.ingredientId);
+  });
+
+  grid.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const ingredient = event.target.closest(".ingredient-card");
+    if (!ingredient) return;
+    event.preventDefault();
+    openIngredientDetail(ingredient.dataset.ingredientId);
   });
 
   searchInput.addEventListener("input", updateGrid);

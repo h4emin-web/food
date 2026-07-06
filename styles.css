@@ -401,6 +401,7 @@ img {
   padding: 0 18px;
   border-bottom: 1px solid var(--line);
   background: #fff;
+  cursor: pointer;
   transition: background 160ms ease;
 }
 
@@ -577,6 +578,65 @@ img {
   color: var(--muted);
   text-align: center;
   font-weight: 700;
+}
+
+.ingredient-detail {
+  display: grid;
+  min-width: 1080px;
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfd;
+}
+
+.ingredient-detail-card {
+  gap: 20px;
+}
+
+.detail-head h2 span {
+  color: #6b7280;
+  font-size: 20px;
+}
+
+.supplier-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.supplier-detail-grid div {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.supplier-detail-grid span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.supplier-detail-grid strong,
+.supplier-detail-grid a {
+  overflow: hidden;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.supplier-detail-grid a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .supplier-band,
@@ -1358,6 +1418,10 @@ img {
   }
 
   .comment-form {
+    grid-template-columns: 1fr;
+  }
+
+  .supplier-detail-grid {
     grid-template-columns: 1fr;
   }
 
