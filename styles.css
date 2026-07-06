@@ -30,10 +30,11 @@ body {
   left: 0;
   top: 0;
   z-index: 9999;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   pointer-events: none;
-  border: 2px solid rgba(23, 132, 91, 0.34);
+  border: 2px solid rgba(23, 132, 91, 0.42);
+  background: rgba(23, 132, 91, 0.08);
   border-radius: 50%;
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
@@ -48,7 +49,7 @@ body {
 
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(9);
+    transform: translate(-50%, -50%) scale(11);
   }
 }
 
@@ -57,8 +58,8 @@ body {
     display: none;
   }
 
-  .ingredient-card,
-  .community-post,
+  .ingredient-card > *,
+  .community-post > *,
   .card-actions button {
     transition: none;
   }
@@ -444,8 +445,17 @@ img {
   transition: background 160ms ease;
 }
 
+.ingredient-card > * {
+  transform-origin: left center;
+  transition: transform 180ms ease;
+}
+
 .ingredient-card:hover {
   background: #fbfcfd;
+}
+
+.ingredient-card:hover > :not(.card-actions):not(.favorite-button) {
+  transform: scale(1.012);
 }
 
 .ingredient-card:last-child {
@@ -869,8 +879,17 @@ img {
   transition: background 160ms ease;
 }
 
+.community-post > * {
+  transform-origin: left center;
+  transition: transform 180ms ease;
+}
+
 .community-post:hover {
   background: #fbfcfd;
+}
+
+.community-post:hover > * {
+  transform: scale(1.012);
 }
 
 .community-post:last-child {
