@@ -1,13 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>푸드소스 | 회원가입</title>
-    <meta
-      name="description"
-      content="푸드소스에서 원료 검색, 원료 문의, 원료 등록을 이용하기 위한 회원가입 화면"
-    />
+    <title>푸드소스 | 마이페이지</title>
+    <meta name="description" content="푸드소스 회원 정보와 내가 등록한 원료를 관리하는 마이페이지" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -41,51 +38,43 @@
       </div>
     </header>
 
-    <main class="signup-page">
-      <section class="signup-hero" aria-labelledby="signup-title">
-        <p class="eyebrow">회원가입</p>
-        <h1 id="signup-title">푸드소스 시작하기</h1>
-        <p>가입하면 원료 문의와 원료 등록 화면에서 회원 정보를 사용할 수 있습니다.</p>
+    <main class="mypage-page">
+      <section class="signup-hero" aria-labelledby="mypage-title">
+        <p class="eyebrow">마이페이지</p>
+        <h1 id="mypage-title">내 정보</h1>
       </section>
 
-      <section class="signup-layout" aria-label="회원가입 폼">
-        <form class="signup-form" id="signupForm">
+      <section class="auth-required" id="mypageAuthRequired" hidden>
+        <i data-lucide="lock"></i>
+        <h2>로그인이 필요합니다</h2>
+        <p>마이페이지는 로그인한 회원만 이용할 수 있습니다.</p>
+        <a class="primary-button" href="login.html">로그인</a>
+      </section>
+
+      <section class="mypage-layout" id="mypageLayout" hidden>
+        <form class="signup-form" id="mypageForm">
           <div class="form-section">
-            <h2>계정 정보</h2>
+            <h2>가입 정보</h2>
             <div class="form-grid">
               <label>
                 <span>이름</span>
-                <input id="signupName" type="text" placeholder="이름" required />
+                <input id="mypageName" type="text" required />
               </label>
               <label>
                 <span>이메일</span>
-                <input id="signupEmail" type="email" placeholder="name@example.com" required />
+                <input id="mypageEmail" type="email" readonly />
               </label>
               <label>
                 <span>전화번호</span>
-                <input id="signupPhone" type="tel" placeholder="010-0000-0000" required />
+                <input id="mypagePhone" type="tel" placeholder="010-0000-0000" />
               </label>
-              <label>
-                <span>비밀번호</span>
-                <input id="signupPassword" type="password" placeholder="6자 이상" minlength="6" required />
-              </label>
-              <label>
-                <span>비밀번호 확인</span>
-                <input id="signupPasswordConfirm" type="password" placeholder="비밀번호 재입력" minlength="6" required />
-              </label>
-            </div>
-          </div>
-
-          <div class="form-section">
-            <h2>회사 정보</h2>
-            <div class="form-grid">
               <label>
                 <span>회사명</span>
-                <input id="signupCompany" type="text" placeholder="회사명" required />
+                <input id="mypageCompany" type="text" placeholder="회사명" />
               </label>
               <label>
                 <span>담당 업무</span>
-                <select id="signupRole">
+                <select id="mypageRole">
                   <option>식품 개발</option>
                   <option>구매</option>
                   <option>품질관리</option>
@@ -93,32 +82,32 @@
                   <option>기타</option>
                 </select>
               </label>
+              <label>
+                <span>관심 원료</span>
+                <input id="mypageInterest" type="text" placeholder="예: 단백질, 천연색소, 대체당" />
+              </label>
             </div>
           </div>
 
-          <label class="terms-check">
-            <input id="signupTerms" type="checkbox" required />
-            <span>서비스 이용약관과 개인정보 처리방침에 동의합니다.</span>
-          </label>
+          <div class="form-section">
+            <h2>추가 정보</h2>
+            <label class="full-field">
+              <span>메모</span>
+              <textarea id="mypageMemo" placeholder="필요한 원료, 거래 조건, 선호 연락 방식 등을 입력하세요"></textarea>
+            </label>
+          </div>
 
-          <p class="form-message" id="signupMessage" aria-live="polite"></p>
+          <p class="form-message" id="mypageMessage" aria-live="polite"></p>
 
           <div class="form-actions">
-            <button class="outline-button" type="reset">초기화</button>
-            <button class="primary-button" type="submit">가입하기</button>
+            <button class="primary-button" type="submit">저장하기</button>
           </div>
         </form>
 
-        <aside class="signup-result admin-only-panel" aria-label="가입 상태" hidden>
-          <p class="eyebrow">가입 상태</p>
-          <h2 id="memberStatusTitle">아직 가입 전입니다</h2>
-          <p id="memberStatusText">회원가입을 완료하면 이 브라우저에 회원 정보가 저장됩니다.</p>
-          <div class="member-card" id="memberCard" hidden>
-            <strong id="memberName">회원명</strong>
-            <span id="memberEmail">email@example.com</span>
-            <span id="memberCompany">회사 정보</span>
-          </div>
-          <button class="outline-button" id="logoutButton" type="button" hidden>가입 정보 지우기</button>
+        <aside class="signup-result">
+          <p class="eyebrow">내가 올린 원료</p>
+          <h2>등록 원료</h2>
+          <div class="my-ingredient-list" id="myIngredientList" aria-live="polite"></div>
         </aside>
       </section>
     </main>

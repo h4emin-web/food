@@ -1,4 +1,4 @@
-const ingredients = [
+﻿const ingredients = [
   {
     id: "pea-protein-isolate",
     name: "완두 단백 분리물",
@@ -180,7 +180,12 @@ const registerLayout = document.querySelector("#registerLayout");
 const registerAuthRequired = document.querySelector("#registerAuthRequired");
 const signupForm = document.querySelector("#signupForm");
 const loginForm = document.querySelector("#loginForm");
+const mypageForm = document.querySelector("#mypageForm");
+const mypageLayout = document.querySelector("#mypageLayout");
+const mypageAuthRequired = document.querySelector("#mypageAuthRequired");
+const myIngredientList = document.querySelector("#myIngredientList");
 const authLinks = [...document.querySelectorAll(".auth-link")];
+const logoutLinks = [...document.querySelectorAll("[data-logout-link]")];
 const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
 const guestOnlyLinks = [...document.querySelectorAll(".guest-only")];
 let activeIngredientId = "";
@@ -471,11 +476,23 @@ function setCurrentMember(member) {
   localStorage.setItem("foodsourceCurrentMember", JSON.stringify(member));
 }
 
+function updateStoredMember(member) {
+  const members = getMembers();
+  const exists = members.some((item) => item.email === member.email);
+  const nextMembers = exists
+    ? members.map((item) => (item.email === member.email ? member : item))
+    : [...members, member];
+  localStorage.setItem("foodsourceMembers", JSON.stringify(nextMembers));
+  setCurrentMember(member);
+}
+
 function logoutCurrentMember() {
   localStorage.removeItem("foodsourceCurrentMember");
   updateAuthLinks();
   updateRegisterAccess();
+  updateMypageAccess();
   if (grid) updateGrid();
+  renderFavorites();
 }
 
 function updateAuthLinks() {
@@ -490,20 +507,72 @@ function updateAuthLinks() {
   authLinks.forEach((link) => {
     if (member) {
       link.textContent = `${member.name}님`;
-      link.href = "#logout";
+      link.href = "mypage.html";
     } else {
       link.textContent = "회원가입";
       link.href = "signup.html";
     }
   });
 }
-
 function updateRegisterAccess() {
   if (!registerLayout || !registerAuthRequired) return;
 
   const member = getCurrentMember();
   registerLayout.hidden = !member;
   registerAuthRequired.hidden = Boolean(member);
+}
+
+function updateMypageAccess() {
+  if (!mypageLayout || !mypageAuthRequired) return;
+
+  const member = getCurrentMember();
+  mypageLayout.hidden = !member;
+  mypageAuthRequired.hidden = Boolean(member);
+}
+
+function getRegisteredIngredientKey() {
+  const member = getCurrentMember();
+  return member ? `foodsourceRegisteredIngredients:${member.email}` : "";
+}
+
+function getRegisteredIngredients() {
+  const key = getRegisteredIngredientKey();
+  if (!key) return [];
+
+  try {
+    return JSON.parse(localStorage.getItem(key)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRegisteredIngredient(item) {
+  const key = getRegisteredIngredientKey();
+  if (!key) return;
+  const items = getRegisteredIngredients();
+  localStorage.setItem(key, JSON.stringify([item, ...items]));
+}
+
+function renderMyIngredients() {
+  if (!myIngredientList) return;
+
+  const items = getRegisteredIngredients();
+  if (!items.length) {
+    myIngredientList.innerHTML = '<p class="empty-mini">아직 등록한 원료가 없습니다.</p>';
+    return;
+  }
+
+  myIngredientList.innerHTML = items
+    .map(
+      (item) => `
+        <article class="my-ingredient-item">
+          <strong>${escapeHtml(item.name)}</strong>
+          <span>${escapeHtml(item.englishName || "영문명 없음")}</span>
+          <p>${escapeHtml(item.category || "분류 없음")} · ${escapeHtml(item.createdAtText || "")}</p>
+        </article>
+      `
+    )
+    .join("");
 }
 
 function getCommunityComments() {
@@ -759,12 +828,13 @@ if (communityList && communitySearch) {
   communitySearch.addEventListener("input", updateCommunityPosts);
 }
 
-authLinks.forEach((link) => {
+logoutLinks.forEach((link) => {
   link.addEventListener("click", (event) => {
     if (!getCurrentMember()) return;
 
     event.preventDefault();
     logoutCurrentMember();
+    window.location.href = "index.html";
   });
 });
 
@@ -818,6 +888,30 @@ if (ingredientRegisterForm) {
   ingredientRegisterForm.addEventListener("submit", (event) => {
     event.preventDefault();
     updateRegisterPreview();
+    const item = {
+      id: `registered-${Date.now()}`,
+      name: registerFields.name.value.trim(),
+      englishName: registerFields.englishName.value.trim(),
+      category: registerFields.category.value.trim(),
+      use: registerFields.use.value.trim(),
+      cert: registerFields.cert.value.trim(),
+      moq: registerFields.moq.value.trim(),
+      sample: registerFields.sample.value.trim(),
+      response: registerFields.response.value.trim(),
+      desc: registerFields.desc.value.trim(),
+      createdAt: new Date().toISOString(),
+      createdAtText: new Intl.DateTimeFormat("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date()),
+    };
+
+    if (!item.name || !item.englishName || !item.category) return;
+
+    saveRegisteredIngredient(item);
+    ingredientRegisterForm.reset();
+    window.setTimeout(updateRegisterPreview, 0);
   });
 
   updateRegisterPreview();
@@ -827,6 +921,7 @@ if (signupForm) {
   const signupFields = {
     name: document.querySelector("#signupName"),
     email: document.querySelector("#signupEmail"),
+    phone: document.querySelector("#signupPhone"),
     password: document.querySelector("#signupPassword"),
     confirm: document.querySelector("#signupPasswordConfirm"),
     company: document.querySelector("#signupCompany"),
@@ -881,13 +976,14 @@ if (signupForm) {
     const member = {
       name: signupFields.name.value.trim(),
       email: signupFields.email.value.trim().toLowerCase(),
+      phone: signupFields.phone.value.trim(),
       company: signupFields.company.value.trim(),
       role: signupFields.role.value,
       password,
       joinedAt: new Date().toISOString(),
     };
 
-    if (!member.name || !member.email || !password || !confirm) {
+    if (!member.name || !member.email || !member.phone || !member.company || !password || !confirm) {
       setSignupMessage("필수 항목을 입력해주세요.", "error");
       return;
     }
@@ -934,6 +1030,67 @@ if (signupForm) {
   renderMemberStatus();
 }
 
+if (mypageForm) {
+  const mypageFields = {
+    name: document.querySelector("#mypageName"),
+    email: document.querySelector("#mypageEmail"),
+    phone: document.querySelector("#mypagePhone"),
+    company: document.querySelector("#mypageCompany"),
+    role: document.querySelector("#mypageRole"),
+    interest: document.querySelector("#mypageInterest"),
+    memo: document.querySelector("#mypageMemo"),
+  };
+  const mypageMessage = document.querySelector("#mypageMessage");
+
+  function setMypageMessage(message, type = "") {
+    mypageMessage.textContent = message;
+    mypageMessage.className = `form-message ${type}`.trim();
+  }
+
+  function renderMypage() {
+    const member = getCurrentMember();
+    updateMypageAccess();
+    if (!member) return;
+
+    mypageFields.name.value = member.name || "";
+    mypageFields.email.value = member.email || "";
+    mypageFields.phone.value = member.phone || "";
+    mypageFields.company.value = member.company || "";
+    mypageFields.role.value = member.role || "식품 개발";
+    mypageFields.interest.value = member.interest || "";
+    mypageFields.memo.value = member.memo || "";
+    renderMyIngredients();
+  }
+
+  mypageForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const member = getCurrentMember();
+    if (!member) return;
+
+    const updatedMember = {
+      ...member,
+      name: mypageFields.name.value.trim(),
+      phone: mypageFields.phone.value.trim(),
+      company: mypageFields.company.value.trim(),
+      role: mypageFields.role.value,
+      interest: mypageFields.interest.value.trim(),
+      memo: mypageFields.memo.value.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (!updatedMember.name || !updatedMember.phone || !updatedMember.company) {
+      setMypageMessage("이름, 전화번호, 회사명을 입력해주세요.", "error");
+      return;
+    }
+
+    updateStoredMember(updatedMember);
+    updateAuthLinks();
+    setMypageMessage("내 정보가 저장되었습니다.", "success");
+  });
+
+  renderMypage();
+}
+
 if (loginForm) {
   const loginFields = {
     email: document.querySelector("#loginEmail"),
@@ -974,6 +1131,8 @@ if (window.lucide) {
 document.addEventListener("click", createClickRipple, true);
 updateAuthLinks();
 updateRegisterAccess();
+updateMypageAccess();
 renderCards(ingredients);
 renderFavorites();
+renderMyIngredients();
 renderCommunityPosts(communityPosts);

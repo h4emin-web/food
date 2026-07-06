@@ -1195,6 +1195,18 @@ img {
   padding: 34px clamp(20px, 5vw, 72px) 70px;
 }
 
+.mypage-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 24px;
+  align-items: start;
+  padding: 34px clamp(20px, 5vw, 72px) 70px;
+}
+
+.mypage-layout[hidden] {
+  display: none;
+}
+
 .auth-required {
   display: grid;
   justify-items: center;
@@ -1284,7 +1296,8 @@ img {
 .register-form select,
 .register-form textarea,
 .signup-form input,
-.signup-form select {
+.signup-form select,
+.signup-form textarea {
   width: 100%;
   min-height: 46px;
   border: 1px solid var(--line);
@@ -1303,7 +1316,8 @@ img {
   border-color: #111;
 }
 
-.register-form textarea {
+.register-form textarea,
+.signup-form textarea {
   min-height: 120px;
   padding: 13px;
   resize: vertical;
@@ -1391,6 +1405,33 @@ img {
 .member-card span {
   color: var(--muted);
   font-size: 14px;
+  font-weight: 700;
+}
+
+.my-ingredient-list {
+  display: grid;
+  gap: 10px;
+}
+
+.my-ingredient-item {
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.my-ingredient-item strong {
+  font-size: 16px;
+}
+
+.my-ingredient-item span,
+.my-ingredient-item p,
+.empty-mini {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
   font-weight: 700;
 }
 
