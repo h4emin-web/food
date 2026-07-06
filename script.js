@@ -125,7 +125,6 @@ function renderCards(items) {
     .map(
       (item) => `
         <article class="ingredient-card">
-          <span class="badge">${item.badge}</span>
           <div class="ingredient-name">
             <h3>${item.name}</h3>
             <span class="english-name">${item.englishName}</span>
@@ -146,7 +145,6 @@ function renderCards(items) {
     "afterbegin",
     `
       <div class="ingredient-board-head" aria-hidden="true">
-        <span>구분</span>
         <span>원료명</span>
         <span>조건</span>
         <span>문의</span>

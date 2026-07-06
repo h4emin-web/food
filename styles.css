@@ -433,10 +433,10 @@ img {
 .ingredient-board-head,
 .ingredient-card {
   display: grid;
-  grid-template-columns: 100px minmax(250px, 1fr) minmax(170px, 260px) 196px;
+  grid-template-columns: minmax(320px, 1fr) minmax(180px, 280px) 196px;
   gap: 16px;
   align-items: center;
-  min-width: 820px;
+  min-width: 720px;
 }
 
 .ingredient-board-head {
