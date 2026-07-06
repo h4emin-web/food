@@ -129,9 +129,6 @@ function renderCards(items) {
             <h3>${item.name}</h3>
             <span class="english-name">${item.englishName}</span>
           </div>
-          <div class="meta-row">
-            ${item.tags.slice(0, 2).map((tag) => `<span>${tag}</span>`).join("")}
-          </div>
           <div class="card-actions">
             <button class="sample-button" type="button">샘플 요청</button>
             <button class="quote-button" type="button">견적 문의</button>
@@ -146,7 +143,6 @@ function renderCards(items) {
     `
       <div class="ingredient-board-head" aria-hidden="true">
         <span>원료명</span>
-        <span>조건</span>
         <span>문의</span>
       </div>
     `
