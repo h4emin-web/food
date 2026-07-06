@@ -4,6 +4,7 @@ const ingredients = [
     englishName: "Pea Protein Isolate",
     desc: "대체육, 단백질 음료, 베이커리용 단백 원료",
     origin: "캐나다",
+    type: "단백 원료",
     image: "https://images.unsplash.com/photo-1515543904379-3d757afe72e4?auto=format&fit=crop&w=900&q=80",
     badge: "응답 빠름",
     tags: ["대체식품", "HACCP", "국내재고", "소량샘플"],
@@ -13,6 +14,7 @@ const ingredients = [
     englishName: "Hydrolyzed Collagen Peptide",
     desc: "음료와 젤리에 쓰기 좋은 건강기능 콘셉트 원료",
     origin: "프랑스",
+    type: "기능성 원료",
     image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=900&q=80",
     badge: "인기",
     tags: ["건강기능", "FSSC22000", "빠른견적", "소량샘플"],
@@ -22,6 +24,7 @@ const ingredients = [
     englishName: "Allulose Syrup",
     desc: "저당 제품 개발에 쓰이는 감미 원료",
     origin: "국내",
+    type: "감미 원료",
     image: "https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?auto=format&fit=crop&w=900&q=80",
     badge: "저당",
     tags: ["음료", "HACCP", "국내재고", "빠른견적"],
@@ -31,6 +34,7 @@ const ingredients = [
     englishName: "Beet Red Color",
     desc: "젤리, 음료, 디저트용 식물 유래 색소",
     origin: "네덜란드",
+    type: "색소 원료",
     image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=900&q=80",
     badge: "클린라벨",
     tags: ["음료", "베이커리", "유기농", "소량샘플"],
@@ -40,6 +44,7 @@ const ingredients = [
     englishName: "Oat Beta-Glucan",
     desc: "시리얼, 쉐이크, 건강 스낵용 식이섬유 원료",
     origin: "핀란드",
+    type: "식이섬유",
     image: "https://images.unsplash.com/photo-1614961233913-a5113a4a34ed?auto=format&fit=crop&w=900&q=80",
     badge: "기능성",
     tags: ["건강기능", "FSSC22000", "할랄", "빠른견적"],
@@ -49,6 +54,7 @@ const ingredients = [
     englishName: "Natural Strawberry Flavor Base",
     desc: "유제품, 음료, 베이커리용 향료 베이스",
     origin: "국내",
+    type: "향료 원료",
     image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=900&q=80",
     badge: "커스텀",
     tags: ["음료", "베이커리", "HACCP", "국내재고"],
@@ -131,10 +137,10 @@ function renderCards(items) {
       (item) => `
         <article class="ingredient-card">
           <div class="ingredient-name">
-            <h3>${item.name}</h3>
-            <span class="english-name">${item.englishName}</span>
+            <h3>${item.name} <span>(${item.englishName})</span></h3>
           </div>
           <p class="ingredient-desc">${item.desc}</p>
+          <span class="ingredient-type">${item.type || "원료"}</span>
           <span class="ingredient-origin">${item.origin || "확인 필요"}</span>
           <div class="card-actions">
             <button class="sample-button" type="button">샘플 요청</button>
@@ -151,6 +157,7 @@ function renderCards(items) {
       <div class="ingredient-board-head" aria-hidden="true">
         <span>원료명</span>
         <span>설명</span>
+        <span>분류</span>
         <span>원산지</span>
         <span>문의</span>
       </div>
