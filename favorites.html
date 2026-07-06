@@ -3,11 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>푸드소스 | 원료문의</title>
-    <meta
-      name="description"
-      content="식품 원료명, 용도, 규격, 인증 조건을 문의하는 푸드소스 원료 문의 게시판"
-    />
+    <title>푸드소스 | 내 즐겨찾기</title>
+    <meta name="description" content="푸드소스에서 저장한 식품 원료 즐겨찾기 목록" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -24,7 +21,7 @@
       </a>
       <nav class="main-nav" aria-label="주요 메뉴">
         <a href="index.html#ingredients">원료 찾기</a>
-        <a class="active" href="community.html">원료문의</a>
+        <a href="community.html">원료문의</a>
       </nav>
       <div class="header-actions">
         <button class="icon-button" type="button" aria-label="알림">
@@ -32,7 +29,7 @@
         </button>
         <a class="text-button login-link guest-only" href="login.html">로그인</a>
         <a class="text-button auth-link" href="signup.html">회원가입</a>
-        <a class="text-button auth-only" href="favorites.html" hidden>내 즐겨찾기</a>
+        <a class="text-button auth-only active-auth" href="favorites.html" hidden>내 즐겨찾기</a>
         <a class="primary-button compact auth-only" href="ingredient-register.html" hidden>
           <i data-lucide="plus"></i>
           원료 등록
@@ -40,28 +37,17 @@
       </div>
     </header>
 
-    <main class="community-page">
-      <section class="community-hero" aria-labelledby="community-title">
+    <main class="favorites-page">
+      <section class="community-hero" aria-labelledby="favorites-title">
         <div>
-          <p class="eyebrow">원료문의 게시판</p>
-          <h1 id="community-title">원료문의</h1>
-          <p>
-            필요한 원료명, 용도, 규격, 인증 조건을 확인하는 공간입니다.
-          </p>
+          <p class="eyebrow">내 즐겨찾기</p>
+          <h1 id="favorites-title">저장한 원료</h1>
         </div>
       </section>
 
-      <section class="community-section" id="community">
-        <div class="community-layout">
-          <div class="community-main">
-            <div class="community-toolbar">
-              <label class="community-search">
-                <i data-lucide="search"></i>
-                <input id="communitySearch" type="search" placeholder="원료 문의 검색" />
-              </label>
-            </div>
-            <div class="community-list" id="communityList" aria-live="polite"></div>
-          </div>
+      <section class="marketplace">
+        <div class="content-area">
+          <div class="ingredient-grid" id="favoriteGrid" aria-live="polite"></div>
         </div>
       </section>
     </main>
@@ -69,7 +55,7 @@
     <footer class="site-footer">
       <div>
         <strong>푸드소스</strong>
-        <p>식품 원료 탐색, 샘플, 견적, 인증 자료를 연결하는 B2B 플랫폼</p>
+        <p>식품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p>
       </div>
       <div class="footer-links">
         <a href="#">이용약관</a>

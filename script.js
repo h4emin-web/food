@@ -169,6 +169,7 @@ const communityPosts = [
 ];
 
 const grid = document.querySelector("#ingredientGrid");
+const favoriteGrid = document.querySelector("#favoriteGrid");
 const searchInput = document.querySelector("#heroSearch");
 const filterInputs = [...document.querySelectorAll(".filter-panel input")];
 const resetButton = document.querySelector("#resetFilters");
@@ -223,6 +224,7 @@ function toggleFavoriteIngredient(ingredientId) {
     : [...favorites, ingredientId];
   setFavoriteIngredients(nextFavorites);
   updateGrid();
+  renderFavorites();
 }
 
 function renderCards(items) {
@@ -282,6 +284,77 @@ function renderCards(items) {
   );
 }
 
+function getIngredientCardMarkup(item) {
+  return `
+    <article class="ingredient-card" role="button" tabindex="0" data-ingredient-id="${item.id}">
+      <div class="ingredient-name">
+        <h3>${item.name} <span>(${item.englishName})</span></h3>
+      </div>
+      <p class="ingredient-desc">${item.desc}</p>
+      <span class="ingredient-type">${item.type || "원료"}</span>
+      <span class="ingredient-origin">
+        ${item.origin || "확인 필요"}
+        ${
+          item.originFlagCode
+            ? `<img class="origin-flag" src="https://flagcdn.com/w40/${item.originFlagCode}.png" alt="${item.origin} 국기" loading="lazy" />`
+            : ""
+        }
+      </span>
+      <div class="card-actions">
+        <button class="sample-button" type="button">샘플 요청</button>
+        <button class="quote-button" type="button">견적 문의</button>
+      </div>
+      <button
+        class="favorite-button ${isFavoriteIngredient(item.id) ? "active" : ""}"
+        type="button"
+        data-favorite-id="${item.id}"
+        aria-label="${item.name} 즐겨찾기"
+        aria-pressed="${isFavoriteIngredient(item.id)}"
+      >★</button>
+    </article>
+    ${activeIngredientId === item.id ? getIngredientDetailMarkup(item) : ""}
+  `;
+}
+
+function renderIngredientBoard(target, items, emptyMessage) {
+  if (!target) return;
+
+  if (!items.length) {
+    target.innerHTML = `<div class="empty-state">${emptyMessage}</div>`;
+    return;
+  }
+
+  target.innerHTML = `
+    <div class="ingredient-board-head" aria-hidden="true">
+      <span>원료명</span>
+      <span>설명</span>
+      <span>분류</span>
+      <span>원산지</span>
+      <span>문의</span>
+      <span>즐겨찾기</span>
+    </div>
+    ${items.map((item) => getIngredientCardMarkup(item)).join("")}
+  `;
+}
+
+function renderFavorites() {
+  if (!favoriteGrid) return;
+
+  if (!getCurrentMember()) {
+    favoriteGrid.innerHTML = `
+      <div class="empty-state favorites-login-state">
+        로그인하면 내 즐겨찾기를 모아볼 수 있습니다.
+        <a class="primary-button" href="login.html">로그인</a>
+      </div>
+    `;
+    return;
+  }
+
+  const favoriteIds = getFavoriteIngredients();
+  const favoriteItems = ingredients.filter((item) => favoriteIds.includes(item.id));
+  renderIngredientBoard(favoriteGrid, favoriteItems, "아직 즐겨찾기한 원료가 없습니다.");
+}
+
 function getIngredientDetailMarkup(item) {
   const supplier = item.supplier || {};
   const website = supplier.website || "#";
@@ -339,6 +412,7 @@ function createClickRipple(event) {
 function openIngredientDetail(ingredientId) {
   activeIngredientId = activeIngredientId === ingredientId ? "" : ingredientId;
   updateGrid();
+  renderFavorites();
 }
 
 function getFilteredItems() {
@@ -622,6 +696,30 @@ if (grid && searchInput) {
 
 }
 
+if (favoriteGrid) {
+  favoriteGrid.addEventListener("click", (event) => {
+    if (event.target.closest(".ingredient-detail")) return;
+    const favoriteButton = event.target.closest("[data-favorite-id]");
+    if (favoriteButton) {
+      event.stopPropagation();
+      toggleFavoriteIngredient(favoriteButton.dataset.favoriteId);
+      return;
+    }
+    if (event.target.closest("button")) return;
+    const ingredient = event.target.closest(".ingredient-card");
+    if (!ingredient) return;
+    openIngredientDetail(ingredient.dataset.ingredientId);
+  });
+
+  favoriteGrid.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const ingredient = event.target.closest(".ingredient-card");
+    if (!ingredient) return;
+    event.preventDefault();
+    openIngredientDetail(ingredient.dataset.ingredientId);
+  });
+}
+
 if (communityList && communitySearch) {
   communityList.addEventListener("click", (event) => {
     if (event.target.closest(".community-detail")) return;
@@ -877,4 +975,5 @@ document.addEventListener("pointerdown", createClickRipple);
 updateAuthLinks();
 updateRegisterAccess();
 renderCards(ingredients);
+renderFavorites();
 renderCommunityPosts(communityPosts);
