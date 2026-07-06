@@ -377,10 +377,10 @@ img {
 .ingredient-board-head,
 .ingredient-card {
   display: grid;
-  grid-template-columns: minmax(320px, 1fr) 196px;
+  grid-template-columns: minmax(230px, 1fr) minmax(260px, 1.1fr) 110px 196px;
   gap: 16px;
   align-items: center;
-  min-width: 560px;
+  min-width: 900px;
 }
 
 .ingredient-board-head {
@@ -394,7 +394,7 @@ img {
 }
 
 .ingredient-card {
-  min-height: 62px;
+  min-height: 74px;
   padding: 0 18px;
   border-bottom: 1px solid var(--line);
   background: #fff;
@@ -442,7 +442,7 @@ img {
 .ingredient-name h3 {
   overflow: hidden;
   margin: 0 0 3px;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -452,10 +452,28 @@ img {
   display: block;
   overflow: hidden;
   margin-bottom: 0;
-  color: #8a8e98;
+  color: #6b7280;
   font-size: 13px;
   font-weight: 700;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ingredient-desc {
+  overflow: hidden;
+  margin: 0;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ingredient-origin {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 800;
   white-space: nowrap;
 }
 
