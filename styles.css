@@ -25,6 +25,45 @@ body {
   font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.page-ripple {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  border: 2px solid rgba(23, 132, 91, 0.34);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  animation: page-ripple 700ms ease-out forwards;
+}
+
+@keyframes page-ripple {
+  0% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-ripple {
+    display: none;
+  }
+
+  .ingredient-card,
+  .community-post,
+  .card-actions button {
+    transition: none;
+  }
+}
+
 button,
 input,
 select {
@@ -402,11 +441,13 @@ img {
   border-bottom: 1px solid var(--line);
   background: #fff;
   cursor: pointer;
-  transition: background 160ms ease;
+  transform-origin: center;
+  transition: background 160ms ease, transform 180ms ease;
 }
 
 .ingredient-card:hover {
   background: #fbfcfd;
+  transform: scale(1.006);
 }
 
 .ingredient-card:last-child {
@@ -555,6 +596,12 @@ img {
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.card-actions button:hover {
+  transform: scale(1.04);
+  border-color: #111 !important;
 }
 
 .sample-button {
@@ -794,11 +841,13 @@ img {
   border-bottom: 1px solid var(--line);
   background: #fff;
   cursor: pointer;
-  transition: background 160ms ease;
+  transform-origin: center;
+  transition: background 160ms ease, transform 180ms ease;
 }
 
 .community-post:hover {
   background: #fbfcfd;
+  transform: scale(1.006);
 }
 
 .community-post:last-child {

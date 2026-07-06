@@ -269,13 +269,23 @@ function getIngredientDetailMarkup(item) {
             <strong>${supplier.contact || "확인 필요"}</strong>
           </div>
         </div>
-        <div class="detail-actions">
-          <button class="sample-button" type="button">샘플 요청</button>
-          <button class="quote-button" type="button">견적 문의</button>
-        </div>
       </article>
     </section>
   `;
+}
+
+function createClickRipple(event) {
+  if (event.button !== 0) return;
+
+  const ripple = document.createElement("span");
+  ripple.className = "page-ripple";
+  ripple.style.left = `${event.clientX}px`;
+  ripple.style.top = `${event.clientY}px`;
+  document.body.appendChild(ripple);
+
+  window.setTimeout(() => {
+    ripple.remove();
+  }, 700);
 }
 
 function openIngredientDetail(ingredientId) {
@@ -788,6 +798,7 @@ if (window.lucide) {
   window.lucide.createIcons();
 }
 
+document.addEventListener("pointerdown", createClickRipple);
 updateAuthLinks();
 updateRegisterAccess();
 renderCards(ingredients);
