@@ -433,7 +433,7 @@ img {
 .ingredient-board-head,
 .ingredient-card {
   display: grid;
-  grid-template-columns: 110px minmax(250px, 1fr) minmax(190px, 280px) 186px;
+  grid-template-columns: 100px minmax(250px, 1fr) minmax(170px, 260px) 196px;
   gap: 16px;
   align-items: center;
   min-width: 820px;
@@ -550,16 +550,20 @@ img {
 
 .card-actions {
   justify-content: flex-start;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
 }
 
 .card-actions button {
-  min-height: 38px;
-  padding: 0 14px;
+  min-height: 32px;
+  padding: 0 10px;
   border: 1px solid transparent;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 12px;
   font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .sample-button {
