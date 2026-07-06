@@ -396,7 +396,7 @@ function getIngredientDetailMarkup(item) {
 }
 
 function createClickRipple(event) {
-  if (event.button !== 0) return;
+  if (event.button && event.button !== 0) return;
 
   const ripple = document.createElement("span");
   ripple.className = "page-ripple";
@@ -406,7 +406,7 @@ function createClickRipple(event) {
 
   window.setTimeout(() => {
     ripple.remove();
-  }, 700);
+  }, 900);
 }
 
 function openIngredientDetail(ingredientId) {
@@ -971,7 +971,7 @@ if (window.lucide) {
   window.lucide.createIcons();
 }
 
-document.addEventListener("pointerdown", createClickRipple);
+document.addEventListener("click", createClickRipple, true);
 updateAuthLinks();
 updateRegisterAccess();
 renderCards(ingredients);
