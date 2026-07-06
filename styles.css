@@ -1127,6 +1127,26 @@ img {
   background: #fff;
 }
 
+.seo-content {
+  display: grid;
+  gap: 12px;
+  padding: 0 clamp(20px, 5vw, 72px) 58px;
+}
+
+.seo-content h2 {
+  margin: 0;
+  color: #252a33;
+  font-size: 22px;
+}
+
+.seo-content p {
+  max-width: 920px;
+  margin: 0;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
 .auth-only[hidden] {
   display: none !important;
 }

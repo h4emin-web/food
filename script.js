@@ -1289,6 +1289,12 @@ document.addEventListener("click", createClickRipple, true);
 updateAuthLinks();
 updateRegisterAccess();
 updateMypageAccess();
+if (searchInput) {
+  const initialSearchQuery = new URLSearchParams(window.location.search).get("search");
+  if (initialSearchQuery) {
+    searchInput.value = initialSearchQuery;
+  }
+}
 renderCards(ingredients);
 renderFavorites();
 renderMyIngredients();
