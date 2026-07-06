@@ -69,7 +69,6 @@ img {
 .filter-heading,
 .footer-links,
 .community-toolbar,
-.community-tabs,
 .community-search,
 .post-meta,
 .post-stats {
@@ -672,51 +671,15 @@ img {
 
 .community-toolbar {
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 14px;
+  gap: 0;
   margin-bottom: 16px;
 }
 
-.community-tabs {
-  justify-content: center;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: none;
-}
-
-.community-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.community-tabs button {
-  min-height: 38px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  color: #34363b;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.community-tabs button {
-  padding: 0 14px;
-}
-
-.community-tabs button.active,
-.community-tabs button:hover {
-  border-color: #111;
-  background: #fff;
-  color: #111;
-}
-
 .community-search {
-  flex: 0 0 260px;
+  flex: 0 1 420px;
   gap: 10px;
-  min-height: 42px;
-  padding: 0 13px;
+  min-height: 46px;
+  padding: 0 15px;
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--muted);
@@ -797,8 +760,8 @@ img {
 .community-post h3 {
   overflow: hidden;
   margin: 0;
-  font-size: 15px;
-  line-height: 1.4;
+  font-size: 18px;
+  line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

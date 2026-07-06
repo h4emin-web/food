@@ -121,14 +121,12 @@ const filterInputs = [...document.querySelectorAll(".filter-panel input")];
 const resetButton = document.querySelector("#resetFilters");
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
-const communityTabs = [...document.querySelectorAll("[data-community-tab]")];
 const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm");
 const registerLayout = document.querySelector("#registerLayout");
 const registerAuthRequired = document.querySelector("#registerAuthRequired");
 const signupForm = document.querySelector("#signupForm");
 const authLinks = [...document.querySelectorAll(".auth-link")];
 const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
-let activeCommunityTab = "전체";
 
 function renderCards(items) {
   if (!grid) return;
@@ -300,14 +298,12 @@ function updateCommunityPosts() {
 
   const query = communitySearch.value.trim().toLowerCase();
   const posts = communityPosts.filter((post) => {
-    const matchesTab = activeCommunityTab === "전체" || post.category === activeCommunityTab;
-    const matchesQuery =
+    return (
       !query ||
       post.title.toLowerCase().includes(query) ||
       post.desc.toLowerCase().includes(query) ||
-      post.category.toLowerCase().includes(query);
-
-    return matchesTab && matchesQuery;
+      post.category.toLowerCase().includes(query)
+    );
   });
 
   renderCommunityPosts(posts);
@@ -333,15 +329,6 @@ if (grid && searchInput) {
 }
 
 if (communityList && communitySearch) {
-  communityTabs.forEach((button) => {
-    button.addEventListener("click", () => {
-      activeCommunityTab = button.dataset.communityTab;
-      communityTabs.forEach((tab) => tab.classList.remove("active"));
-      button.classList.add("active");
-      updateCommunityPosts();
-    });
-  });
-
   communitySearch.addEventListener("input", updateCommunityPosts);
 }
 
