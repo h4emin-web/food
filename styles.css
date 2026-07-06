@@ -972,6 +972,14 @@ img {
   display: none !important;
 }
 
+.guest-only[hidden] {
+  display: none !important;
+}
+
+.single-column {
+  grid-template-columns: 1fr;
+}
+
 .register-hero {
   padding: clamp(44px, 7vw, 84px) clamp(20px, 5vw, 72px) 30px;
   text-align: center;

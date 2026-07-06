@@ -3,11 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>푸드소스 | 원료문의</title>
-    <meta
-      name="description"
-      content="식품 원료명, 용도, 규격, 인증 조건을 문의하는 푸드소스 원료 문의 게시판"
-    />
+    <title>푸드소스 | 로그인</title>
+    <meta name="description" content="푸드소스 회원 로그인 화면" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -24,13 +21,13 @@
       </a>
       <nav class="main-nav" aria-label="주요 메뉴">
         <a href="index.html#ingredients">원료 찾기</a>
-        <a class="active" href="community.html">원료문의</a>
+        <a href="community.html">원료문의</a>
       </nav>
       <div class="header-actions">
         <button class="icon-button" type="button" aria-label="알림">
           <i data-lucide="bell"></i>
         </button>
-        <a class="text-button login-link guest-only" href="login.html">로그인</a>
+        <a class="text-button login-link active-auth guest-only" href="login.html">로그인</a>
         <a class="text-button auth-link" href="signup.html">회원가입</a>
         <a class="primary-button compact auth-only" href="ingredient-register.html" hidden>
           <i data-lucide="plus"></i>
@@ -39,36 +36,48 @@
       </div>
     </header>
 
-    <main class="community-page">
-      <section class="community-hero" aria-labelledby="community-title">
-        <div>
-          <p class="eyebrow">원료문의 게시판</p>
-          <h1 id="community-title">원료문의</h1>
-          <p>
-            필요한 원료명, 용도, 규격, 인증 조건을 확인하는 공간입니다.
-          </p>
-        </div>
+    <main class="signup-page">
+      <section class="signup-hero" aria-labelledby="login-title">
+        <p class="eyebrow">로그인</p>
+        <h1 id="login-title">푸드소스 로그인</h1>
       </section>
 
-      <section class="community-section" id="community">
-        <div class="community-layout">
-          <div class="community-main">
-            <div class="community-toolbar">
-              <label class="community-search">
-                <i data-lucide="search"></i>
-                <input id="communitySearch" type="search" placeholder="원료 문의 검색" />
+      <section class="signup-layout" aria-label="로그인 폼">
+        <form class="signup-form" id="loginForm">
+          <div class="form-section">
+            <h2>계정 정보</h2>
+            <div class="form-grid single-column">
+              <label>
+                <span>이메일</span>
+                <input id="loginEmail" type="email" placeholder="name@example.com" required />
+              </label>
+              <label>
+                <span>비밀번호</span>
+                <input id="loginPassword" type="password" placeholder="비밀번호" required />
               </label>
             </div>
-            <div class="community-list" id="communityList" aria-live="polite"></div>
           </div>
-        </div>
+
+          <p class="form-message" id="loginMessage" aria-live="polite"></p>
+
+          <div class="form-actions">
+            <a class="outline-button" href="signup.html">회원가입</a>
+            <button class="primary-button" type="submit">로그인</button>
+          </div>
+        </form>
+
+        <aside class="signup-result" aria-label="로그인 안내">
+          <p class="eyebrow">계정</p>
+          <h2>회원 정보로 시작하세요</h2>
+          <p>가입한 이메일과 비밀번호로 로그인하면 원료 등록 메뉴가 표시됩니다.</p>
+        </aside>
       </section>
     </main>
 
     <footer class="site-footer">
       <div>
         <strong>푸드소스</strong>
-        <p>식품 원료 탐색, 샘플, 견적, 인증 자료를 연결하는 B2B 플랫폼</p>
+        <p>식품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p>
       </div>
       <div class="footer-links">
         <a href="#">이용약관</a>

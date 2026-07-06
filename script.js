@@ -130,8 +130,10 @@ const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm")
 const registerLayout = document.querySelector("#registerLayout");
 const registerAuthRequired = document.querySelector("#registerAuthRequired");
 const signupForm = document.querySelector("#signupForm");
+const loginForm = document.querySelector("#loginForm");
 const authLinks = [...document.querySelectorAll(".auth-link")];
 const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
+const guestOnlyLinks = [...document.querySelectorAll(".guest-only")];
 let activeCommunityPostId = "";
 
 function renderCards(items) {
@@ -242,6 +244,9 @@ function updateAuthLinks() {
   const member = getCurrentMember();
   authOnlyLinks.forEach((link) => {
     link.hidden = !member;
+  });
+  guestOnlyLinks.forEach((link) => {
+    link.hidden = Boolean(member);
   });
 
   authLinks.forEach((link) => {
@@ -573,15 +578,16 @@ if (signupForm) {
   signupForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
+    const password = signupFields.password.value;
+    const confirm = signupFields.confirm.value;
     const member = {
       name: signupFields.name.value.trim(),
       email: signupFields.email.value.trim().toLowerCase(),
       company: signupFields.company.value.trim(),
       role: signupFields.role.value,
+      password,
       joinedAt: new Date().toISOString(),
     };
-    const password = signupFields.password.value;
-    const confirm = signupFields.confirm.value;
 
     if (!member.name || !member.email || !password || !confirm) {
       setSignupMessage("필수 항목을 입력해주세요.", "error");
@@ -628,6 +634,39 @@ if (signupForm) {
   });
 
   renderMemberStatus();
+}
+
+if (loginForm) {
+  const loginFields = {
+    email: document.querySelector("#loginEmail"),
+    password: document.querySelector("#loginPassword"),
+  };
+  const loginMessage = document.querySelector("#loginMessage");
+
+  function setLoginMessage(message, type = "") {
+    loginMessage.textContent = message;
+    loginMessage.className = `form-message ${type}`.trim();
+  }
+
+  loginForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const email = loginFields.email.value.trim().toLowerCase();
+    const password = loginFields.password.value;
+    const member = getMembers().find((item) => item.email === email && item.password === password);
+
+    if (!member) {
+      setLoginMessage("이메일 또는 비밀번호를 확인해주세요.", "error");
+      return;
+    }
+
+    setCurrentMember(member);
+    setLoginMessage("로그인되었습니다.", "success");
+    updateAuthLinks();
+    window.setTimeout(() => {
+      window.location.href = "index.html";
+    }, 500);
+  });
 }
 
 if (window.lucide) {
