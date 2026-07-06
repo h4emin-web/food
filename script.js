@@ -4,6 +4,7 @@ const ingredients = [
     englishName: "Pea Protein Isolate",
     desc: "대체육, 단백질 음료, 베이커리용 단백 원료",
     origin: "캐나다",
+    originFlag: "🇨🇦",
     type: "단백 원료",
     image: "https://images.unsplash.com/photo-1515543904379-3d757afe72e4?auto=format&fit=crop&w=900&q=80",
     badge: "응답 빠름",
@@ -14,6 +15,7 @@ const ingredients = [
     englishName: "Hydrolyzed Collagen Peptide",
     desc: "음료와 젤리에 쓰기 좋은 건강기능 콘셉트 원료",
     origin: "프랑스",
+    originFlag: "🇫🇷",
     type: "기능성 원료",
     image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=900&q=80",
     badge: "인기",
@@ -24,6 +26,7 @@ const ingredients = [
     englishName: "Allulose Syrup",
     desc: "저당 제품 개발에 쓰이는 감미 원료",
     origin: "국내",
+    originFlag: "🇰🇷",
     type: "감미 원료",
     image: "https://images.unsplash.com/photo-1606914501449-5a96b6ce24ca?auto=format&fit=crop&w=900&q=80",
     badge: "저당",
@@ -34,6 +37,7 @@ const ingredients = [
     englishName: "Beet Red Color",
     desc: "젤리, 음료, 디저트용 식물 유래 색소",
     origin: "네덜란드",
+    originFlag: "🇳🇱",
     type: "색소 원료",
     image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=900&q=80",
     badge: "클린라벨",
@@ -44,6 +48,7 @@ const ingredients = [
     englishName: "Oat Beta-Glucan",
     desc: "시리얼, 쉐이크, 건강 스낵용 식이섬유 원료",
     origin: "핀란드",
+    originFlag: "🇫🇮",
     type: "식이섬유",
     image: "https://images.unsplash.com/photo-1614961233913-a5113a4a34ed?auto=format&fit=crop&w=900&q=80",
     badge: "기능성",
@@ -54,6 +59,7 @@ const ingredients = [
     englishName: "Natural Strawberry Flavor Base",
     desc: "유제품, 음료, 베이커리용 향료 베이스",
     origin: "국내",
+    originFlag: "🇰🇷",
     type: "향료 원료",
     image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=900&q=80",
     badge: "커스텀",
@@ -141,7 +147,7 @@ function renderCards(items) {
           </div>
           <p class="ingredient-desc">${item.desc}</p>
           <span class="ingredient-type">${item.type || "원료"}</span>
-          <span class="ingredient-origin">${item.origin || "확인 필요"}</span>
+          <span class="ingredient-origin"><span aria-hidden="true">${item.originFlag || "🏳️"}</span>${item.origin || "확인 필요"}</span>
           <div class="card-actions">
             <button class="sample-button" type="button">샘플 요청</button>
             <button class="quote-button" type="button">견적 문의</button>

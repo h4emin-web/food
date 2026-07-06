@@ -484,6 +484,17 @@ img {
   white-space: nowrap;
 }
 
+.ingredient-origin {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ingredient-origin span {
+  font-size: 16px;
+  line-height: 1;
+}
+
 .ingredient-type {
   color: #374151;
 }
