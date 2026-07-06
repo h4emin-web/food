@@ -64,8 +64,6 @@ img {
 .brand,
 .header-actions,
 .main-nav,
-.quick-tags,
-.category-strip,
 .section-title,
 .sort-control,
 .filter-heading,
@@ -121,8 +119,6 @@ img {
 .text-button,
 .primary-button,
 .outline-button,
-.category,
-.quick-tags button,
 .filter-heading button {
   border: 0;
   cursor: pointer;
@@ -140,7 +136,6 @@ img {
 
 .icon-button svg,
 .primary-button svg,
-.category svg,
 .sort-control svg {
   width: 18px;
   height: 18px;
@@ -270,57 +265,6 @@ img {
   outline: 0;
   color: var(--ink);
   font-size: 17px;
-}
-
-.quick-tags {
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 18px;
-}
-
-.quick-tags button,
-.category {
-  border-radius: 8px;
-  background: #fff;
-  color: #34363b;
-  font-weight: 700;
-}
-
-.quick-tags button {
-  padding: 10px 15px;
-  border: 1px solid var(--line);
-}
-
-.quick-tags button:hover,
-.category.active {
-  border-color: #111;
-  background: #fff;
-  color: #111;
-}
-
-.category-strip {
-  gap: 10px;
-  overflow-x: auto;
-  padding: 22px clamp(20px, 5vw, 72px);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  background: #fff;
-  scrollbar-width: none;
-}
-
-.category-strip::-webkit-scrollbar {
-  display: none;
-}
-
-.category {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 46px;
-  padding: 0 17px;
-  border: 1px solid var(--line);
-  white-space: nowrap;
 }
 
 .marketplace {

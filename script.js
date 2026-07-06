@@ -101,7 +101,6 @@ const grid = document.querySelector("#ingredientGrid");
 const searchInput = document.querySelector("#heroSearch");
 const filterInputs = [...document.querySelectorAll(".filter-panel input")];
 const resetButton = document.querySelector("#resetFilters");
-const quickTags = [...document.querySelectorAll(".quick-tags button")];
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
 const communityTabs = [...document.querySelectorAll("[data-community-tab]")];
@@ -308,20 +307,7 @@ if (grid && searchInput) {
     updateGrid();
   });
 
-  quickTags.forEach((button) => {
-    button.addEventListener("click", () => {
-      searchInput.value = button.textContent.trim();
-      updateGrid();
-    });
-  });
 }
-
-document.querySelectorAll(".category").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".category").forEach((item) => item.classList.remove("active"));
-    button.classList.add("active");
-  });
-});
 
 if (communityList && communitySearch) {
   communityTabs.forEach((button) => {
