@@ -31,15 +31,15 @@ body {
   left: 0;
   top: 0;
   z-index: 9999;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   pointer-events: none;
   border: 1px solid rgba(37, 99, 235, 0.36);
   background: radial-gradient(circle, rgba(37, 99, 235, 0.16) 0%, rgba(37, 99, 235, 0.08) 42%, rgba(37, 99, 235, 0) 72%);
   border-radius: 50%;
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
-  animation: page-ripple 820ms ease-out forwards;
+  animation: page-ripple 620ms ease-out forwards;
 }
 
 @keyframes page-ripple {
@@ -50,13 +50,13 @@ body {
 
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(14);
+    transform: translate(-50%, -50%) scale(8);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .page-ripple {
-    animation-duration: 360ms;
+    animation-duration: 300ms;
   }
 
   .ingredient-card > *,
