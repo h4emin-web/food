@@ -45,7 +45,7 @@
       <section class="register-hero" aria-labelledby="register-title">
         <p class="eyebrow">원료 등록</p>
         <h1 id="register-title">식품 원료 정보를 등록하세요</h1>
-        <p>원료명, 영문명, 규격, 인증, 샘플 가능 여부를 입력하면 등록 미리보기가 생성됩니다.</p>
+        <p>원료명, 영문명, 규격, 인증, 샘플 가능 여부를 입력하고 원료를 등록합니다.</p>
       </section>
 
       <section class="auth-required" id="registerAuthRequired" hidden>
@@ -123,8 +123,9 @@
 
           <div class="form-actions">
             <button class="outline-button" type="reset">초기화</button>
-            <button class="primary-button" type="submit">등록 미리보기</button>
+            <button class="primary-button" type="submit">등록하기</button>
           </div>
+          <p class="form-message" id="registerMessage" aria-live="polite"></p>
         </form>
 
         <aside class="register-preview" aria-label="등록 미리보기">

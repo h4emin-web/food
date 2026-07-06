@@ -1413,6 +1413,38 @@ img {
   gap: 10px;
 }
 
+.my-ingredient-search {
+  display: grid;
+  gap: 8px;
+}
+
+.my-ingredient-search span,
+.my-ingredient-detail label span {
+  color: #384252;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.my-ingredient-search input,
+.my-ingredient-detail input,
+.my-ingredient-detail select,
+.my-ingredient-detail textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  outline: 0;
+  background: #fff;
+  color: var(--ink);
+}
+
+.my-ingredient-detail textarea {
+  min-height: 96px;
+  padding: 12px;
+  resize: vertical;
+}
+
 .my-ingredient-item {
   display: grid;
   gap: 5px;
@@ -1420,6 +1452,15 @@ img {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.my-ingredient-item:hover,
+.my-ingredient-item.active {
+  border-color: #111;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.08);
+  transform: translateY(-1px);
 }
 
 .my-ingredient-item strong {
@@ -1433,6 +1474,35 @@ img {
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
+}
+
+.my-ingredient-detail {
+  display: grid;
+  gap: 14px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.my-ingredient-detail[hidden] {
+  display: none;
+}
+
+.my-ingredient-detail h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.my-ingredient-detail label {
+  display: grid;
+  gap: 8px;
+}
+
+.split-actions {
+  justify-content: space-between;
+}
+
+.danger-button {
+  color: #b91c1c;
 }
 
 .preview-card {

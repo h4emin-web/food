@@ -184,12 +184,15 @@ const mypageForm = document.querySelector("#mypageForm");
 const mypageLayout = document.querySelector("#mypageLayout");
 const mypageAuthRequired = document.querySelector("#mypageAuthRequired");
 const myIngredientList = document.querySelector("#myIngredientList");
+const myIngredientSearch = document.querySelector("#myIngredientSearch");
+const myIngredientDetailForm = document.querySelector("#myIngredientDetailForm");
 const authLinks = [...document.querySelectorAll(".auth-link")];
 const logoutLinks = [...document.querySelectorAll("[data-logout-link]")];
 const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
 const guestOnlyLinks = [...document.querySelectorAll(".guest-only")];
 let activeIngredientId = "";
 let activeCommunityPostId = "";
+let activeRegisteredIngredientId = "";
 
 function getFavoriteKey() {
   const member = getCurrentMember();
@@ -546,6 +549,12 @@ function getRegisteredIngredients() {
   }
 }
 
+function setRegisteredIngredients(items) {
+  const key = getRegisteredIngredientKey();
+  if (!key) return;
+  localStorage.setItem(key, JSON.stringify(items));
+}
+
 function saveRegisteredIngredient(item) {
   const key = getRegisteredIngredientKey();
   if (!key) return;
@@ -553,19 +562,33 @@ function saveRegisteredIngredient(item) {
   localStorage.setItem(key, JSON.stringify([item, ...items]));
 }
 
+function getFilteredRegisteredIngredients() {
+  const items = getRegisteredIngredients();
+  const query = myIngredientSearch ? myIngredientSearch.value.trim().toLowerCase() : "";
+  if (!query) return items;
+
+  return items.filter((item) => {
+    return (
+      item.name.toLowerCase().includes(query) ||
+      (item.englishName || "").toLowerCase().includes(query) ||
+      (item.category || "").toLowerCase().includes(query)
+    );
+  });
+}
+
 function renderMyIngredients() {
   if (!myIngredientList) return;
 
-  const items = getRegisteredIngredients();
+  const items = getFilteredRegisteredIngredients();
   if (!items.length) {
-    myIngredientList.innerHTML = '<p class="empty-mini">아직 등록한 원료가 없습니다.</p>';
+    myIngredientList.innerHTML = '<p class="empty-mini">검색된 원료가 없습니다.</p>';
     return;
   }
 
   myIngredientList.innerHTML = items
     .map(
       (item) => `
-        <article class="my-ingredient-item">
+        <article class="my-ingredient-item ${activeRegisteredIngredientId === item.id ? "active" : ""}" role="button" tabindex="0" data-my-ingredient-id="${item.id}">
           <strong>${escapeHtml(item.name)}</strong>
           <span>${escapeHtml(item.englishName || "영문명 없음")}</span>
           <p>${escapeHtml(item.category || "분류 없음")} · ${escapeHtml(item.createdAtText || "")}</p>
@@ -573,6 +596,20 @@ function renderMyIngredients() {
       `
     )
     .join("");
+}
+
+function getRegisteredIngredientById(id) {
+  return getRegisteredIngredients().find((item) => item.id === id);
+}
+
+function updateRegisteredIngredient(id, nextItem) {
+  const items = getRegisteredIngredients();
+  setRegisteredIngredients(items.map((item) => (item.id === id ? { ...item, ...nextItem } : item)));
+}
+
+function deleteRegisteredIngredient(id) {
+  const items = getRegisteredIngredients();
+  setRegisteredIngredients(items.filter((item) => item.id !== id));
 }
 
 function getCommunityComments() {
@@ -858,6 +895,13 @@ if (ingredientRegisterForm) {
     desc: document.querySelector("#previewDesc"),
     tags: document.querySelector("#previewTags"),
   };
+  const registerMessage = document.querySelector("#registerMessage");
+
+  function setRegisterMessage(message, type = "") {
+    if (!registerMessage) return;
+    registerMessage.textContent = message;
+    registerMessage.className = `form-message ${type}`.trim();
+  }
 
   function updateRegisterPreview() {
     const name = registerFields.name.value.trim();
@@ -883,6 +927,7 @@ if (ingredientRegisterForm) {
   ingredientRegisterForm.addEventListener("input", updateRegisterPreview);
   ingredientRegisterForm.addEventListener("change", updateRegisterPreview);
   ingredientRegisterForm.addEventListener("reset", () => {
+    setRegisterMessage("", "");
     window.setTimeout(updateRegisterPreview, 0);
   });
   ingredientRegisterForm.addEventListener("submit", (event) => {
@@ -907,10 +952,14 @@ if (ingredientRegisterForm) {
       }).format(new Date()),
     };
 
-    if (!item.name || !item.englishName || !item.category) return;
+    if (!item.name || !item.englishName || !item.category) {
+      setRegisterMessage("원료명, 영문명, 카테고리를 입력해주세요.", "error");
+      return;
+    }
 
     saveRegisteredIngredient(item);
     ingredientRegisterForm.reset();
+    setRegisterMessage("원료가 등록되었습니다. 마이페이지에서 수정하거나 삭제할 수 있습니다.", "success");
     window.setTimeout(updateRegisterPreview, 0);
   });
 
@@ -1041,6 +1090,19 @@ if (mypageForm) {
     memo: document.querySelector("#mypageMemo"),
   };
   const mypageMessage = document.querySelector("#mypageMessage");
+  const myIngredientFields = {
+    name: document.querySelector("#myIngredientName"),
+    englishName: document.querySelector("#myIngredientEnglishName"),
+    category: document.querySelector("#myIngredientCategory"),
+    use: document.querySelector("#myIngredientUse"),
+    cert: document.querySelector("#myIngredientCert"),
+    moq: document.querySelector("#myIngredientMoq"),
+    sample: document.querySelector("#myIngredientSample"),
+    response: document.querySelector("#myIngredientResponse"),
+    desc: document.querySelector("#myIngredientDesc"),
+  };
+  const myIngredientMessage = document.querySelector("#myIngredientMessage");
+  const deleteMyIngredientButton = document.querySelector("#deleteMyIngredient");
 
   function setMypageMessage(message, type = "") {
     mypageMessage.textContent = message;
@@ -1060,6 +1122,35 @@ if (mypageForm) {
     mypageFields.interest.value = member.interest || "";
     mypageFields.memo.value = member.memo || "";
     renderMyIngredients();
+    renderMyIngredientDetail();
+  }
+
+  function setMyIngredientMessage(message, type = "") {
+    if (!myIngredientMessage) return;
+    myIngredientMessage.textContent = message;
+    myIngredientMessage.className = `form-message ${type}`.trim();
+  }
+
+  function renderMyIngredientDetail() {
+    if (!myIngredientDetailForm) return;
+
+    const item = getRegisteredIngredientById(activeRegisteredIngredientId);
+    if (!item) {
+      myIngredientDetailForm.hidden = true;
+      setMyIngredientMessage("", "");
+      return;
+    }
+
+    myIngredientDetailForm.hidden = false;
+    myIngredientFields.name.value = item.name || "";
+    myIngredientFields.englishName.value = item.englishName || "";
+    myIngredientFields.category.value = item.category || "";
+    myIngredientFields.use.value = item.use || "";
+    myIngredientFields.cert.value = item.cert || "";
+    myIngredientFields.moq.value = item.moq || "";
+    myIngredientFields.sample.value = item.sample || "가능";
+    myIngredientFields.response.value = item.response || "샘플 요청 가능";
+    myIngredientFields.desc.value = item.desc || "";
   }
 
   mypageForm.addEventListener("submit", (event) => {
@@ -1087,6 +1178,72 @@ if (mypageForm) {
     updateAuthLinks();
     setMypageMessage("내 정보가 저장되었습니다.", "success");
   });
+
+  if (myIngredientSearch) {
+    myIngredientSearch.addEventListener("input", () => {
+      renderMyIngredients();
+    });
+  }
+
+  if (myIngredientList) {
+    myIngredientList.addEventListener("click", (event) => {
+      const item = event.target.closest("[data-my-ingredient-id]");
+      if (!item) return;
+      activeRegisteredIngredientId = item.dataset.myIngredientId;
+      renderMyIngredients();
+      renderMyIngredientDetail();
+    });
+
+    myIngredientList.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const item = event.target.closest("[data-my-ingredient-id]");
+      if (!item) return;
+      event.preventDefault();
+      activeRegisteredIngredientId = item.dataset.myIngredientId;
+      renderMyIngredients();
+      renderMyIngredientDetail();
+    });
+  }
+
+  if (myIngredientDetailForm) {
+    myIngredientDetailForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!activeRegisteredIngredientId) return;
+
+      const item = {
+        name: myIngredientFields.name.value.trim(),
+        englishName: myIngredientFields.englishName.value.trim(),
+        category: myIngredientFields.category.value.trim(),
+        use: myIngredientFields.use.value.trim(),
+        cert: myIngredientFields.cert.value.trim(),
+        moq: myIngredientFields.moq.value.trim(),
+        sample: myIngredientFields.sample.value.trim(),
+        response: myIngredientFields.response.value.trim(),
+        desc: myIngredientFields.desc.value.trim(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      if (!item.name || !item.englishName || !item.category) {
+        setMyIngredientMessage("원료명, 영문명, 카테고리를 입력해주세요.", "error");
+        return;
+      }
+
+      updateRegisteredIngredient(activeRegisteredIngredientId, item);
+      renderMyIngredients();
+      renderMyIngredientDetail();
+      setMyIngredientMessage("원료 정보가 수정되었습니다.", "success");
+    });
+  }
+
+  if (deleteMyIngredientButton) {
+    deleteMyIngredientButton.addEventListener("click", () => {
+      if (!activeRegisteredIngredientId) return;
+      deleteRegisteredIngredient(activeRegisteredIngredientId);
+      activeRegisteredIngredientId = "";
+      renderMyIngredients();
+      renderMyIngredientDetail();
+    });
+  }
 
   renderMypage();
 }

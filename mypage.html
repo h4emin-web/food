@@ -107,7 +107,73 @@
         <aside class="signup-result">
           <p class="eyebrow">내가 올린 원료</p>
           <h2>등록 원료</h2>
+          <label class="my-ingredient-search">
+            <span>원료 검색</span>
+            <input id="myIngredientSearch" type="search" placeholder="등록한 원료명 검색" />
+          </label>
           <div class="my-ingredient-list" id="myIngredientList" aria-live="polite"></div>
+          <form class="my-ingredient-detail" id="myIngredientDetailForm" hidden>
+            <div class="form-section">
+              <h3>원료 정보 수정</h3>
+              <label>
+                <span>원료명</span>
+                <input id="myIngredientName" type="text" required />
+              </label>
+              <label>
+                <span>영문명</span>
+                <input id="myIngredientEnglishName" type="text" required />
+              </label>
+              <label>
+                <span>카테고리</span>
+                <select id="myIngredientCategory" required>
+                  <option value="">선택</option>
+                  <option>기능성</option>
+                  <option>곡물·단백</option>
+                  <option>천연추출물</option>
+                  <option>향료·색소</option>
+                  <option>인증 원료</option>
+                  <option>냉동·농축</option>
+                </select>
+              </label>
+              <label>
+                <span>사용 용도</span>
+                <input id="myIngredientUse" type="text" />
+              </label>
+              <label>
+                <span>인증</span>
+                <input id="myIngredientCert" type="text" />
+              </label>
+              <label>
+                <span>MOQ</span>
+                <input id="myIngredientMoq" type="text" />
+              </label>
+              <label>
+                <span>샘플 제공</span>
+                <select id="myIngredientSample">
+                  <option>가능</option>
+                  <option>협의</option>
+                  <option>불가</option>
+                </select>
+              </label>
+              <label>
+                <span>응답 방식</span>
+                <select id="myIngredientResponse">
+                  <option>샘플 요청 가능</option>
+                  <option>견적 문의 가능</option>
+                  <option>샘플·견적 모두 가능</option>
+                </select>
+              </label>
+              <label class="full-field">
+                <span>원료 설명</span>
+                <textarea id="myIngredientDesc"></textarea>
+              </label>
+            </div>
+            <p class="form-message" id="myIngredientMessage" aria-live="polite"></p>
+            <div class="form-actions split-actions">
+              <button class="outline-button danger-button" type="button" id="deleteMyIngredient">삭제</button>
+              <button class="primary-button" type="submit">수정 저장</button>
+            </div>
+          </form>
         </aside>
       </section>
     </main>
