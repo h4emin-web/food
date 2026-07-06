@@ -168,6 +168,42 @@ const communityPosts = [
   },
 ];
 
+const fallbackNewsItems = [
+  {
+    id: "2026-07-06-food-dye-pledges",
+    title: "FDA가 합성 식용색소 감축 약속 추적표를 공개",
+    source: "FDA",
+    sourceLabel: "REGULATION",
+    category: "식품첨가물",
+    publishedAt: "2026-07-06",
+    summary: "미국 FDA가 식품업계의 석유계 합성 식용색소 감축 계획을 정리한 추적표를 공개했습니다. 천연 색소와 클린라벨 원료 수요를 확인할 수 있는 흐름입니다.",
+    url: "https://www.fda.gov/food/color-additives-information-consumers/tracking-food-industry-pledges-remove-petroleum-based-food-dyes",
+    image: "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "2026-07-06-functional-ingredients-market",
+    title: "기능성 식품 원료 시장, 2034년까지 성장 전망",
+    source: "Fortune Business Insights",
+    sourceLabel: "MARKET",
+    category: "기능성 원료",
+    publishedAt: "2026-07-06",
+    summary: "기능성 식품 원료 시장은 단백질, 식이섬유, 프로바이오틱스, 천연 기능성 소재 중심으로 확대될 전망입니다.",
+    url: "https://www.fortunebusinessinsights.com/industry-reports/functional-food-ingredients-market-100224",
+    image: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "2026-07-06-food-ingredient-safety",
+    title: "식품 원료 안전성 검토와 GRAS 제도 이슈 재부각",
+    source: "The Guardian",
+    sourceLabel: "SAFETY",
+    category: "원료 안전성",
+    publishedAt: "2026-07-06",
+    summary: "미국 식품 원료 안전성 검토와 GRAS 제도에 대한 논의가 이어지고 있습니다. 신규 원료 도입 시 안전성 자료 확인이 중요해지고 있습니다.",
+    url: "https://www.theguardian.com/us-news/2026/mar/07/fda-food-product-safety-checks-substances",
+    image: "https://images.unsplash.com/photo-1581093458791-9d15482442f6?auto=format&fit=crop&w=900&q=80",
+  },
+];
+
 const grid = document.querySelector("#ingredientGrid");
 const favoriteGrid = document.querySelector("#favoriteGrid");
 const searchInput = document.querySelector("#heroSearch");
@@ -175,6 +211,7 @@ const filterInputs = [...document.querySelectorAll(".filter-panel input")];
 const resetButton = document.querySelector("#resetFilters");
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
+const newsGrid = document.querySelector("#newsGrid");
 const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm");
 const registerLayout = document.querySelector("#registerLayout");
 const registerAuthRequired = document.querySelector("#registerAuthRequired");
@@ -610,6 +647,64 @@ function updateRegisteredIngredient(id, nextItem) {
 function deleteRegisteredIngredient(id) {
   const items = getRegisteredIngredients();
   setRegisteredIngredients(items.filter((item) => item.id !== id));
+}
+
+function renderNewsCards(items) {
+  if (!newsGrid) return;
+
+  if (!items.length) {
+    newsGrid.innerHTML = '<p class="empty-mini">아직 등록된 뉴스가 없습니다.</p>';
+    return;
+  }
+
+  newsGrid.innerHTML = items
+    .slice(0, 21)
+    .map(
+      (item) => `
+        <article class="news-card">
+          <a href="${item.url}" target="_blank" rel="noreferrer">
+            <img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" />
+            <div class="news-card-body">
+              <div class="news-tags">
+                <span>${escapeHtml(item.sourceLabel || item.category || "NEWS")}</span>
+                <span>${escapeHtml(item.source || "Food Source")}</span>
+              </div>
+              <time datetime="${escapeHtml(item.publishedAt || "")}">${formatNewsDate(item.publishedAt)}</time>
+              <h3>${escapeHtml(item.title)}</h3>
+              <p>${escapeHtml(item.summary || "")}</p>
+              <strong>Read More</strong>
+            </div>
+          </a>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function formatNewsDate(value) {
+  if (!value) return "";
+  try {
+    return new Intl.DateTimeFormat("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(new Date(value));
+  } catch {
+    return value;
+  }
+}
+
+async function loadNewsCards() {
+  if (!newsGrid) return;
+
+  try {
+    const response = await fetch("news-data.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("news-data.json");
+    const items = await response.json();
+    renderNewsCards(items);
+  } catch {
+    renderNewsCards(fallbackNewsItems);
+  }
 }
 
 function getCommunityComments() {
@@ -1299,3 +1394,4 @@ renderCards(ingredients);
 renderFavorites();
 renderMyIngredients();
 renderCommunityPosts(communityPosts);
+loadNewsCards();

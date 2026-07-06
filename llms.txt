@@ -30,6 +30,7 @@
 
 - 홈: https://food-omega-virid-62.vercel.app/index.html
 - 원료 문의 게시판: https://food-omega-virid-62.vercel.app/community.html
+- 소개와 식품 원료 뉴스: https://food-omega-virid-62.vercel.app/intro.html
 - 원료 등록: https://food-omega-virid-62.vercel.app/ingredient-register.html
 - 회원가입: https://food-omega-virid-62.vercel.app/signup.html
 - 로그인: https://food-omega-virid-62.vercel.app/login.html
