@@ -69,6 +69,7 @@ const ingredients = [
 
 const communityPosts = [
   {
+    id: "pea-protein-80",
     category: "원료 문의",
     title: "완두 단백 80% 원료 문의",
     desc: "대체육 시제품용으로 20kg 샘플 테스트 예정입니다. HACCP 또는 FSSC 자료가 필요합니다.",
@@ -78,6 +79,7 @@ const communityPosts = [
     views: 142,
   },
   {
+    id: "allulose-brix",
     category: "규격 문의",
     title: "알룰로스 시럽 Brix 규격 문의",
     desc: "음료 적용용으로 70 Brix 전후 규격을 찾고 있습니다. 점도와 후미 차이가 궁금합니다.",
@@ -87,6 +89,7 @@ const communityPosts = [
     views: 96,
   },
   {
+    id: "clean-label-strawberry",
     category: "원료 문의",
     title: "클린라벨 딸기향 원료 문의",
     desc: "요거트 베이스에 넣을 예정입니다. 산미가 강하지 않고 표시사항이 간단한 원료를 찾습니다.",
@@ -96,6 +99,7 @@ const communityPosts = [
     views: 221,
   },
   {
+    id: "organic-cocoa",
     category: "인증 문의",
     title: "유기농 표시 가능한 코코아 분말 문의",
     desc: "수입 원료를 소분 제품에 적용하려고 합니다. 원산지 증명과 유기 인증서 조건을 확인하고 싶습니다.",
@@ -105,6 +109,7 @@ const communityPosts = [
     views: 188,
   },
   {
+    id: "frozen-mango-dice",
     category: "수입 문의",
     title: "냉동 망고 다이스 10mm 원료 문의",
     desc: "디저트 토핑용으로 월 300kg 정도 예상합니다. 당도 규격과 해동 후 드립 손실 자료가 필요합니다.",
@@ -121,6 +126,8 @@ const filterInputs = [...document.querySelectorAll(".filter-panel input")];
 const resetButton = document.querySelector("#resetFilters");
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
+const communityToolbar = document.querySelector(".community-toolbar");
+const communityDetail = document.querySelector("#communityDetail");
 const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm");
 const registerLayout = document.querySelector("#registerLayout");
 const registerAuthRequired = document.querySelector("#registerAuthRequired");
@@ -257,6 +264,37 @@ function updateRegisterAccess() {
   registerAuthRequired.hidden = Boolean(member);
 }
 
+function getCommunityComments() {
+  try {
+    return JSON.parse(localStorage.getItem("foodsourceCommunityComments")) || {};
+  } catch {
+    return {};
+  }
+}
+
+function getPostComments(postId) {
+  return getCommunityComments()[postId] || [];
+}
+
+function savePostComment(postId, comment) {
+  const comments = getCommunityComments();
+  comments[postId] = [...(comments[postId] || []), comment];
+  localStorage.setItem("foodsourceCommunityComments", JSON.stringify(comments));
+}
+
+function formatCommentDate(value) {
+  try {
+    return new Intl.DateTimeFormat("ko-KR", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(value));
+  } catch {
+    return "방금 전";
+  }
+}
+
 function renderCommunityPosts(posts) {
   if (!communityList) return;
 
@@ -268,13 +306,13 @@ function renderCommunityPosts(posts) {
   communityList.innerHTML = posts
     .map(
       (post) => `
-        <article class="community-post">
+        <article class="community-post" role="button" tabindex="0" data-post-id="${post.id}">
           <h3>${post.title}</h3>
           <span class="post-author">${post.author}</span>
           <span class="post-date">${post.date}</span>
           <span class="post-status">문의 접수</span>
           <div class="post-stats" aria-label="게시글 반응">
-            <span><i data-lucide="message-circle"></i>${post.comments}</span>
+            <span><i data-lucide="message-circle"></i>${getPostComments(post.id).length}</span>
             <span><i data-lucide="eye"></i>${post.views}</span>
           </div>
         </article>
@@ -298,6 +336,97 @@ function renderCommunityPosts(posts) {
   if (window.lucide) {
     window.lucide.createIcons();
   }
+}
+
+function showCommunityList() {
+  if (!communityList || !communityDetail) return;
+
+  if (communityToolbar) communityToolbar.hidden = false;
+  communityList.hidden = false;
+  communityDetail.hidden = true;
+  communityDetail.innerHTML = "";
+}
+
+function renderCommunityDetail(postId) {
+  if (!communityList || !communityDetail) return;
+
+  const post = communityPosts.find((item) => item.id === postId);
+  if (!post) return;
+
+  const comments = getPostComments(post.id);
+  const member = getCurrentMember();
+  const defaultName = member?.name || "";
+  const commentsMarkup = comments.length
+    ? comments
+        .map(
+          (comment) => `
+            <article class="comment-item">
+              <div>
+                <strong>${escapeHtml(comment.author)}</strong>
+                <span>${formatCommentDate(comment.createdAt)}</span>
+              </div>
+              <p>${escapeHtml(comment.body)}</p>
+            </article>
+          `
+        )
+        .join("")
+    : '<p class="comment-empty">아직 댓글이 없습니다.</p>';
+
+  if (communityToolbar) communityToolbar.hidden = true;
+  communityList.hidden = true;
+  communityDetail.hidden = false;
+  communityDetail.innerHTML = `
+    <button class="detail-back" type="button">
+      <i data-lucide="arrow-left"></i>
+      목록
+    </button>
+    <article class="detail-post">
+      <div class="detail-head">
+        <span>${post.category}</span>
+        <h2>${post.title}</h2>
+        <div class="detail-meta">
+          <span>${post.author}</span>
+          <span>${post.date}</span>
+          <span>조회 ${post.views}</span>
+          <span>댓글 ${comments.length}</span>
+        </div>
+      </div>
+      <p>${post.desc}</p>
+    </article>
+    <section class="comment-panel" aria-label="댓글">
+      <div class="comment-title">
+        <h3>댓글</h3>
+        <span>${comments.length}개</span>
+      </div>
+      <div class="comment-list">${commentsMarkup}</div>
+      <form class="comment-form" id="commentForm">
+        <input id="commentAuthor" type="text" placeholder="이름" value="${escapeHtml(defaultName)}" required />
+        <textarea id="commentBody" placeholder="댓글을 입력하세요" required></textarea>
+        <button class="primary-button" type="submit">댓글 등록</button>
+      </form>
+    </section>
+  `;
+
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+
+  communityDetail.querySelector(".detail-back").addEventListener("click", showCommunityList);
+  communityDetail.querySelector("#commentForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const author = communityDetail.querySelector("#commentAuthor").value.trim();
+    const body = communityDetail.querySelector("#commentBody").value.trim();
+
+    if (!author || !body) return;
+
+    savePostComment(post.id, {
+      author,
+      body,
+      createdAt: new Date().toISOString(),
+    });
+    renderCommunityDetail(post.id);
+    updateCommunityPosts();
+  });
 }
 
 function updateCommunityPosts() {
@@ -336,6 +465,20 @@ if (grid && searchInput) {
 }
 
 if (communityList && communitySearch) {
+  communityList.addEventListener("click", (event) => {
+    const post = event.target.closest(".community-post");
+    if (!post) return;
+    renderCommunityDetail(post.dataset.postId);
+  });
+
+  communityList.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const post = event.target.closest(".community-post");
+    if (!post) return;
+    event.preventDefault();
+    renderCommunityDetail(post.dataset.postId);
+  });
+
   communitySearch.addEventListener("input", updateCommunityPosts);
 }
 
