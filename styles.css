@@ -490,12 +490,15 @@ img {
 .ingredient-origin {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
-.ingredient-origin span {
-  font-size: 16px;
-  line-height: 1;
+.origin-flag {
+  width: 24px;
+  height: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 2px;
+  object-fit: cover;
 }
 
 .ingredient-type {
