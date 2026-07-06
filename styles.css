@@ -729,7 +729,7 @@ img {
 }
 
 .community-post {
-  min-height: 56px;
+  min-height: 78px;
   padding: 0 18px;
   border-bottom: 1px solid var(--line);
   background: #fff;
