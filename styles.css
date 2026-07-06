@@ -1403,11 +1403,12 @@ img {
   gap: 24px;
   padding: 34px clamp(20px, 5vw, 72px);
   border-top: 1px solid var(--line);
-  color: var(--muted);
+  color: #9ca3af;
+  background: #fafafa;
 }
 
 .site-footer strong {
-  color: var(--ink);
+  color: #6b7280;
   font-size: 18px;
 }
 
@@ -1415,9 +1416,28 @@ img {
   margin: 8px 0 0;
 }
 
+.footer-brand-block {
+  display: grid;
+  gap: 8px;
+}
+
+.company-info {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+  color: #9ca3af;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.company-info p {
+  margin: 0;
+}
+
 .footer-links {
   gap: 18px;
   font-weight: 700;
+  color: #9ca3af;
 }
 
 @media (max-width: 1180px) {
