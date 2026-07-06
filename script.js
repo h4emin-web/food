@@ -362,7 +362,6 @@ function getCommunityDetailMarkup(post) {
     <section class="community-detail" data-detail-post-id="${post.id}" aria-label="${post.title} 상세">
       <article class="detail-post">
         <div class="detail-head">
-          <span>${post.category}</span>
           <h2>${post.title}</h2>
           <div class="detail-meta">
             <span>${post.author}</span>
