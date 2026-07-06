@@ -126,14 +126,13 @@ const filterInputs = [...document.querySelectorAll(".filter-panel input")];
 const resetButton = document.querySelector("#resetFilters");
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
-const communityToolbar = document.querySelector(".community-toolbar");
-const communityDetail = document.querySelector("#communityDetail");
 const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm");
 const registerLayout = document.querySelector("#registerLayout");
 const registerAuthRequired = document.querySelector("#registerAuthRequired");
 const signupForm = document.querySelector("#signupForm");
 const authLinks = [...document.querySelectorAll(".auth-link")];
 const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
+let activeCommunityPostId = "";
 
 function renderCards(items) {
   if (!grid) return;
@@ -316,6 +315,7 @@ function renderCommunityPosts(posts) {
             <span><i data-lucide="eye"></i>${post.views}</span>
           </div>
         </article>
+        ${activeCommunityPostId === post.id ? getCommunityDetailMarkup(post) : ""}
       `
     )
     .join("");
@@ -338,21 +338,7 @@ function renderCommunityPosts(posts) {
   }
 }
 
-function showCommunityList() {
-  if (!communityList || !communityDetail) return;
-
-  if (communityToolbar) communityToolbar.hidden = false;
-  communityList.hidden = false;
-  communityDetail.hidden = true;
-  communityDetail.innerHTML = "";
-}
-
-function renderCommunityDetail(postId) {
-  if (!communityList || !communityDetail) return;
-
-  const post = communityPosts.find((item) => item.id === postId);
-  if (!post) return;
-
+function getCommunityDetailMarkup(post) {
   const comments = getPostComments(post.id);
   const member = getCurrentMember();
   const defaultName = member?.name || "";
@@ -372,61 +358,43 @@ function renderCommunityDetail(postId) {
         .join("")
     : '<p class="comment-empty">아직 댓글이 없습니다.</p>';
 
-  if (communityToolbar) communityToolbar.hidden = true;
-  communityList.hidden = true;
-  communityDetail.hidden = false;
-  communityDetail.innerHTML = `
-    <button class="detail-back" type="button">
-      <i data-lucide="arrow-left"></i>
-      목록
-    </button>
-    <article class="detail-post">
-      <div class="detail-head">
-        <span>${post.category}</span>
-        <h2>${post.title}</h2>
-        <div class="detail-meta">
-          <span>${post.author}</span>
-          <span>${post.date}</span>
-          <span>조회 ${post.views}</span>
-          <span>댓글 ${comments.length}</span>
+  return `
+    <section class="community-detail" data-detail-post-id="${post.id}" aria-label="${post.title} 상세">
+      <article class="detail-post">
+        <div class="detail-head">
+          <span>${post.category}</span>
+          <h2>${post.title}</h2>
+          <div class="detail-meta">
+            <span>${post.author}</span>
+            <span>${post.date}</span>
+            <span>조회 ${post.views}</span>
+            <span>댓글 ${comments.length}</span>
+          </div>
         </div>
-      </div>
-      <p>${post.desc}</p>
-    </article>
-    <section class="comment-panel" aria-label="댓글">
-      <div class="comment-title">
-        <h3>댓글</h3>
-        <span>${comments.length}개</span>
-      </div>
-      <div class="comment-list">${commentsMarkup}</div>
-      <form class="comment-form" id="commentForm">
-        <input id="commentAuthor" type="text" placeholder="이름" value="${escapeHtml(defaultName)}" required />
-        <textarea id="commentBody" placeholder="댓글을 입력하세요" required></textarea>
-        <button class="primary-button" type="submit">댓글 등록</button>
-      </form>
+        <p>${post.desc}</p>
+      </article>
+      <section class="comment-panel" aria-label="댓글">
+        <div class="comment-title">
+          <h3>댓글</h3>
+          <span>${comments.length}개</span>
+        </div>
+        <div class="comment-list">${commentsMarkup}</div>
+        <form class="comment-form" data-comment-form data-post-id="${post.id}">
+          <input name="author" type="text" placeholder="이름" value="${escapeHtml(defaultName)}" required />
+          <textarea name="body" placeholder="댓글을 입력하세요" required></textarea>
+          <button class="primary-button" type="submit">댓글 등록</button>
+        </form>
+      </section>
     </section>
   `;
+}
 
+function openCommunityDetail(postId) {
+  activeCommunityPostId = activeCommunityPostId === postId ? "" : postId;
+  updateCommunityPosts();
   if (window.lucide) {
     window.lucide.createIcons();
   }
-
-  communityDetail.querySelector(".detail-back").addEventListener("click", showCommunityList);
-  communityDetail.querySelector("#commentForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const author = communityDetail.querySelector("#commentAuthor").value.trim();
-    const body = communityDetail.querySelector("#commentBody").value.trim();
-
-    if (!author || !body) return;
-
-    savePostComment(post.id, {
-      author,
-      body,
-      createdAt: new Date().toISOString(),
-    });
-    renderCommunityDetail(post.id);
-    updateCommunityPosts();
-  });
 }
 
 function updateCommunityPosts() {
@@ -466,9 +434,10 @@ if (grid && searchInput) {
 
 if (communityList && communitySearch) {
   communityList.addEventListener("click", (event) => {
+    if (event.target.closest(".community-detail")) return;
     const post = event.target.closest(".community-post");
     if (!post) return;
-    renderCommunityDetail(post.dataset.postId);
+    openCommunityDetail(post.dataset.postId);
   });
 
   communityList.addEventListener("keydown", (event) => {
@@ -476,7 +445,27 @@ if (communityList && communitySearch) {
     const post = event.target.closest(".community-post");
     if (!post) return;
     event.preventDefault();
-    renderCommunityDetail(post.dataset.postId);
+    openCommunityDetail(post.dataset.postId);
+  });
+
+  communityList.addEventListener("submit", (event) => {
+    const form = event.target.closest("[data-comment-form]");
+    if (!form) return;
+
+    event.preventDefault();
+    const postId = form.dataset.postId;
+    const author = form.elements.author.value.trim();
+    const body = form.elements.body.value.trim();
+
+    if (!author || !body) return;
+
+    savePostComment(postId, {
+      author,
+      body,
+      createdAt: new Date().toISOString(),
+    });
+    activeCommunityPostId = postId;
+    updateCommunityPosts();
   });
 
   communitySearch.addEventListener("input", updateCommunityPosts);

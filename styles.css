@@ -819,31 +819,14 @@ img {
 .community-detail {
   display: grid;
   gap: 16px;
+  min-width: 700px;
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfd;
 }
 
 .community-detail[hidden] {
   display: none;
-}
-
-.detail-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  width: fit-content;
-  min-height: 38px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  color: #374151;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.detail-back svg {
-  width: 16px;
-  height: 16px;
 }
 
 .detail-post,
