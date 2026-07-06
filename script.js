@@ -242,7 +242,6 @@ function renderCommunityPosts(posts) {
     .map(
       (post) => `
         <article class="community-post">
-          <span class="post-category">${post.category}</span>
           <h3>${post.title}</h3>
           <span class="post-author">${post.author}</span>
           <span class="post-date">${post.date}</span>
@@ -260,7 +259,6 @@ function renderCommunityPosts(posts) {
     "afterbegin",
     `
       <div class="community-board-head" aria-hidden="true">
-        <span>분류</span>
         <span>제목</span>
         <span>작성자</span>
         <span>등록일</span>

@@ -761,10 +761,10 @@ img {
 .community-board-head,
 .community-post {
   display: grid;
-  grid-template-columns: 110px minmax(220px, 1fr) 110px 96px 86px 116px;
+  grid-template-columns: minmax(280px, 1fr) 110px 96px 86px 116px;
   gap: 14px;
   align-items: center;
-  min-width: 820px;
+  min-width: 700px;
 }
 
 .community-board-head {
