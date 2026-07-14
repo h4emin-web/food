@@ -510,12 +510,17 @@ img {
 }
 
 .ingredient-name h3 {
+  display: inline-block;
   overflow: hidden;
   margin: 0;
+  max-width: 100%;
+  background: linear-gradient(transparent 58%, rgba(255, 169, 92, 0.24) 58% 88%, transparent 88%);
   font-size: 18px;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .ingredient-name h3 span {
