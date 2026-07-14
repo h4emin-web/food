@@ -1273,6 +1273,7 @@ img {
   border: 1px solid #f0f1f4;
   border-radius: 8px;
   background: #f7f8fa;
+  min-height: 260px;
   scroll-snap-align: start;
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
@@ -1287,16 +1288,11 @@ img {
   height: 100%;
 }
 
-.news-card img {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-}
-
 .news-card-body {
   display: grid;
   gap: 12px;
-  padding: 18px;
+  min-height: 100%;
+  padding: 22px;
 }
 
 .news-tags {

@@ -1139,7 +1139,6 @@ function renderNewsCards(items) {
       (item) => `
         <article class="news-card">
           <a href="${item.url}" target="_blank" rel="noreferrer">
-            <img src="${item.image}" alt="${escapeHtml(item.title)}" loading="lazy" />
             <div class="news-card-body">
               <div class="news-tags">
                 <span>${escapeHtml(item.sourceLabel || item.category || "NEWS")}</span>
