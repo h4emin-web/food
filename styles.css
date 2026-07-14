@@ -1351,6 +1351,12 @@ img {
   grid-template-columns: 1fr;
 }
 
+.auth-form-layout {
+  max-width: 620px;
+  margin: 0 auto;
+  width: 100%;
+}
+
 .register-hero {
   padding: clamp(44px, 7vw, 84px) clamp(20px, 5vw, 72px) 30px;
   text-align: center;
