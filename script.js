@@ -534,8 +534,13 @@ function isAdminMember(member = getCurrentMember()) {
   return email === "foden_@naver.com" || member.name === "하임" || member.role === "관리자" || member.isAdmin;
 }
 
+function getDisplayName(member = getCurrentMember()) {
+  return member?.nickname || member?.name || "";
+}
+
 function setCurrentMember(member) {
-  localStorage.setItem("foodsourceCurrentMember", JSON.stringify(member));
+  const normalizedMember = { ...member, nickname: member.nickname || member.name };
+  localStorage.setItem("foodsourceCurrentMember", JSON.stringify(normalizedMember));
 }
 
 function trackVisit() {
@@ -630,7 +635,7 @@ function updateAuthLinks() {
 
   authLinks.forEach((link) => {
     if (member) {
-      link.textContent = `${member.name}님`;
+      link.textContent = `${getDisplayName(member)}님`;
       link.href = "mypage.html";
     } else {
       link.textContent = "회원가입";
@@ -808,7 +813,7 @@ function createMessageThread(partnerName, text) {
   saveMessageToCurrentUser({
     id: `sent-${Date.now()}`,
     partner: partnerName,
-    sender: member.name,
+    sender: getDisplayName(member),
     body: text.trim(),
     direction: "sent",
     read: true,
@@ -933,7 +938,7 @@ function sendThreadMessage(body) {
   saveMessageToCurrentUser({
     id: `sent-${Date.now()}`,
     partner: activeMessagePartner,
-    sender: member.name,
+    sender: getDisplayName(member),
     body: body.trim(),
     direction: "sent",
     read: true,
@@ -951,7 +956,7 @@ function getAllRegisteredIngredientsByMember() {
     } catch {
       items = [];
     }
-    return items.map((item) => ({ ...item, ownerName: member.name, ownerEmail: member.email }));
+    return items.map((item) => ({ ...item, ownerName: getDisplayName(member), ownerEmail: member.email }));
   });
 }
 
@@ -963,7 +968,7 @@ function getAllMessagesByMember() {
     } catch {
       items = [];
     }
-    return items.map((item) => ({ ...item, ownerName: member.name, ownerEmail: member.email }));
+    return items.map((item) => ({ ...item, ownerName: getDisplayName(member), ownerEmail: member.email }));
   });
 }
 
@@ -1018,7 +1023,7 @@ function renderAdminMembers() {
 
   const query = adminMemberSearch ? adminMemberSearch.value.trim().toLowerCase() : "";
   const members = getMembers().filter((member) => {
-    const text = `${member.name} ${member.email} ${member.company || ""} ${member.phone || ""}`.toLowerCase();
+    const text = `${member.name} ${member.nickname || ""} ${member.email} ${member.company || ""} ${member.phone || ""}`.toLowerCase();
     return !query || text.includes(query);
   });
 
@@ -1027,7 +1032,7 @@ function renderAdminMembers() {
         .map(
           (member) => `
             <tr>
-              <td><strong>${escapeHtml(member.name)}</strong><span>${escapeHtml(member.email)}</span></td>
+              <td><strong>${escapeHtml(getDisplayName(member))}</strong><span>${escapeHtml(member.name)} · ${escapeHtml(member.email)}</span></td>
               <td>${escapeHtml(member.phone || "-")}</td>
               <td>${escapeHtml(member.company || "-")}<span>${escapeHtml(member.role || "")}</span></td>
               <td>${member.joinedAt ? formatNewsDate(member.joinedAt) : "-"}</td>
@@ -1268,7 +1273,7 @@ function renderCommunityPosts(posts) {
 function getCommunityDetailMarkup(post) {
   const comments = getPostComments(post.id);
   const member = getCurrentMember();
-  const defaultName = member?.name || "";
+  const defaultName = getDisplayName(member);
   const commentsMarkup = comments.length
     ? comments
         .map(
@@ -1306,7 +1311,7 @@ function getCommunityDetailMarkup(post) {
         </div>
         <div class="comment-list">${commentsMarkup}</div>
         <form class="comment-form" data-comment-form data-post-id="${post.id}">
-          <input name="author" type="text" placeholder="이름" value="${escapeHtml(defaultName)}" required />
+          <input name="author" type="text" placeholder="닉네임" value="${escapeHtml(defaultName)}" ${member ? "readonly" : ""} required />
           <textarea name="body" placeholder="댓글을 입력하세요" required></textarea>
           <button class="primary-button" type="submit">댓글 등록</button>
         </form>
@@ -1492,6 +1497,7 @@ if (adminMemberTable) {
       alert(
         [
           `이름: ${member.name}`,
+          `닉네임: ${member.nickname || member.name || "-"}`,
           `이메일: ${member.email}`,
           `전화번호: ${member.phone || "-"}`,
           `회사명: ${member.company || "-"}`,
@@ -1617,6 +1623,7 @@ if (signupForm) {
     name: document.querySelector("#signupName"),
     email: document.querySelector("#signupEmail"),
     phone: document.querySelector("#signupPhone"),
+    nickname: document.querySelector("#signupNickname"),
     password: document.querySelector("#signupPassword"),
     confirm: document.querySelector("#signupPasswordConfirm"),
     company: document.querySelector("#signupCompany"),
@@ -1624,43 +1631,10 @@ if (signupForm) {
     terms: document.querySelector("#signupTerms"),
   };
   const signupMessage = document.querySelector("#signupMessage");
-  const memberStatusTitle = document.querySelector("#memberStatusTitle");
-  const memberStatusText = document.querySelector("#memberStatusText");
-  const memberCard = document.querySelector("#memberCard");
-  const memberName = document.querySelector("#memberName");
-  const memberEmail = document.querySelector("#memberEmail");
-  const memberCompany = document.querySelector("#memberCompany");
-  const logoutButton = document.querySelector("#logoutButton");
 
   function setSignupMessage(message, type = "") {
     signupMessage.textContent = message;
     signupMessage.className = `form-message ${type}`.trim();
-  }
-
-  function renderMemberStatus() {
-    if (!memberStatusTitle || !memberStatusText || !memberCard || !logoutButton) {
-      updateAuthLinks();
-      return;
-    }
-
-    const member = getCurrentMember();
-    if (!member) {
-      memberStatusTitle.textContent = "아직 가입 전입니다";
-      memberStatusText.textContent = "회원가입을 완료하면 이 브라우저에 회원 정보가 저장됩니다.";
-      memberCard.hidden = true;
-      logoutButton.hidden = true;
-      updateAuthLinks();
-      return;
-    }
-
-    memberStatusTitle.textContent = "가입 완료";
-    memberStatusText.textContent = "현재 브라우저에 아래 회원 정보가 저장되어 있습니다.";
-    memberName.textContent = member.name;
-    memberEmail.textContent = member.email;
-    memberCompany.textContent = [member.company, member.role].filter(Boolean).join(" · ") || "회사 정보 없음";
-    memberCard.hidden = false;
-    logoutButton.hidden = false;
-    updateAuthLinks();
   }
 
   signupForm.addEventListener("submit", (event) => {
@@ -1672,13 +1646,14 @@ if (signupForm) {
       name: signupFields.name.value.trim(),
       email: signupFields.email.value.trim().toLowerCase(),
       phone: signupFields.phone.value.trim(),
+      nickname: signupFields.nickname.value.trim(),
       company: signupFields.company.value.trim(),
       role: signupFields.role.value,
       password,
       joinedAt: new Date().toISOString(),
     };
 
-    if (!member.name || !member.email || !member.phone || !member.company || !password || !confirm) {
+    if (!member.name || !member.email || !member.phone || !member.nickname || !member.company || !password || !confirm) {
       setSignupMessage("필수 항목을 입력해주세요.", "error");
       return;
     }
@@ -1709,20 +1684,14 @@ if (signupForm) {
     setCurrentMember(member);
     signupForm.reset();
     setSignupMessage("회원가입이 완료되었습니다.", "success");
-    renderMemberStatus();
+    updateAuthLinks();
   });
 
   signupForm.addEventListener("reset", () => {
     window.setTimeout(() => setSignupMessage("", ""), 0);
   });
 
-  logoutButton.addEventListener("click", () => {
-    logoutCurrentMember();
-    setSignupMessage("가입 상태를 지웠습니다. 저장된 회원 목록은 유지됩니다.", "success");
-    renderMemberStatus();
-  });
-
-  renderMemberStatus();
+  updateAuthLinks();
 }
 
 if (mypageForm) {
@@ -1730,6 +1699,7 @@ if (mypageForm) {
     name: document.querySelector("#mypageName"),
     email: document.querySelector("#mypageEmail"),
     phone: document.querySelector("#mypagePhone"),
+    nickname: document.querySelector("#mypageNickname"),
     company: document.querySelector("#mypageCompany"),
     role: document.querySelector("#mypageRole"),
     interest: document.querySelector("#mypageInterest"),
@@ -1763,6 +1733,7 @@ if (mypageForm) {
     mypageFields.name.value = member.name || "";
     mypageFields.email.value = member.email || "";
     mypageFields.phone.value = member.phone || "";
+    mypageFields.nickname.value = member.nickname || member.name || "";
     mypageFields.company.value = member.company || "";
     mypageFields.role.value = member.role || "식품 개발";
     mypageFields.interest.value = member.interest || "";
@@ -1808,6 +1779,7 @@ if (mypageForm) {
       ...member,
       name: mypageFields.name.value.trim(),
       phone: mypageFields.phone.value.trim(),
+      nickname: mypageFields.nickname.value.trim(),
       company: mypageFields.company.value.trim(),
       role: mypageFields.role.value,
       interest: mypageFields.interest.value.trim(),
@@ -1815,8 +1787,8 @@ if (mypageForm) {
       updatedAt: new Date().toISOString(),
     };
 
-    if (!updatedMember.name || !updatedMember.phone || !updatedMember.company) {
-      setMypageMessage("이름, 전화번호, 회사명을 입력해주세요.", "error");
+    if (!updatedMember.name || !updatedMember.phone || !updatedMember.nickname || !updatedMember.company) {
+      setMypageMessage("이름, 전화번호, 닉네임, 회사명을 입력해주세요.", "error");
       return;
     }
 

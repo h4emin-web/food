@@ -138,7 +138,7 @@
         <p>가입하면 원료 문의와 원료 등록 화면에서 회원 정보를 사용할 수 있습니다.</p>
       </section>
 
-      <section class="signup-layout" aria-label="회원가입 폼">
+      <section class="signup-layout single-column auth-form-layout" aria-label="회원가입 폼">
         <form class="signup-form" id="signupForm">
           <div class="form-section">
             <h2>계정 정보</h2>
@@ -154,6 +154,10 @@
               <label>
                 <span>전화번호</span>
                 <input id="signupPhone" type="tel" placeholder="010-0000-0000" required />
+              </label>
+              <label>
+                <span>닉네임</span>
+                <input id="signupNickname" type="text" placeholder="게시판 표시 이름" required />
               </label>
               <label>
                 <span>비밀번호</span>
@@ -198,18 +202,6 @@
             <button class="primary-button" type="submit">가입하기</button>
           </div>
         </form>
-
-        <aside class="signup-result admin-only-panel" aria-label="가입 상태" hidden>
-          <p class="eyebrow">가입 상태</p>
-          <h2 id="memberStatusTitle">아직 가입 전입니다</h2>
-          <p id="memberStatusText">회원가입을 완료하면 이 브라우저에 회원 정보가 저장됩니다.</p>
-          <div class="member-card" id="memberCard" hidden>
-            <strong id="memberName">회원명</strong>
-            <span id="memberEmail">email@example.com</span>
-            <span id="memberCompany">회사 정보</span>
-          </div>
-          <button class="outline-button" id="logoutButton" type="button" hidden>가입 정보 지우기</button>
-        </aside>
       </section>
     </main>
 
