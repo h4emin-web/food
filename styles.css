@@ -1348,9 +1348,17 @@ img {
 }
 
 .auth-form-layout {
-  max-width: 620px;
+  max-width: 760px;
   margin: 0 auto;
   width: 100%;
+}
+
+.signup-form-layout {
+  max-width: 920px;
+}
+
+.login-form-layout {
+  max-width: 720px;
 }
 
 .register-hero {
@@ -1468,7 +1476,7 @@ img {
 .signup-form {
   display: grid;
   gap: 22px;
-  padding: 24px;
+  padding: clamp(26px, 3.5vw, 38px);
 }
 
 .form-section {
@@ -1513,13 +1521,14 @@ img {
 .signup-form select,
 .signup-form textarea {
   width: 100%;
-  min-height: 46px;
+  min-height: 52px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 0 13px;
+  padding: 0 15px;
   outline: 0;
   background: #fff;
   color: var(--ink);
+  font-size: 15px;
 }
 
 .register-form input:focus,
