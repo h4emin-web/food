@@ -229,10 +229,19 @@ const mypageAuthRequired = document.querySelector("#mypageAuthRequired");
 const myIngredientList = document.querySelector("#myIngredientList");
 const myIngredientSearch = document.querySelector("#myIngredientSearch");
 const myIngredientDetailForm = document.querySelector("#myIngredientDetailForm");
+const adminLayout = document.querySelector("#adminLayout");
+const adminAuthRequired = document.querySelector("#adminAuthRequired");
+const adminStatGrid = document.querySelector("#adminStatGrid");
+const adminMemberSearch = document.querySelector("#adminMemberSearch");
+const adminMemberTable = document.querySelector("#adminMemberTable");
+const adminVisitList = document.querySelector("#adminVisitList");
+const adminIngredientList = document.querySelector("#adminIngredientList");
+const adminMessageList = document.querySelector("#adminMessageList");
 const authLinks = [...document.querySelectorAll(".auth-link")];
 const logoutLinks = [...document.querySelectorAll("[data-logout-link]")];
 const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
 const guestOnlyLinks = [...document.querySelectorAll(".guest-only")];
+const adminOnlyLinks = [...document.querySelectorAll(".admin-only-link")];
 let activeIngredientId = "";
 let activeCommunityPostId = "";
 let activeRegisteredIngredientId = "";
@@ -519,8 +528,38 @@ function getCurrentMember() {
   }
 }
 
+function isAdminMember(member = getCurrentMember()) {
+  if (!member) return false;
+  const email = (member.email || "").toLowerCase();
+  return email === "foden_@naver.com" || member.name === "하임" || member.role === "관리자" || member.isAdmin;
+}
+
 function setCurrentMember(member) {
   localStorage.setItem("foodsourceCurrentMember", JSON.stringify(member));
+}
+
+function trackVisit() {
+  const today = new Date().toISOString().slice(0, 10);
+  const path = window.location.pathname.split("/").pop() || "index.html";
+  let visits = {};
+  try {
+    visits = JSON.parse(localStorage.getItem("foodsourceVisits")) || {};
+  } catch {
+    visits = {};
+  }
+
+  visits[today] = visits[today] || { count: 0, pages: {} };
+  visits[today].count += 1;
+  visits[today].pages[path] = (visits[today].pages[path] || 0) + 1;
+  localStorage.setItem("foodsourceVisits", JSON.stringify(visits));
+}
+
+function getVisitStats() {
+  try {
+    return JSON.parse(localStorage.getItem("foodsourceVisits")) || {};
+  } catch {
+    return {};
+  }
 }
 
 function getMemberKey(member = getCurrentMember()) {
@@ -585,6 +624,9 @@ function updateAuthLinks() {
   guestOnlyLinks.forEach((link) => {
     link.hidden = Boolean(member);
   });
+  adminOnlyLinks.forEach((link) => {
+    link.hidden = !isAdminMember(member);
+  });
 
   authLinks.forEach((link) => {
     if (member) {
@@ -615,6 +657,14 @@ function updateMypageAccess() {
   const member = getCurrentMember();
   mypageLayout.hidden = !member;
   mypageAuthRequired.hidden = Boolean(member);
+}
+
+function updateAdminAccess() {
+  if (!adminLayout || !adminAuthRequired) return;
+
+  const allowed = isAdminMember();
+  adminLayout.hidden = !allowed;
+  adminAuthRequired.hidden = allowed;
 }
 
 function getRegisteredIngredientKey() {
@@ -890,6 +940,184 @@ function sendThreadMessage(body) {
     createdAt: new Date().toISOString(),
   });
   renderMessagesPage();
+}
+
+function getAllRegisteredIngredientsByMember() {
+  return getMembers().flatMap((member) => {
+    const key = `foodsourceRegisteredIngredients:${member.email}`;
+    let items = [];
+    try {
+      items = JSON.parse(localStorage.getItem(key)) || [];
+    } catch {
+      items = [];
+    }
+    return items.map((item) => ({ ...item, ownerName: member.name, ownerEmail: member.email }));
+  });
+}
+
+function getAllMessagesByMember() {
+  return getMembers().flatMap((member) => {
+    let items = [];
+    try {
+      items = JSON.parse(localStorage.getItem(`foodsourceMessages:${member.email}`)) || [];
+    } catch {
+      items = [];
+    }
+    return items.map((item) => ({ ...item, ownerName: member.name, ownerEmail: member.email }));
+  });
+}
+
+function getTodayVisitCount() {
+  const today = new Date().toISOString().slice(0, 10);
+  return getVisitStats()[today]?.count || 0;
+}
+
+function renderAdminPage() {
+  if (!adminLayout) return;
+  updateAdminAccess();
+  if (!isAdminMember()) return;
+
+  renderAdminStats();
+  renderAdminMembers();
+  renderAdminVisits();
+  renderAdminIngredients();
+  renderAdminMessages();
+}
+
+function renderAdminStats() {
+  if (!adminStatGrid) return;
+
+  const members = getMembers();
+  const ingredients = getAllRegisteredIngredientsByMember();
+  const messages = getAllMessagesByMember();
+  const visits = getVisitStats();
+  const totalVisits = Object.values(visits).reduce((sum, day) => sum + (day.count || 0), 0);
+
+  const stats = [
+    ["오늘 접속", `${getTodayVisitCount()}회`],
+    ["누적 접속", `${totalVisits}회`],
+    ["회원", `${members.length}명`],
+    ["등록 원료", `${ingredients.length}개`],
+    ["쪽지", `${messages.length}개`],
+  ];
+
+  adminStatGrid.innerHTML = stats
+    .map(
+      ([label, value]) => `
+        <article class="admin-stat-card">
+          <span>${label}</span>
+          <strong>${value}</strong>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderAdminMembers() {
+  if (!adminMemberTable) return;
+
+  const query = adminMemberSearch ? adminMemberSearch.value.trim().toLowerCase() : "";
+  const members = getMembers().filter((member) => {
+    const text = `${member.name} ${member.email} ${member.company || ""} ${member.phone || ""}`.toLowerCase();
+    return !query || text.includes(query);
+  });
+
+  adminMemberTable.innerHTML = members.length
+    ? members
+        .map(
+          (member) => `
+            <tr>
+              <td><strong>${escapeHtml(member.name)}</strong><span>${escapeHtml(member.email)}</span></td>
+              <td>${escapeHtml(member.phone || "-")}</td>
+              <td>${escapeHtml(member.company || "-")}<span>${escapeHtml(member.role || "")}</span></td>
+              <td>${member.joinedAt ? formatNewsDate(member.joinedAt) : "-"}</td>
+              <td>
+                <button class="admin-small-button" type="button" data-admin-login="${escapeHtml(member.email)}">보기</button>
+                <button class="admin-small-button danger-button" type="button" data-admin-delete="${escapeHtml(member.email)}">삭제</button>
+              </td>
+            </tr>
+          `
+        )
+        .join("")
+    : '<tr><td colspan="5">회원 정보가 없습니다.</td></tr>';
+}
+
+function renderAdminVisits() {
+  if (!adminVisitList) return;
+
+  const visits = getVisitStats();
+  const days = Object.keys(visits).sort().reverse().slice(0, 14);
+  adminVisitList.innerHTML = days.length
+    ? days
+        .map((day) => {
+          const pages = Object.entries(visits[day].pages || {})
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([page, count]) => `${page} ${count}`)
+            .join(" · ");
+          return `
+            <article class="admin-list-row">
+              <strong>${day}</strong>
+              <span>${visits[day].count || 0}회</span>
+              <p>${escapeHtml(pages || "페이지 기록 없음")}</p>
+            </article>
+          `;
+        })
+        .join("")
+    : '<p class="empty-mini">아직 접속 기록이 없습니다.</p>';
+}
+
+function renderAdminIngredients() {
+  if (!adminIngredientList) return;
+
+  const ingredients = getAllRegisteredIngredientsByMember();
+  adminIngredientList.innerHTML = ingredients.length
+    ? ingredients
+        .map(
+          (item) => `
+            <article class="admin-list-row">
+              <strong>${escapeHtml(item.name || "원료명 없음")}</strong>
+              <span>${escapeHtml(item.ownerName)} · ${escapeHtml(item.ownerEmail)}</span>
+              <p>${escapeHtml(item.category || "분류 없음")} / ${escapeHtml(item.englishName || "영문명 없음")}</p>
+            </article>
+          `
+        )
+        .join("")
+    : '<p class="empty-mini">등록된 원료가 없습니다.</p>';
+}
+
+function renderAdminMessages() {
+  if (!adminMessageList) return;
+
+  const messages = getAllMessagesByMember();
+  adminMessageList.innerHTML = messages.length
+    ? messages
+        .slice(0, 30)
+        .map(
+          (message) => `
+            <article class="admin-list-row">
+              <strong>${escapeHtml(message.ownerName)} ↔ ${escapeHtml(message.partner || message.sender || "-")}</strong>
+              <span>${formatMessageDate(message.createdAt)}</span>
+              <p>${escapeHtml(message.body || "")}</p>
+            </article>
+          `
+        )
+        .join("")
+    : '<p class="empty-mini">쪽지 기록이 없습니다.</p>';
+}
+
+function deleteAdminMember(email) {
+  const current = getCurrentMember();
+  const members = getMembers().filter((member) => member.email !== email);
+  localStorage.setItem("foodsourceMembers", JSON.stringify(members));
+  localStorage.removeItem(`foodsourceFavorites:${email}`);
+  localStorage.removeItem(`foodsourceMessages:${email}`);
+  localStorage.removeItem(`foodsourceRegisteredIngredients:${email}`);
+  if (current?.email === email) {
+    localStorage.removeItem("foodsourceCurrentMember");
+  }
+  updateAuthLinks();
+  renderAdminPage();
 }
 
 function renderNewsCards(items) {
@@ -1246,6 +1474,40 @@ if (messageComposer) {
     const input = messageComposer.elements.body;
     sendThreadMessage(input.value);
     input.value = "";
+  });
+}
+
+if (adminMemberSearch) {
+  adminMemberSearch.addEventListener("input", renderAdminMembers);
+}
+
+if (adminMemberTable) {
+  adminMemberTable.addEventListener("click", (event) => {
+    const viewButton = event.target.closest("[data-admin-login]");
+    const deleteButton = event.target.closest("[data-admin-delete]");
+
+    if (viewButton) {
+      const member = getMembers().find((item) => item.email === viewButton.dataset.adminLogin);
+      if (!member) return;
+      alert(
+        [
+          `이름: ${member.name}`,
+          `이메일: ${member.email}`,
+          `전화번호: ${member.phone || "-"}`,
+          `회사명: ${member.company || "-"}`,
+          `담당 업무: ${member.role || "-"}`,
+          `관심 원료: ${member.interest || "-"}`,
+          `메모: ${member.memo || "-"}`,
+        ].join("\n")
+      );
+    }
+
+    if (deleteButton) {
+      const email = deleteButton.dataset.adminDelete;
+      if (confirm(`${email} 회원과 관련 데이터를 삭제할까요?`)) {
+        deleteAdminMember(email);
+      }
+    }
   });
 }
 
@@ -1670,9 +1932,11 @@ if (window.lucide) {
 }
 
 document.addEventListener("click", createClickRipple, true);
+trackVisit();
 updateAuthLinks();
 updateRegisterAccess();
 updateMypageAccess();
+updateAdminAccess();
 if (searchInput) {
   const initialSearchQuery = new URLSearchParams(window.location.search).get("search");
   if (initialSearchQuery) {
@@ -1685,3 +1949,4 @@ renderMyIngredients();
 renderCommunityPosts(communityPosts);
 loadNewsCards();
 renderMessagesPage();
+renderAdminPage();

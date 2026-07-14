@@ -1897,6 +1897,139 @@ img {
   resize: vertical;
 }
 
+.admin-layout {
+  display: grid;
+  gap: 22px;
+  padding: 34px clamp(20px, 5vw, 72px) 70px;
+}
+
+.admin-layout[hidden] {
+  display: none;
+}
+
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-stat-card,
+.admin-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.admin-stat-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.admin-stat-card span,
+.admin-note {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-stat-card strong {
+  font-size: 28px;
+}
+
+.admin-panel {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.admin-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-panel-head h2 {
+  margin: 4px 0 0;
+  font-size: 22px;
+}
+
+.admin-panel-head input {
+  width: min(360px, 100%);
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 13px 10px;
+  border-top: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-table th {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-table td span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-small-button {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0 10px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.admin-visit-list,
+.admin-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-list-row {
+  display: grid;
+  gap: 5px;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin-list-row strong {
+  font-size: 15px;
+}
+
+.admin-list-row span,
+.admin-list-row p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .preview-card {
   margin-top: 14px;
 }
@@ -1946,7 +2079,8 @@ img {
 
 @media (max-width: 1180px) {
   .ingredient-grid,
-  .supplier-list {
+  .supplier-list,
+  .admin-stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2065,6 +2199,15 @@ img {
 
   .message-composer {
     grid-template-columns: 1fr;
+  }
+
+  .admin-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-panel-head {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .supplier-detail-grid {
