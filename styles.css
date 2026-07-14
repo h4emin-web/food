@@ -824,6 +824,8 @@ img {
 .community-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  max-width: 1080px;
+  margin: 0 auto;
   width: 100%;
 }
 
@@ -870,10 +872,9 @@ img {
 .community-board-head,
 .community-post {
   display: grid;
-  grid-template-columns: minmax(180px, max-content) 92px 96px 116px;
-  gap: 8px;
+  grid-template-columns: minmax(280px, 1fr) 118px 96px 116px;
+  gap: 14px;
   align-items: center;
-  justify-content: start;
   width: 100%;
   min-width: 0;
 }
@@ -933,7 +934,6 @@ img {
 .community-post h3 {
   overflow: hidden;
   margin: 0;
-  max-width: min(54vw, 560px);
   font-size: 18px;
   line-height: 1.35;
   text-overflow: ellipsis;
