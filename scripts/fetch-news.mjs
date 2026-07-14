@@ -34,6 +34,49 @@ function pick(text, tag) {
   return match ? decodeXml(match[1]) : "";
 }
 
+function pickAttribute(text, tag, attribute) {
+  const match = text.match(new RegExp(`<${tag}[^>]*\\s${attribute}=["']([^"']+)["'][^>]*>`, "i"));
+  return match ? decodeXml(match[1]) : "";
+}
+
+function pickRssImage(item) {
+  return (
+    pickAttribute(item, "media:content", "url") ||
+    pickAttribute(item, "media:thumbnail", "url") ||
+    pickAttribute(item, "enclosure", "url")
+  );
+}
+
+function pickMetaImage(html) {
+  const patterns = [
+    /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["'][^>]*>/i,
+    /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["'][^>]*>/i,
+  ];
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+    if (match) return decodeXml(match[1]);
+  }
+  return "";
+}
+
+async function pickArticleImage(url) {
+  try {
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(5000),
+      headers: {
+        "user-agent": "FoodSourceNewsBot/1.0 (+https://food-omega-virid-62.vercel.app)",
+      },
+    });
+    if (!response.ok) return "";
+    const html = await response.text();
+    return pickMetaImage(html);
+  } catch {
+    return "";
+  }
+}
+
 function slugify(value) {
   return value
     .toLowerCase()
@@ -73,15 +116,27 @@ async function fetchFeed(url) {
     const title = pick(item, "title");
     const link = pick(item, "link");
     const pubDate = pick(item, "pubDate");
+    const image = pickRssImage(item);
     const publishedAt = pubDate ? new Date(pubDate) : now;
-    return { title, link, publishedAt };
+    return { title, link, image, publishedAt };
   });
+}
+
+function isFallbackImage(image = "") {
+  return !image || fallbackImages.includes(image);
 }
 
 const existing = (await readExisting()).filter((item) => {
   const date = new Date(item.publishedAt || item.collectedAt || now);
-  return date >= cutoff;
+  const title = `${item.title || ""} ${item.category || ""}`.toLowerCase();
+  return date >= cutoff && !/(화장품|cosmetic|pharma|제약|의약품)/i.test(title);
 });
+
+for (const item of existing) {
+  if (isFallbackImage(item.image) && item.url) {
+    item.image = (await pickArticleImage(item.url)) || item.image || fallbackImages[0];
+  }
+}
 
 const seen = new Set(existing.map((item) => item.url || item.link || item.title));
 const fresh = [];
@@ -93,8 +148,10 @@ for (const feed of feeds) {
     const title = item.title.replace(/\s+-\s+.+$/, "");
     const lower = title.toLowerCase();
     if (!/(원료|식품|ingredient|additive|protein|functional|color|sweetener)/i.test(lower)) continue;
+    if (/(화장품|cosmetic|pharma|제약|의약품)/i.test(lower)) continue;
 
     const index = fresh.length % fallbackImages.length;
+    const image = item.image || (await pickArticleImage(item.link)) || fallbackImages[index];
     fresh.push({
       id: `${now.toISOString().slice(0, 10)}-${slugify(title)}`,
       title,
@@ -105,7 +162,7 @@ for (const feed of feeds) {
       collectedAt: now.toISOString(),
       summary: summarize(title),
       url: item.link,
-      image: fallbackImages[index],
+      image,
     });
     seen.add(item.link);
     if (fresh.length >= 3) break;

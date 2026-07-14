@@ -212,6 +212,8 @@ const resetButton = document.querySelector("#resetFilters");
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
 const newsGrid = document.querySelector("#newsGrid");
+const newsPrevButton = document.querySelector("[data-news-prev]");
+const newsNextButton = document.querySelector("[data-news-next]");
 const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm");
 const registerLayout = document.querySelector("#registerLayout");
 const registerAuthRequired = document.querySelector("#registerAuthRequired");
@@ -679,6 +681,10 @@ function renderNewsCards(items) {
       `
     )
     .join("");
+
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
 }
 
 function formatNewsDate(value) {
@@ -705,6 +711,16 @@ async function loadNewsCards() {
   } catch {
     renderNewsCards(fallbackNewsItems);
   }
+}
+
+function scrollNewsCarousel(direction) {
+  if (!newsGrid) return;
+  const card = newsGrid.querySelector(".news-card");
+  const distance = card ? card.getBoundingClientRect().width + 22 : newsGrid.clientWidth * 0.8;
+  newsGrid.scrollBy({
+    left: direction * distance,
+    behavior: "smooth",
+  });
 }
 
 function getCommunityComments() {
@@ -958,6 +974,14 @@ if (communityList && communitySearch) {
   });
 
   communitySearch.addEventListener("input", updateCommunityPosts);
+}
+
+if (newsPrevButton) {
+  newsPrevButton.addEventListener("click", () => scrollNewsCarousel(-1));
+}
+
+if (newsNextButton) {
+  newsNextButton.addEventListener("click", () => scrollNewsCarousel(1));
 }
 
 logoutLinks.forEach((link) => {
