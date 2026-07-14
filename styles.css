@@ -1040,7 +1040,7 @@ img {
   border: 0;
   padding: 0;
   background: transparent;
-  color: #2563eb;
+  color: #6b7280;
   cursor: pointer;
   font: inherit;
   font-weight: 800;
@@ -1050,6 +1050,7 @@ img {
 }
 
 .message-user-button:hover {
+  color: #374151;
   text-decoration: underline;
 }
 
@@ -1498,6 +1499,10 @@ img {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+}
+
+.form-grid.single-column {
+  grid-template-columns: 1fr;
 }
 
 .register-form label,
