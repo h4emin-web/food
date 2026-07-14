@@ -1366,13 +1366,16 @@ img {
 
 .auth-form-layout .signup-form {
   width: 100%;
+  max-width: 100%;
 }
 
 .signup-form-layout .signup-form {
+  min-width: min(100%, 820px);
   min-height: 560px;
 }
 
 .login-form-layout .signup-form {
+  min-width: min(100%, 560px);
   min-height: 420px;
 }
 
