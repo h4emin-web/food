@@ -1356,13 +1356,16 @@ img {
 }
 
 .auth-form-layout {
+  display: flex;
+  justify-content: center;
   max-width: 760px;
   margin: 0 auto;
   width: 100%;
+  justify-items: center;
 }
 
 .signup-form-layout {
-  max-width: 920px;
+  max-width: 980px;
 }
 
 .login-form-layout {
@@ -1370,17 +1373,18 @@ img {
 }
 
 .auth-form-layout .signup-form {
-  width: 100%;
-  max-width: 100%;
+  justify-self: center;
+  width: 760px;
+  max-width: calc(100vw - 40px);
 }
 
 .signup-form-layout .signup-form {
-  min-width: min(100%, 820px);
+  width: 820px;
   min-height: 560px;
 }
 
 .login-form-layout .signup-form {
-  min-width: min(100%, 560px);
+  width: 560px;
   min-height: 420px;
 }
 
@@ -1446,6 +1450,11 @@ img {
   gap: 24px;
   align-items: start;
   padding: 34px clamp(20px, 5vw, 72px) 70px;
+}
+
+.signup-layout.auth-form-layout {
+  display: flex;
+  justify-content: center;
 }
 
 .mypage-layout[hidden] {
