@@ -214,6 +214,10 @@ const communitySearch = document.querySelector("#communitySearch");
 const newsGrid = document.querySelector("#newsGrid");
 const newsPrevButton = document.querySelector("[data-news-prev]");
 const newsNextButton = document.querySelector("[data-news-next]");
+const messageThreadList = document.querySelector("#messageThreadList");
+const messageConversation = document.querySelector("#messageConversation");
+const messageComposer = document.querySelector("#messageComposer");
+const messageAlarmButtons = [...document.querySelectorAll("[data-message-link]")];
 const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm");
 const registerLayout = document.querySelector("#registerLayout");
 const registerAuthRequired = document.querySelector("#registerAuthRequired");
@@ -232,6 +236,7 @@ const guestOnlyLinks = [...document.querySelectorAll(".guest-only")];
 let activeIngredientId = "";
 let activeCommunityPostId = "";
 let activeRegisteredIngredientId = "";
+let activeMessagePartner = "";
 
 function getFavoriteKey() {
   const member = getCurrentMember();
@@ -518,6 +523,41 @@ function setCurrentMember(member) {
   localStorage.setItem("foodsourceCurrentMember", JSON.stringify(member));
 }
 
+function getMemberKey(member = getCurrentMember()) {
+  return member ? member.email || member.name : "";
+}
+
+function getMessageKey(member = getCurrentMember()) {
+  const key = getMemberKey(member);
+  return key ? `foodsourceMessages:${key}` : "";
+}
+
+function getMessages(member = getCurrentMember()) {
+  const key = getMessageKey(member);
+  if (!key) return [];
+
+  try {
+    return JSON.parse(localStorage.getItem(key)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function setMessages(items, member = getCurrentMember()) {
+  const key = getMessageKey(member);
+  if (!key) return;
+  localStorage.setItem(key, JSON.stringify(items));
+}
+
+function saveMessageToCurrentUser(message) {
+  const messages = getMessages();
+  setMessages([message, ...messages]);
+}
+
+function hasUnreadMessages() {
+  return getMessages().some((message) => !message.read && message.direction === "received");
+}
+
 function updateStoredMember(member) {
   const members = getMembers();
   const exists = members.some((item) => item.email === member.email);
@@ -554,6 +594,11 @@ function updateAuthLinks() {
       link.textContent = "회원가입";
       link.href = "signup.html";
     }
+  });
+
+  messageAlarmButtons.forEach((button) => {
+    button.hidden = !member;
+    button.classList.toggle("has-unread", Boolean(member) && hasUnreadMessages());
   });
 }
 function updateRegisterAccess() {
@@ -649,6 +694,202 @@ function updateRegisteredIngredient(id, nextItem) {
 function deleteRegisteredIngredient(id) {
   const items = getRegisteredIngredients();
   setRegisteredIngredients(items.filter((item) => item.id !== id));
+}
+
+function openMessageComposer(partnerName) {
+  const member = getCurrentMember();
+  if (!member) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  showMessageModal(partnerName);
+}
+
+function showMessageModal(partnerName) {
+  document.querySelector(".message-modal-backdrop")?.remove();
+  const modal = document.createElement("div");
+  modal.className = "message-modal-backdrop";
+  modal.innerHTML = `
+    <section class="message-modal" role="dialog" aria-modal="true" aria-label="쪽지 보내기">
+      <div class="message-modal-head">
+        <div>
+          <p class="eyebrow">쪽지 보내기</p>
+          <h2>${escapeHtml(partnerName)}</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-message-modal aria-label="닫기">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form data-message-modal-form>
+        <textarea name="body" placeholder="쪽지 내용을 입력하세요" required></textarea>
+        <div class="form-actions">
+          <button class="outline-button" type="button" data-close-message-modal>취소</button>
+          <button class="primary-button" type="submit">보내기</button>
+        </div>
+      </form>
+    </section>
+  `;
+  document.body.appendChild(modal);
+  if (window.lucide) window.lucide.createIcons();
+  modal.querySelector("textarea").focus();
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal || event.target.closest("[data-close-message-modal]")) {
+      modal.remove();
+    }
+  });
+
+  modal.querySelector("[data-message-modal-form]").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const text = event.target.elements.body.value.trim();
+    if (!text) return;
+    createMessageThread(partnerName, text);
+    modal.remove();
+    window.location.href = "messages.html";
+  });
+}
+
+function createMessageThread(partnerName, text) {
+  const member = getCurrentMember();
+  if (!member) return;
+
+  const createdAt = new Date().toISOString();
+  saveMessageToCurrentUser({
+    id: `sent-${Date.now()}`,
+    partner: partnerName,
+    sender: member.name,
+    body: text.trim(),
+    direction: "sent",
+    read: true,
+    createdAt,
+  });
+  saveMessageToCurrentUser({
+    id: `received-demo-${Date.now()}`,
+    partner: partnerName,
+    sender: partnerName,
+    body: "쪽지를 보냈습니다. 메시지함에서 대화를 이어갈 수 있습니다.",
+    direction: "received",
+    read: false,
+    createdAt,
+  });
+  updateAuthLinks();
+}
+
+function groupMessagesByPartner(messages) {
+  return messages.reduce((groups, message) => {
+    const partner = message.partner || message.sender || "알 수 없음";
+    groups[partner] = groups[partner] || [];
+    groups[partner].push(message);
+    return groups;
+  }, {});
+}
+
+function formatMessageDate(value) {
+  try {
+    return new Intl.DateTimeFormat("ko-KR", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(value));
+  } catch {
+    return "";
+  }
+}
+
+function renderMessagesPage() {
+  if (!messageThreadList || !messageConversation) return;
+
+  const member = getCurrentMember();
+  if (!member) {
+    messageThreadList.innerHTML = '<p class="empty-mini">로그인 후 받은 쪽지를 볼 수 있습니다.</p>';
+    messageConversation.innerHTML = '<a class="primary-button" href="login.html">로그인</a>';
+    if (messageComposer) messageComposer.hidden = true;
+    return;
+  }
+
+  const messages = getMessages();
+  const groups = groupMessagesByPartner(messages);
+  const partners = Object.keys(groups);
+  if (!activeMessagePartner && partners.length) {
+    activeMessagePartner = partners[0];
+  }
+
+  messageThreadList.innerHTML = partners.length
+    ? partners
+        .map((partner) => {
+          const thread = groups[partner];
+          const unread = thread.some((message) => !message.read && message.direction === "received");
+          const latest = thread[0];
+          return `
+            <button class="message-thread ${activeMessagePartner === partner ? "active" : ""} ${unread ? "unread" : ""}" type="button" data-message-thread="${escapeHtml(partner)}">
+              <strong>${escapeHtml(partner)}</strong>
+              <span>${escapeHtml(latest.body)}</span>
+            </button>
+          `;
+        })
+        .join("")
+    : '<p class="empty-mini">받은 쪽지가 없습니다.</p>';
+
+  renderActiveConversation();
+}
+
+function renderActiveConversation() {
+  if (!messageConversation) return;
+
+  const messages = getMessages();
+  const thread = messages
+    .filter((message) => (message.partner || message.sender) === activeMessagePartner)
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  if (!activeMessagePartner || !thread.length) {
+    messageConversation.innerHTML = '<p class="empty-mini">대화를 선택하세요.</p>';
+    if (messageComposer) messageComposer.hidden = true;
+    return;
+  }
+
+  const nextMessages = messages.map((message) =>
+    (message.partner || message.sender) === activeMessagePartner ? { ...message, read: true } : message
+  );
+  setMessages(nextMessages);
+  updateAuthLinks();
+
+  messageConversation.innerHTML = `
+    <div class="message-conversation-head">
+      <h2>${escapeHtml(activeMessagePartner)}</h2>
+      <span>대화</span>
+    </div>
+    <div class="message-bubbles">
+      ${thread
+        .map(
+          (message) => `
+            <article class="message-bubble ${message.direction === "sent" ? "sent" : "received"}">
+              <p>${escapeHtml(message.body)}</p>
+              <span>${formatMessageDate(message.createdAt)}</span>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+  if (messageComposer) messageComposer.hidden = false;
+}
+
+function sendThreadMessage(body) {
+  const member = getCurrentMember();
+  if (!member || !activeMessagePartner || !body.trim()) return;
+
+  saveMessageToCurrentUser({
+    id: `sent-${Date.now()}`,
+    partner: activeMessagePartner,
+    sender: member.name,
+    body: body.trim(),
+    direction: "sent",
+    read: true,
+    createdAt: new Date().toISOString(),
+  });
+  renderMessagesPage();
 }
 
 function renderNewsCards(items) {
@@ -767,9 +1008,8 @@ function renderCommunityPosts(posts) {
       (post) => `
         <article class="community-post" role="button" tabindex="0" data-post-id="${post.id}">
           <h3>${post.title}</h3>
-          <span class="post-author">${post.author}</span>
+          <button class="post-author message-user-button" type="button" data-message-user="${escapeHtml(post.author)}">${post.author}</button>
           <span class="post-date">${post.date}</span>
-          <span class="post-status">문의 접수</span>
           <div class="post-stats" aria-label="게시글 반응">
             <span><i data-lucide="message-circle"></i>${getPostComments(post.id).length}</span>
             <span><i data-lucide="eye"></i>${post.views}</span>
@@ -787,7 +1027,6 @@ function renderCommunityPosts(posts) {
         <span>제목</span>
         <span>작성자</span>
         <span>등록일</span>
-        <span>상태</span>
         <span>반응</span>
       </div>
     `
@@ -808,7 +1047,7 @@ function getCommunityDetailMarkup(post) {
           (comment) => `
             <article class="comment-item">
               <div>
-                <strong>${escapeHtml(comment.author)}</strong>
+                <button class="message-user-button comment-author" type="button" data-message-user="${escapeHtml(comment.author)}">${escapeHtml(comment.author)}</button>
                 <span>${formatCommentDate(comment.createdAt)}</span>
               </div>
               <p>${escapeHtml(comment.body)}</p>
@@ -824,7 +1063,7 @@ function getCommunityDetailMarkup(post) {
         <div class="detail-head">
           <h2>${post.title}</h2>
           <div class="detail-meta">
-            <span>${post.author}</span>
+            <button class="message-user-button detail-author" type="button" data-message-user="${escapeHtml(post.author)}">${post.author}</button>
             <span>${post.date}</span>
             <span>조회 ${post.views}</span>
             <span>댓글 ${comments.length}</span>
@@ -939,6 +1178,14 @@ if (favoriteGrid) {
 
 if (communityList && communitySearch) {
   communityList.addEventListener("click", (event) => {
+    const messageUser = event.target.closest("[data-message-user]");
+    if (messageUser) {
+      event.preventDefault();
+      event.stopPropagation();
+      openMessageComposer(messageUser.dataset.messageUser);
+      return;
+    }
+
     if (event.target.closest(".community-detail")) return;
     const post = event.target.closest(".community-post");
     if (!post) return;
@@ -982,6 +1229,24 @@ if (newsPrevButton) {
 
 if (newsNextButton) {
   newsNextButton.addEventListener("click", () => scrollNewsCarousel(1));
+}
+
+if (messageThreadList) {
+  messageThreadList.addEventListener("click", (event) => {
+    const thread = event.target.closest("[data-message-thread]");
+    if (!thread) return;
+    activeMessagePartner = thread.dataset.messageThread;
+    renderMessagesPage();
+  });
+}
+
+if (messageComposer) {
+  messageComposer.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = messageComposer.elements.body;
+    sendThreadMessage(input.value);
+    input.value = "";
+  });
 }
 
 logoutLinks.forEach((link) => {
@@ -1419,3 +1684,4 @@ renderFavorites();
 renderMyIngredients();
 renderCommunityPosts(communityPosts);
 loadNewsCards();
+renderMessagesPage();

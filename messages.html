@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>받은 쪽지 | 푸드소스</title>
+    <meta name="description" content="푸드소스 회원이 받은 쪽지와 대화를 확인하는 메시지함입니다." />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://food-omega-virid-62.vercel.app/messages.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="푸드소스 홈">
+        <span class="brand-mark">F</span>
+        <span>푸드소스</span>
+      </a>
+      <nav class="main-nav" aria-label="주요 메뉴">
+        <a href="index.html#ingredients">원료 찾기</a>
+        <a href="community.html">원료문의</a>
+        <a href="intro.html">소개</a>
+      </nav>
+      <div class="header-actions">
+        <a class="icon-button message-bell auth-only active-auth" href="messages.html" aria-label="받은 쪽지" data-message-link hidden>
+          <i data-lucide="bell"></i>
+        </a>
+        <a class="text-button login-link guest-only" href="login.html">로그인</a>
+        <a class="text-button auth-link" href="signup.html">회원가입</a>
+        <a class="text-button auth-only" href="favorites.html" hidden>내 즐겨찾기</a>
+        <button class="text-button auth-only logout-link" type="button" data-logout-link hidden>로그아웃</button>
+        <a class="primary-button compact auth-only" href="ingredient-register.html" hidden>
+          <i data-lucide="plus"></i>
+          원료 등록
+        </a>
+      </div>
+    </header>
+
+    <main class="messages-page">
+      <section class="signup-hero" aria-labelledby="messages-title">
+        <p class="eyebrow">쪽지함</p>
+        <h1 id="messages-title">받은 쪽지</h1>
+        <p>원료문의 게시판에서 시작한 대화를 확인하고 답장합니다.</p>
+      </section>
+
+      <section class="messages-layout" aria-label="쪽지 대화">
+        <aside class="message-thread-list" id="messageThreadList" aria-live="polite"></aside>
+        <section class="message-room">
+          <div class="message-conversation" id="messageConversation" aria-live="polite"></div>
+          <form class="message-composer" id="messageComposer" hidden>
+            <textarea name="body" placeholder="쪽지를 입력하세요" required></textarea>
+            <button class="primary-button" type="submit">보내기</button>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-brand-block">
+        <strong>푸드소스</strong>
+        <p>식품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p>
+        <div class="company-info">
+          <p>[08814] 서울 관악구 신림동 신림로11길 115-1</p>
+          <p>대표 : 하임 / TEL : 010-8004-9057 / E-mail : foden_@naver.com</p>
+          <p>Copyright © 2026 Haim company. All Rights Reserved.</p>
+        </div>
+      </div>
+      <div class="footer-links">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
