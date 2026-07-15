@@ -2724,13 +2724,33 @@ img {
   .site-header {
     height: auto;
     flex-wrap: nowrap;
+    gap: 10px;
     padding-top: 14px;
     padding-bottom: 14px;
+  }
+
+  .site-header .brand {
+    display: none;
+  }
+
+  .main-nav {
+    display: flex;
+    flex: 1 1 auto;
+    gap: 10px;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .main-nav a[href="intro.html"] {
+    display: none;
   }
 
   .header-actions {
     width: auto;
     margin-left: auto;
+    flex: 0 0 auto;
     justify-content: flex-end;
     gap: 8px;
   }
