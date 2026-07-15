@@ -214,6 +214,20 @@ const communitySearch = document.querySelector("#communitySearch");
 const newsGrid = document.querySelector("#newsGrid");
 const newsPrevButton = document.querySelector("[data-news-prev]");
 const newsNextButton = document.querySelector("[data-news-next]");
+
+const defaultAdminMember = {
+  name: "하임",
+  nickname: "관리자",
+  email: "foden_@naver.com",
+  phone: "010-8004-9057",
+  password: "goals7523@",
+  company: "Haim company",
+  role: "관리자",
+  interest: "식품 원료",
+  memo: "푸드소스 기본 관리자 계정",
+  isAdmin: true,
+  joinedAt: "2026-07-16T00:00:00.000Z",
+};
 const messageThreadList = document.querySelector("#messageThreadList");
 const messageConversation = document.querySelector("#messageConversation");
 const messageComposer = document.querySelector("#messageComposer");
@@ -517,6 +531,28 @@ function getMembers() {
     return JSON.parse(localStorage.getItem("foodsourceMembers")) || [];
   } catch {
     return [];
+  }
+}
+
+function ensureDefaultAdminMember() {
+  const members = getMembers();
+  const adminEmail = defaultAdminMember.email.toLowerCase();
+  const existing = members.find((member) => (member.email || "").toLowerCase() === adminEmail);
+  const nextAdmin = existing
+    ? {
+        ...existing,
+        ...defaultAdminMember,
+        joinedAt: existing.joinedAt || defaultAdminMember.joinedAt,
+      }
+    : defaultAdminMember;
+  const nextMembers = existing
+    ? members.map((member) => ((member.email || "").toLowerCase() === adminEmail ? nextAdmin : member))
+    : [...members, nextAdmin];
+  localStorage.setItem("foodsourceMembers", JSON.stringify(nextMembers));
+
+  const current = getCurrentMember();
+  if ((current?.email || "").toLowerCase() === adminEmail) {
+    setCurrentMember(nextAdmin);
   }
 }
 
@@ -1929,6 +1965,7 @@ if (window.lucide) {
 
 document.addEventListener("click", createClickRipple, true);
 trackVisit();
+ensureDefaultAdminMember();
 updateAuthLinks();
 updateRegisterAccess();
 updateMypageAccess();
