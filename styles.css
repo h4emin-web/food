@@ -1498,6 +1498,48 @@ img {
   text-underline-offset: 3px;
 }
 
+.suggestion-document {
+  max-width: 760px;
+}
+
+.suggestion-form {
+  display: grid;
+  gap: 18px;
+}
+
+.suggestion-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.suggestion-form label span {
+  color: #384252;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.suggestion-form input,
+.suggestion-form textarea {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 15px;
+  outline: 0;
+  color: var(--ink);
+}
+
+.suggestion-form textarea {
+  min-height: 180px;
+  padding: 14px 15px;
+  resize: vertical;
+}
+
+.suggestion-form input:focus,
+.suggestion-form textarea:focus {
+  border-color: #111;
+}
+
 .auth-only[hidden] {
   display: none !important;
 }

@@ -218,6 +218,8 @@ const communityWriteMessage = document.querySelector("#communityWriteMessage");
 const communityPostTitle = document.querySelector("#communityPostTitle");
 const communityPostAuthor = document.querySelector("#communityPostAuthor");
 const communityPostDesc = document.querySelector("#communityPostDesc");
+const suggestionForm = document.querySelector("#suggestionForm");
+const suggestionMessage = document.querySelector("#suggestionMessage");
 const newsGrid = document.querySelector("#newsGrid");
 const newsPrevButton = document.querySelector("[data-news-prev]");
 const newsNextButton = document.querySelector("[data-news-next]");
@@ -1619,6 +1621,36 @@ if (communityWriteForm) {
     if (communityWriteMessage) communityWriteMessage.textContent = "";
     activeCommunityPostId = "";
     updateCommunityPosts();
+  });
+}
+
+if (suggestionForm) {
+  suggestionForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const name = suggestionForm.querySelector("#suggestionName").value.trim();
+    const email = suggestionForm.querySelector("#suggestionEmail").value.trim();
+    const subject = suggestionForm.querySelector("#suggestionSubject").value.trim();
+    const body = suggestionForm.querySelector("#suggestionBody").value.trim();
+
+    if (!name || !subject || !body) return;
+
+    const mailBody = [
+      `작성자: ${name}`,
+      email ? `답변 이메일: ${email}` : "",
+      "",
+      body,
+      "",
+      `보낸 페이지: ${window.location.href}`,
+    ]
+      .filter((line) => line !== "")
+      .join("\n");
+    const mailto = `mailto:foden_@naver.com?subject=${encodeURIComponent(`[푸드소스 건의사항] ${subject}`)}&body=${encodeURIComponent(mailBody)}`;
+
+    if (suggestionMessage) {
+      suggestionMessage.textContent = "메일 앱을 열고 있습니다. 메일 앱에서 전송 버튼을 눌러주세요.";
+      suggestionMessage.className = "form-message success";
+    }
+    window.location.href = mailto;
   });
 }
 

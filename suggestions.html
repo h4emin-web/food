@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>&#xac74;&#xc758;&#xc0ac;&#xd56d; | &#xd478;&#xb4dc;&#xc18c;&#xc2a4;</title>
+    <meta name="description" content="&#xd478;&#xb4dc;&#xc18c;&#xc2a4; &#xac1c;&#xbc1c;&#xc790;&#xc5d0;&#xac8c; &#xc11c;&#xbe44;&#xc2a4; &#xac1c;&#xc120; &#xc758;&#xacac;&#xacfc; &#xac74;&#xc758;&#xc0ac;&#xd56d;&#xc744; &#xbcf4;&#xb0bc; &#xc218; &#xc788;&#xb294; &#xd398;&#xc774;&#xc9c0;&#xc785;&#xb2c8;&#xb2e4;." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://food-omega-virid-62.vercel.app/suggestions.html" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:site_name" content="&#xd478;&#xb4dc;&#xc18c;&#xc2a4;" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="&#xac74;&#xc758;&#xc0ac;&#xd56d; | &#xd478;&#xb4dc;&#xc18c;&#xc2a4;" />
+    <meta property="og:description" content="&#xd478;&#xb4dc;&#xc18c;&#xc2a4; &#xac1c;&#xbc1c;&#xc790;&#xc5d0;&#xac8c; &#xc11c;&#xbe44;&#xc2a4; &#xac1c;&#xc120; &#xc758;&#xacac;&#xc744; &#xbcf4;&#xb0b4;&#xc8fc;&#xc138;&#xc694;." />
+    <meta property="og:url" content="https://food-omega-virid-62.vercel.app/suggestions.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="&#xd478;&#xb4dc;&#xc18c;&#xc2a4; &#xd648;">
+        <span class="brand-mark">F</span>
+        <span>&#xd478;&#xb4dc;&#xc18c;&#xc2a4;</span>
+      </a>
+      <nav class="main-nav" aria-label="&#xc8fc;&#xc694; &#xba54;&#xb274;">
+        <a href="index.html#ingredients">&#xc6d0;&#xb8cc; &#xcc3e;&#xae30;</a>
+        <a href="community.html">&#xc6d0;&#xb8cc;&#xbb38;&#xc758;</a>
+        <a href="intro.html">&#xc18c;&#xac1c;</a>
+      </nav>
+      <div class="header-actions">
+        <a class="icon-button message-bell auth-only" href="messages.html" aria-label="&#xbc1b;&#xc740; &#xcabd;&#xc9c0;" data-message-link hidden><i data-lucide="bell"></i></a>
+        <a class="text-button login-link guest-only" href="login.html">&#xb85c;&#xadf8;&#xc778;</a>
+        <a class="text-button auth-link" href="signup.html">&#xd68c;&#xc6d0;&#xac00;&#xc785;</a>
+        <a class="text-button auth-only" href="favorites.html" hidden>&#xb0b4; &#xc990;&#xaca8;&#xcc3e;&#xae30;</a>
+        <a class="text-button admin-only-link" href="admin.html" hidden>&#xad00;&#xb9ac;&#xc790;</a>
+        <button class="text-button auth-only logout-link" type="button" data-logout-link hidden>&#xb85c;&#xadf8;&#xc544;&#xc6c3;</button>
+        <a class="primary-button compact auth-only" href="ingredient-register.html" hidden><i data-lucide="plus"></i>&#xc6d0;&#xb8cc; &#xb4f1;&#xb85d;</a>
+      </div>
+    </header>
+
+    <main class="legal-page">
+      <section class="legal-hero" aria-labelledby="suggestion-title">
+        <p class="eyebrow">Feedback</p>
+        <h1 id="suggestion-title">&#xac74;&#xc758;&#xc0ac;&#xd56d;</h1>
+        <p>&#xd478;&#xb4dc;&#xc18c;&#xc2a4;&#xc5d0; &#xd544;&#xc694;&#xd55c; &#xae30;&#xb2a5;&#xc774;&#xb098; &#xac1c;&#xc120; &#xc758;&#xacac;&#xc744; &#xac1c;&#xbc1c;&#xc790;&#xc5d0;&#xac8c; &#xbcf4;&#xb0b4;&#xc8fc;&#xc138;&#xc694;.</p>
+      </section>
+
+      <section class="legal-document suggestion-document">
+        <form class="suggestion-form" id="suggestionForm">
+          <label><span>&#xc774;&#xb984; &#xb610;&#xb294; &#xb2c9;&#xb124;&#xc784;</span><input id="suggestionName" type="text" placeholder="&#xc608;: &#xd558;&#xc784;" required /></label>
+          <label><span>&#xb2f5;&#xbcc0; &#xbc1b;&#xc744; &#xc774;&#xba54;&#xc77c;</span><input id="suggestionEmail" type="email" placeholder="name@example.com" /></label>
+          <label><span>&#xc81c;&#xbaa9;</span><input id="suggestionSubject" type="text" placeholder="&#xc608;: &#xc6d0;&#xb8cc; &#xb4f1;&#xb85d; &#xae30;&#xb2a5; &#xac1c;&#xc120; &#xc694;&#xccad;" required /></label>
+          <label><span>&#xb0b4;&#xc6a9;</span><textarea id="suggestionBody" placeholder="&#xbd88;&#xd3b8;&#xd55c; &#xc810;, &#xcd94;&#xac00;&#xb418;&#xba74; &#xc88b;&#xc740; &#xae30;&#xb2a5;, &#xc624;&#xb958; &#xc0c1;&#xd669; &#xb4f1;&#xc744; &#xc801;&#xc5b4;&#xc8fc;&#xc138;&#xc694;." required></textarea></label>
+          <div class="form-actions">
+            <a class="outline-button" href="mailto:foden_@naver.com">&#xba54;&#xc77c;&#xb85c; &#xbc14;&#xb85c; &#xbcf4;&#xb0b4;&#xae30;</a>
+            <button class="primary-button" type="submit">&#xac1c;&#xbc1c;&#xc790;&#xc5d0;&#xac8c; &#xbcf4;&#xb0b4;&#xae30;</button>
+          </div>
+          <p class="form-message" id="suggestionMessage" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-brand-block">
+        <strong>&#xd478;&#xb4dc;&#xc18c;&#xc2a4;</strong>
+        <p>&#xc2dd;&#xd488; &#xc6d0;&#xb8cc; &#xd0d0;&#xc0c9;, &#xc0d8;&#xd50c;, &#xacac;&#xc801;&#xc744; &#xb3d5;&#xb294; B2B &#xd50c;&#xb7ab;&#xd3fc;</p>
+        <div class="company-info">
+          <p>[08814] &#xc11c;&#xc6b8; &#xad00;&#xc545;&#xad6c; &#xc2e0;&#xb9bc;&#xb3d9; &#xc2e0;&#xb9bc;&#xb85c;11&#xae38;</p>
+          <p>&#xb300;&#xd45c; : &#xd558;&#xc784; / E-mail : foden_@naver.com</p>
+          <p>Copyright &#xa9; 2026 Haim company. All Rights Reserved.</p>
+        </div>
+      </div>
+      <div class="footer-links">
+        <a href="suggestions.html">&#xac74;&#xc758;&#xc0ac;&#xd56d;</a>
+        <a href="terms.html">&#xc774;&#xc6a9;&#xc57d;&#xad00;</a>
+        <a href="privacy.html">&#xac1c;&#xc778;&#xc815;&#xbcf4;&#xcc98;&#xb9ac;&#xbc29;&#xce68;</a>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
