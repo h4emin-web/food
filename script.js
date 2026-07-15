@@ -1158,6 +1158,7 @@ function createMessageThread(partnerName, text) {
   const senderMeta = {
     senderCompany: member.company || "",
     senderEmail: member.email || "",
+    senderPhone: member.phone || "",
     senderWebsite: member.companyWebsite || "",
   };
 
@@ -1166,6 +1167,7 @@ function createMessageThread(partnerName, text) {
     partner: recipientLabel,
     partnerCompany: recipient?.company || "",
     partnerEmail: recipient?.email || "",
+    partnerPhone: recipient?.phone || "",
     partnerWebsite: recipient?.companyWebsite || "",
     sender: senderLabel,
     body: text.trim(),
@@ -1181,6 +1183,7 @@ function createMessageThread(partnerName, text) {
       partner: senderLabel,
       partnerCompany: member.company || "",
       partnerEmail: member.email || "",
+      partnerPhone: member.phone || "",
       partnerWebsite: member.companyWebsite || "",
       sender: senderLabel,
       body: text.trim(),
@@ -1216,6 +1219,7 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
   const recipientLabel = getDisplayName(recipient);
   const senderCompany = member.company || "회사명 확인 필요";
   const senderEmail = member.email || "";
+  const senderPhone = member.phone || "";
   const senderWebsite = member.companyWebsite || "";
   const maker =
     ingredient.manufacturerVisibility === "private"
@@ -1226,7 +1230,7 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
     `회사명: ${senderCompany}`,
     `담당자: ${senderLabel}`,
     `이메일: ${senderEmail || "확인 필요"}`,
-    `회사 홈페이지: ${senderWebsite || "확인 필요"}`,
+    `연락처: ${senderPhone || "확인 필요"}`,
     "",
     `원료: ${ingredient.name} (${ingredient.englishName})`,
     `제조사/공급사: ${maker}`,
@@ -1238,10 +1242,12 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
     partner: recipientLabel,
     partnerCompany: recipient.company || "",
     partnerEmail: recipient.email || "",
+    partnerPhone: recipient.phone || "",
     partnerWebsite: recipient.companyWebsite || "",
     sender: senderLabel,
     senderCompany,
     senderEmail,
+    senderPhone,
     senderWebsite,
     body,
     direction: "sent",
@@ -1253,10 +1259,12 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
     partner: senderLabel,
     partnerCompany: senderCompany,
     partnerEmail: senderEmail,
+    partnerPhone: senderPhone,
     partnerWebsite: senderWebsite,
     sender: senderLabel,
     senderCompany,
     senderEmail,
+    senderPhone,
     senderWebsite,
     body,
     direction: "received",
@@ -1284,8 +1292,8 @@ function getThreadPartnerMeta(thread) {
   const source = received || sent || thread[0] || {};
   const company = source.partnerCompany || source.senderCompany || "";
   const email = source.partnerEmail || source.senderEmail || "";
-  const website = source.partnerWebsite || source.senderWebsite || "";
-  return { company, email, website };
+  const phone = source.partnerPhone || source.senderPhone || "";
+  return { company, email, phone };
 }
 
 function getMessagePreview(body) {
@@ -1340,7 +1348,7 @@ function renderMessagesPage() {
           const unreadCount = thread.filter((message) => !message.read && message.direction === "received").length;
           const latest = thread[0];
           const partnerMeta = getThreadPartnerMeta(thread);
-          const metaText = [partnerMeta.company, partnerMeta.email].filter(Boolean).join(" · ");
+          const metaText = [partnerMeta.company, partnerMeta.email, partnerMeta.phone].filter(Boolean).join(" · ");
           return `
             <button class="message-thread ${activeMessagePartner === partner ? "active" : ""} ${unreadCount ? "unread" : ""}" type="button" data-message-thread="${escapeHtml(partner)}" ${unreadCount ? `data-thread-unread="${unreadCount > 99 ? "99+" : unreadCount}"` : ""}>
               <strong>${escapeHtml(partner)}</strong>
@@ -1375,7 +1383,7 @@ function renderActiveConversation() {
         <h2>${escapeHtml(activeMessagePartner)}</h2>
         ${(() => {
           const meta = getThreadPartnerMeta(thread);
-          const text = [meta.company, meta.email, meta.website].filter(Boolean).join(" · ");
+          const text = [meta.company, meta.email, meta.phone].filter(Boolean).join(" · ");
           return text ? `<p>${escapeHtml(text)}</p>` : "";
         })()}
       </div>
@@ -1410,10 +1418,12 @@ function sendThreadMessage(body) {
     partner: activeMessagePartner,
     partnerCompany: recipient?.company || "",
     partnerEmail: recipient?.email || "",
+    partnerPhone: recipient?.phone || "",
     partnerWebsite: recipient?.companyWebsite || "",
     sender: senderLabel,
     senderCompany: member.company || "",
     senderEmail: member.email || "",
+    senderPhone: member.phone || "",
     senderWebsite: member.companyWebsite || "",
     body: messageBody,
     direction: "sent",
@@ -1426,10 +1436,12 @@ function sendThreadMessage(body) {
       partner: senderLabel,
       partnerCompany: member.company || "",
       partnerEmail: member.email || "",
+      partnerPhone: member.phone || "",
       partnerWebsite: member.companyWebsite || "",
       sender: senderLabel,
       senderCompany: member.company || "",
       senderEmail: member.email || "",
+      senderPhone: member.phone || "",
       senderWebsite: member.companyWebsite || "",
       body: messageBody,
       direction: "received",
