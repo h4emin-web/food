@@ -463,39 +463,35 @@ img {
 
 .ingredient-grid {
   display: grid;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-}
-
-.ingredient-board-head,
-.ingredient-card {
-  display: grid;
-  grid-template-columns: minmax(200px, 1.08fr) 84px minmax(190px, 0.95fr) minmax(120px, 0.62fr) 92px 86px 150px 62px;
-  gap: 12px;
-  align-items: center;
-  width: 100%;
-  min-width: 0;
+  gap: 10px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .ingredient-board-head {
-  min-height: 42px;
-  padding: 0 18px;
-  border-bottom: 1px solid var(--line);
-  background: #f8fafc;
-  color: #7a7d86;
-  font-size: 12px;
-  font-weight: 800;
+  display: none;
 }
 
 .ingredient-card {
-  min-height: 78px;
-  padding: 0 18px;
-  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(260px, 1.2fr) minmax(96px, auto) minmax(110px, auto) 44px;
+  grid-template-areas:
+    "name desc actions actions favorite"
+    "type manufacturer origin lead lead";
+  column-gap: 24px;
+  row-gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 116px;
+  padding: 24px 26px;
+  border: 1px solid #d6e4dd;
+  border-radius: 8px;
   background: #fff;
   cursor: pointer;
-  transition: background 160ms ease;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
 .ingredient-card > * {
@@ -504,15 +500,13 @@ img {
 }
 
 .ingredient-card:hover {
-  background: #fbfcfd;
+  border-color: #aebfb6;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(20, 26, 40, 0.06);
 }
 
 .ingredient-card:hover > :not(.card-actions):not(.favorite-button) {
   transform: scale(1.012);
-}
-
-.ingredient-card:last-child {
-  border-bottom: 0;
 }
 
 .badge {
@@ -531,6 +525,7 @@ img {
 }
 
 .ingredient-name {
+  grid-area: name;
   min-width: 0;
 }
 
@@ -550,8 +545,9 @@ img {
   overflow: hidden;
   margin: 0;
   max-width: 100%;
-  background: linear-gradient(transparent 58%, rgba(255, 169, 92, 0.24) 58% 88%, transparent 88%);
+  background: none;
   font-size: 18px;
+  font-weight: 900;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -561,8 +557,8 @@ img {
 
 .ingredient-name h3 span {
   color: #6b7280;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .english-name {
@@ -577,11 +573,12 @@ img {
 }
 
 .ingredient-desc {
+  grid-area: desc;
   overflow: hidden;
   margin: 0;
-  color: #374151;
+  color: #4b5563;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.45;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -591,10 +588,26 @@ img {
 .ingredient-lead-time,
 .ingredient-manufacturer,
 .ingredient-type {
-  color: #111827;
+  color: #4b5563;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 500;
   white-space: nowrap;
+}
+
+.ingredient-type {
+  grid-area: type;
+}
+
+.ingredient-manufacturer {
+  grid-area: manufacturer;
+}
+
+.ingredient-origin {
+  grid-area: origin;
+}
+
+.ingredient-lead-time {
+  grid-area: lead;
 }
 
 .ingredient-lead-time,
@@ -656,6 +669,7 @@ img {
 }
 
 .card-actions {
+  grid-area: actions;
   justify-content: flex-start;
   gap: 6px;
   min-width: 0;
@@ -680,6 +694,7 @@ img {
 }
 
 .favorite-button {
+  grid-area: favorite;
   display: inline-grid;
   width: 34px;
   height: 36px;
@@ -2614,6 +2629,7 @@ img {
   .ingredient-board-head,
   .ingredient-card {
     grid-template-columns: minmax(0, 1.35fr) minmax(88px, 0.85fr) minmax(70px, 0.55fr);
+    grid-template-areas: "name manufacturer origin";
     gap: 8px;
     padding-right: 12px;
     padding-left: 12px;
