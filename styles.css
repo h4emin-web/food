@@ -472,7 +472,7 @@ img {
 .ingredient-board-head,
 .ingredient-card {
   display: grid;
-  grid-template-columns: minmax(210px, 1.14fr) 90px minmax(200px, 1fr) minmax(130px, 0.68fr) 96px 160px 70px;
+  grid-template-columns: minmax(200px, 1.08fr) 84px minmax(190px, 0.95fr) minmax(120px, 0.62fr) 92px 86px 150px 62px;
   gap: 12px;
   align-items: center;
   width: 100%;
@@ -588,6 +588,7 @@ img {
 }
 
 .ingredient-origin,
+.ingredient-lead-time,
 .ingredient-manufacturer,
 .ingredient-type {
   color: #111827;
@@ -596,6 +597,7 @@ img {
   white-space: nowrap;
 }
 
+.ingredient-lead-time,
 .ingredient-manufacturer {
   overflow: hidden;
   color: #374151;
@@ -2621,8 +2623,10 @@ img {
   .ingredient-board-head span:nth-child(3),
   .ingredient-board-head span:nth-child(6),
   .ingredient-board-head span:nth-child(7),
+  .ingredient-board-head span:nth-child(8),
   .ingredient-card .ingredient-type,
   .ingredient-card .ingredient-desc,
+  .ingredient-card .ingredient-lead-time,
   .ingredient-card > .card-actions,
   .ingredient-card > .favorite-button {
     display: none;

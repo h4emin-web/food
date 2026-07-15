@@ -420,6 +420,7 @@ function renderCards(items) {
                 : ""
             }
           </span>
+          <span class="ingredient-lead-time">${item.leadTime || "확인 필요"}</span>
           <div class="card-actions">
             ${getSampleRequestButton(item)}
             <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
@@ -446,6 +447,7 @@ function renderCards(items) {
         <span>설명</span>
         <span>제조사</span>
         <span>제조국</span>
+        <span>리드타임</span>
         <span>문의</span>
         <span>즐겨찾기</span>
       </div>
@@ -471,6 +473,7 @@ function getIngredientCardMarkup(item) {
             : ""
         }
       </span>
+      <span class="ingredient-lead-time">${item.leadTime || "확인 필요"}</span>
       <div class="card-actions">
         ${getSampleRequestButton(item)}
         <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
@@ -502,6 +505,7 @@ function renderIngredientBoard(target, items, emptyMessage) {
       <span>설명</span>
       <span>제조사</span>
       <span>제조국</span>
+      <span>리드타임</span>
       <span>문의</span>
       <span>즐겨찾기</span>
     </div>
@@ -703,6 +707,7 @@ function normalizeRegisteredIngredient(item) {
     originFlagCode: item.originFlagCode || getCountryFlagCode(origin),
     manufacturer: item.manufacturer || "",
     manufacturerVisibility: item.manufacturerVisibility || "public",
+    leadTime: item.leadTime || "",
     sample: item.sample || "",
     response: item.response || "",
     tags: tags.length ? tags : [item.category || "등록 원료"],
@@ -2205,6 +2210,7 @@ if (ingredientRegisterForm) {
     use: document.querySelector("#registerUse"),
     cert: document.querySelector("#registerCert"),
     moq: document.querySelector("#registerMoq"),
+    leadTime: document.querySelector("#registerLeadTime"),
     sample: document.querySelector("#registerSample"),
     response: document.querySelector("#registerResponse"),
     desc: document.querySelector("#registerDesc"),
@@ -2260,6 +2266,7 @@ if (ingredientRegisterForm) {
       use: registerFields.use.value.trim(),
       cert: registerFields.cert.value.trim(),
       moq: registerFields.moq.value.trim(),
+      leadTime: registerFields.leadTime.value.trim(),
       sample: registerFields.sample.value.trim(),
       response: registerFields.response.value.trim(),
       desc: registerFields.desc.value.trim(),
@@ -2391,6 +2398,7 @@ if (mypageForm) {
     use: document.querySelector("#myIngredientUse"),
     cert: document.querySelector("#myIngredientCert"),
     moq: document.querySelector("#myIngredientMoq"),
+    leadTime: document.querySelector("#myIngredientLeadTime"),
     sample: document.querySelector("#myIngredientSample"),
     response: document.querySelector("#myIngredientResponse"),
     desc: document.querySelector("#myIngredientDesc"),
@@ -2481,6 +2489,7 @@ if (mypageForm) {
     myIngredientFields.use.value = item.use || "";
     myIngredientFields.cert.value = item.cert || "";
     myIngredientFields.moq.value = item.moq || "";
+    myIngredientFields.leadTime.value = item.leadTime || "";
     myIngredientFields.sample.value = item.sample || "가능";
     myIngredientFields.response.value = item.response || "샘플 요청 가능";
     myIngredientFields.desc.value = item.desc || "";
@@ -2582,6 +2591,7 @@ if (mypageForm) {
         use: myIngredientFields.use.value.trim(),
         cert: myIngredientFields.cert.value.trim(),
         moq: myIngredientFields.moq.value.trim(),
+        leadTime: myIngredientFields.leadTime.value.trim(),
         sample: myIngredientFields.sample.value.trim(),
         response: myIngredientFields.response.value.trim(),
         desc: myIngredientFields.desc.value.trim(),
