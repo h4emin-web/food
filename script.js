@@ -502,10 +502,6 @@ function getIngredientDetailMarkup(item) {
             <span>공급사 이메일</span>
             <a href="mailto:${email}">${email}</a>
           </div>
-          <div>
-            <span>담당</span>
-            <strong>${supplier.contact || "확인 필요"}</strong>
-          </div>
         </div>
         <div class="detail-actions">
           <button class="outline-button" type="button" data-message-recipient="${escapeHtml(supplier.contact || supplier.email || supplier.name || "")}">쪽지 보내기</button>
