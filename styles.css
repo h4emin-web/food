@@ -170,6 +170,18 @@ img {
   gap: 10px;
 }
 
+.admin-only-link:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 13px;
+  border-radius: 8px;
+  background: #111827;
+  color: #fff;
+  font-weight: 900;
+}
+
 .icon-button,
 .text-button,
 .primary-button,

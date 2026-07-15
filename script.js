@@ -783,7 +783,7 @@ function getCurrentMember() {
 function isAdminMember(member = getCurrentMember()) {
   if (!member) return false;
   const email = (member.email || "").toLowerCase();
-  return email === "foden_@naver.com" || member.name === "하임" || member.role === "관리자" || member.isAdmin;
+  return email === "foden_@naver.com";
 }
 
 function getDisplayName(member = getCurrentMember()) {
