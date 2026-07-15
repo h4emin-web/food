@@ -343,8 +343,7 @@ img {
 
 .search-panel {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
   width: min(100%, 900px);
   max-width: none;
   margin-top: 34px;
@@ -2724,14 +2723,15 @@ img {
 @media (max-width: 720px) {
   .site-header {
     height: auto;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     padding-top: 14px;
     padding-bottom: 14px;
   }
 
   .header-actions {
-    width: 100%;
-    justify-content: flex-start;
+    width: auto;
+    margin-left: auto;
+    justify-content: flex-end;
     gap: 8px;
   }
 
