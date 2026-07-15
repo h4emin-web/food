@@ -1720,6 +1720,15 @@ img {
   padding: 34px clamp(20px, 5vw, 72px) 70px;
 }
 
+.mypage-layout.ingredients-focus {
+  grid-template-columns: minmax(0, 1120px);
+  justify-content: center;
+}
+
+.mypage-layout.ingredients-focus #mypageForm {
+  display: none;
+}
+
 .signup-layout.auth-form-layout {
   display: flex;
   justify-content: center;
@@ -1950,6 +1959,27 @@ img {
   display: grid;
   gap: 14px;
   padding: 22px;
+}
+
+.my-ingredients-panel {
+  cursor: pointer;
+}
+
+.mypage-layout.ingredients-focus .my-ingredients-panel {
+  position: static;
+  width: 100%;
+  cursor: default;
+}
+
+.my-ingredients-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.my-ingredients-head .eyebrow {
+  margin-bottom: 6px;
 }
 
 .signup-result h2 {

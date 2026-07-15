@@ -253,6 +253,8 @@ const mypageAuthRequired = document.querySelector("#mypageAuthRequired");
 const myIngredientList = document.querySelector("#myIngredientList");
 const myIngredientSearch = document.querySelector("#myIngredientSearch");
 const myIngredientDetailForm = document.querySelector("#myIngredientDetailForm");
+const myIngredientsPanel = document.querySelector("#my-ingredients");
+const mypageReturnButton = document.querySelector("#mypageReturnButton");
 const adminLayout = document.querySelector("#adminLayout");
 const adminAuthRequired = document.querySelector("#adminAuthRequired");
 const adminStatGrid = document.querySelector("#adminStatGrid");
@@ -2390,6 +2392,27 @@ if (mypageForm) {
   const myIngredientMessage = document.querySelector("#myIngredientMessage");
   const deleteMyIngredientButton = document.querySelector("#deleteMyIngredient");
 
+  function setMyIngredientsFocus(focused) {
+    if (!mypageLayout) return;
+    mypageLayout.classList.toggle("ingredients-focus", focused);
+    if (mypageReturnButton) mypageReturnButton.hidden = !focused;
+  }
+
+  function openMyIngredientsFocus() {
+    setMyIngredientsFocus(true);
+    if (window.location.hash !== "#my-ingredients") {
+      history.replaceState(null, "", `${window.location.pathname}#my-ingredients`);
+    }
+    myIngredientsPanel?.scrollIntoView({ block: "start" });
+  }
+
+  function closeMyIngredientsFocus() {
+    setMyIngredientsFocus(false);
+    if (window.location.hash === "#my-ingredients") {
+      history.replaceState(null, "", window.location.pathname);
+    }
+  }
+
   function setMypageMessage(message, type = "") {
     mypageMessage.textContent = message;
     mypageMessage.className = `form-message ${type}`.trim();
@@ -2511,6 +2534,32 @@ if (mypageForm) {
     });
   }
 
+  if (myIngredientsPanel) {
+    myIngredientsPanel.addEventListener("click", (event) => {
+      if (event.target.closest("input, select, textarea, button, [data-my-ingredient-id], .my-ingredient-detail")) return;
+      openMyIngredientsFocus();
+    });
+
+    myIngredientsPanel.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (event.target.closest("input, select, textarea, button, [data-my-ingredient-id], .my-ingredient-detail")) return;
+      event.preventDefault();
+      openMyIngredientsFocus();
+    });
+  }
+
+  if (mypageReturnButton) {
+    mypageReturnButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      closeMyIngredientsFocus();
+      mypageForm.scrollIntoView({ block: "start" });
+    });
+  }
+
+  window.addEventListener("hashchange", () => {
+    setMyIngredientsFocus(window.location.hash === "#my-ingredients");
+  });
+
   if (myIngredientDetailForm) {
     myIngredientDetailForm.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -2557,6 +2606,7 @@ if (mypageForm) {
   }
 
   renderMypage();
+  setMyIngredientsFocus(window.location.hash === "#my-ingredients");
 }
 
 if (loginForm) {

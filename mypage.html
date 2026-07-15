@@ -205,9 +205,14 @@
           </div>
         </form>
 
-        <aside class="signup-result" id="my-ingredients">
-          <p class="eyebrow">내가 올린 원료</p>
-          <h2>등록 원료</h2>
+        <aside class="signup-result my-ingredients-panel" id="my-ingredients" role="button" tabindex="0" aria-label="나의 원료 전체화면으로 보기">
+          <div class="my-ingredients-head">
+            <div>
+              <p class="eyebrow">내가 올린 원료</p>
+              <h2>등록 원료</h2>
+            </div>
+            <button class="outline-button mypage-return-button" type="button" id="mypageReturnButton" hidden>내정보 보기</button>
+          </div>
           <label class="my-ingredient-search">
             <span>원료 검색</span>
             <input id="myIngredientSearch" type="search" placeholder="등록한 원료명 검색" />
