@@ -445,7 +445,7 @@ function renderCards(items) {
         <span>분류</span>
         <span>설명</span>
         <span>제조사</span>
-        <span>원산지</span>
+        <span>제조국</span>
         <span>문의</span>
         <span>즐겨찾기</span>
       </div>
@@ -501,7 +501,7 @@ function renderIngredientBoard(target, items, emptyMessage) {
       <span>분류</span>
       <span>설명</span>
       <span>제조사</span>
-      <span>원산지</span>
+      <span>제조국</span>
       <span>문의</span>
       <span>즐겨찾기</span>
     </div>
@@ -549,21 +549,12 @@ function getIngredientDetailMarkup(item) {
           <h2>${item.name} <span>(${item.englishName})</span></h2>
           <div class="detail-meta">
             <span>${item.type || "원료"}</span>
-            <span>${item.origin || "원산지 확인 필요"}</span>
+            <span>${item.origin || "제조국 확인 필요"}</span>
             <span>${supplier.spec || "규격 확인 필요"}</span>
           </div>
         </div>
         <p>${item.desc}</p>
         <div class="supplier-detail-grid">
-          <div>
-            <span>제조국</span>
-            <strong>${item.origin || "확인 필요"}</strong>
-          </div>
-          <div>
-            <span>제조사</span>
-            <strong>${manufacturerText}</strong>
-            ${manufacturerNote}
-          </div>
           <div>
             <span>공급사</span>
             <strong>${supplier.name || "확인 필요"}</strong>
@@ -575,6 +566,15 @@ function getIngredientDetailMarkup(item) {
           <div>
             <span>공급사 이메일</span>
             <a href="mailto:${email}">${email}</a>
+          </div>
+          <div>
+            <span>제조사</span>
+            <strong>${manufacturerText}</strong>
+            ${manufacturerNote}
+          </div>
+          <div>
+            <span>제조국</span>
+            <strong>${item.origin || "확인 필요"}</strong>
           </div>
         </div>
         <div class="detail-actions">
@@ -644,6 +644,11 @@ function setIngredientPage(page) {
 
 function getCountryFlagCode(origin) {
   const normalized = (origin || "").trim().toLowerCase();
+  const compact = normalized
+    .replace(/\s+/g, " ")
+    .replace(/산$/, "")
+    .replace(/산 원료$/, "")
+    .trim();
   const countryMap = {
     "국내": "kr",
     "한국": "kr",
@@ -682,7 +687,7 @@ function getCountryFlagCode(origin) {
     "인도": "in",
     "india": "in",
   };
-  return countryMap[normalized] || "";
+  return countryMap[normalized] || countryMap[compact] || "";
 }
 
 function normalizeRegisteredIngredient(item) {
@@ -1213,6 +1218,7 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
     `담당자: ${senderLabel}`,
     `이메일: ${senderEmail || "확인 필요"}`,
     `회사 홈페이지: ${senderWebsite || "확인 필요"}`,
+    "",
     `원료: ${ingredient.name} (${ingredient.englishName})`,
     `제조사/공급사: ${maker}`,
     "원하면 이 대화창에서 바로 답장할 수 있습니다.",
