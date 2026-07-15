@@ -1,4 +1,4 @@
-﻿const ingredients = [
+const ingredients = [
   {
     id: "pea-protein-isolate",
     name: "완두 단백 분리물",
@@ -219,7 +219,7 @@ const defaultAdminMember = {
   name: "하임",
   nickname: "관리자",
   email: "foden_@naver.com",
-  phone: "010-8004-9057",
+  phone: "",
   password: "goals7523@",
   company: "Haim company",
   role: "관리자",
