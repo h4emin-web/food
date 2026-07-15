@@ -271,6 +271,10 @@ let activeIngredientId = "";
 let activeCommunityPostId = "";
 let activeRegisteredIngredientId = "";
 let activeMessagePartner = "";
+let ingredientCurrentPage = 1;
+let ingredientPageSize = 10;
+let communityCurrentPage = 1;
+let communityPageSize = 10;
 
 function getFavoriteKey() {
   const member = getCurrentMember();
@@ -333,6 +337,47 @@ function getSampleRequestButton(item) {
     : "";
 }
 
+function getPaginationState(items, currentPage, pageSize) {
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const page = Math.min(Math.max(1, currentPage), totalPages);
+  const start = (page - 1) * pageSize;
+  return {
+    page,
+    totalPages,
+    items: items.slice(start, start + pageSize),
+  };
+}
+
+function getPaginationControls(scope, page, totalPages, pageSize) {
+  const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+  return `
+    <div class="pagination-bar" data-pagination-scope="${scope}">
+      <div class="page-size-toggle" aria-label="보기 개수">
+        ${[10, 50]
+          .map(
+            (size) => `
+              <button class="${pageSize === size ? "active" : ""}" type="button" data-page-size="${size}">
+                ${size}개씩 보기
+              </button>
+            `
+          )
+          .join("")}
+      </div>
+      <div class="page-number-list" aria-label="페이지">
+        ${pages
+          .map(
+            (pageNumber) => `
+              <button class="${pageNumber === page ? "active" : ""}" type="button" data-page-number="${pageNumber}" aria-label="${pageNumber}페이지">
+                ${pageNumber}
+              </button>
+            `
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+}
+
 function renderCards(items) {
   if (!grid) return;
 
@@ -341,7 +386,10 @@ function renderCards(items) {
     return;
   }
 
-  grid.innerHTML = items
+  const pagination = getPaginationState(items, ingredientCurrentPage, ingredientPageSize);
+  ingredientCurrentPage = pagination.page;
+
+  grid.innerHTML = pagination.items
     .map(
       (item) => `
         <article class="ingredient-card" role="button" tabindex="0" data-ingredient-id="${item.id}">
@@ -390,6 +438,7 @@ function renderCards(items) {
       </div>
     `
   );
+  grid.insertAdjacentHTML("beforeend", getPaginationControls("ingredients", ingredientCurrentPage, pagination.totalPages, ingredientPageSize));
 }
 
 function getIngredientCardMarkup(item) {
@@ -567,6 +616,17 @@ function getFilteredItems() {
 
 function updateGrid() {
   renderCards(getFilteredItems());
+}
+
+function setIngredientPageSize(size) {
+  ingredientPageSize = Number(size) === 50 ? 50 : 10;
+  ingredientCurrentPage = 1;
+  updateGrid();
+}
+
+function setIngredientPage(page) {
+  ingredientCurrentPage = Number(page) || 1;
+  updateGrid();
 }
 
 function getCountryFlagCode(origin) {
@@ -1650,7 +1710,10 @@ function renderCommunityPosts(posts) {
     return;
   }
 
-  communityList.innerHTML = posts
+  const pagination = getPaginationState(posts, communityCurrentPage, communityPageSize);
+  communityCurrentPage = pagination.page;
+
+  communityList.innerHTML = pagination.items
     .map(
       (post) => `
         <article class="community-post" role="button" tabindex="0" data-post-id="${post.id}">
@@ -1678,6 +1741,7 @@ function renderCommunityPosts(posts) {
       </div>
     `
   );
+  communityList.insertAdjacentHTML("beforeend", getPaginationControls("community", communityCurrentPage, pagination.totalPages, communityPageSize));
 
   if (window.lucide) {
     window.lucide.createIcons();
@@ -1758,6 +1822,17 @@ function updateCommunityPosts() {
   renderCommunityPosts(posts);
 }
 
+function setCommunityPageSize(size) {
+  communityPageSize = Number(size) === 50 ? 50 : 10;
+  communityCurrentPage = 1;
+  updateCommunityPosts();
+}
+
+function setCommunityPage(page) {
+  communityCurrentPage = Number(page) || 1;
+  updateCommunityPosts();
+}
+
 function getVisibleCommunityPosts() {
   return [...getSavedCommunityPosts(), ...communityPosts];
 }
@@ -1769,6 +1844,18 @@ if (grid && searchInput) {
   });
 
   grid.addEventListener("click", (event) => {
+    const pageSizeButton = event.target.closest("[data-pagination-scope='ingredients'] [data-page-size]");
+    if (pageSizeButton) {
+      event.stopPropagation();
+      setIngredientPageSize(pageSizeButton.dataset.pageSize);
+      return;
+    }
+    const pageButton = event.target.closest("[data-pagination-scope='ingredients'] [data-page-number]");
+    if (pageButton) {
+      event.stopPropagation();
+      setIngredientPage(pageButton.dataset.pageNumber);
+      return;
+    }
     const inquiryButton = event.target.closest("[data-inquiry-type]");
     if (inquiryButton) {
       event.stopPropagation();
@@ -1805,14 +1892,23 @@ if (grid && searchInput) {
     openIngredientDetail(ingredient.dataset.ingredientId);
   });
 
-  searchInput.addEventListener("input", updateGrid);
-  filterInputs.forEach((input) => input.addEventListener("change", updateGrid));
+  searchInput.addEventListener("input", () => {
+    ingredientCurrentPage = 1;
+    updateGrid();
+  });
+  filterInputs.forEach((input) =>
+    input.addEventListener("change", () => {
+      ingredientCurrentPage = 1;
+      updateGrid();
+    })
+  );
 
   resetButton.addEventListener("click", () => {
     filterInputs.forEach((input) => {
       input.checked = false;
     });
     searchInput.value = "";
+    ingredientCurrentPage = 1;
     updateGrid();
   });
 
@@ -1859,6 +1955,18 @@ if (favoriteGrid) {
 
 if (communityList && communitySearch) {
   communityList.addEventListener("click", (event) => {
+    const pageSizeButton = event.target.closest("[data-pagination-scope='community'] [data-page-size]");
+    if (pageSizeButton) {
+      event.stopPropagation();
+      setCommunityPageSize(pageSizeButton.dataset.pageSize);
+      return;
+    }
+    const pageButton = event.target.closest("[data-pagination-scope='community'] [data-page-number]");
+    if (pageButton) {
+      event.stopPropagation();
+      setCommunityPage(pageButton.dataset.pageNumber);
+      return;
+    }
     const messageUser = event.target.closest("[data-message-user]");
     if (messageUser) {
       event.preventDefault();
@@ -1901,7 +2009,10 @@ if (communityList && communitySearch) {
     updateCommunityPosts();
   });
 
-  communitySearch.addEventListener("input", updateCommunityPosts);
+  communitySearch.addEventListener("input", () => {
+    communityCurrentPage = 1;
+    updateCommunityPosts();
+  });
 }
 
 if (communityWriteButton && communityWriteForm) {
@@ -1956,6 +2067,7 @@ if (communityWriteForm) {
     communityWriteForm.hidden = true;
     if (communityWriteMessage) communityWriteMessage.textContent = "";
     activeCommunityPostId = "";
+    communityCurrentPage = 1;
     updateCommunityPosts();
   });
 }

@@ -727,6 +727,53 @@ img {
   font-weight: 700;
 }
 
+.pagination-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+}
+
+.page-size-toggle,
+.page-number-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.page-size-toggle button,
+.page-number-list button {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.page-size-toggle button {
+  padding: 0 12px;
+}
+
+.page-number-list button {
+  min-width: 36px;
+  padding: 0 10px;
+}
+
+.page-size-toggle button.active,
+.page-number-list button.active {
+  border-color: #111827;
+  background: #111827;
+  color: #fff;
+}
+
 .ingredient-detail {
   display: grid;
   min-width: 0;
@@ -2585,6 +2632,17 @@ img {
   .detail-actions {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .pagination-bar {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 14px 12px;
+  }
+
+  .page-size-toggle,
+  .page-number-list {
+    justify-content: center;
   }
 
   .news-carousel {
