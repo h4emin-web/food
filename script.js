@@ -298,6 +298,17 @@ function setFavoriteIngredients(items) {
   localStorage.setItem(key, JSON.stringify(items));
 }
 
+function bindVisibilityChoiceRadios(root = document) {
+  root.querySelectorAll(".visibility-choice label").forEach((label) => {
+    label.addEventListener("click", () => {
+      const input = label.querySelector("input[type='radio']");
+      if (!input) return;
+      input.checked = true;
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  });
+}
+
 function isFavoriteIngredient(ingredientId) {
   return getFavoriteIngredients().includes(ingredientId);
 }
@@ -2585,6 +2596,7 @@ if (window.lucide) {
   window.lucide.createIcons();
 }
 
+bindVisibilityChoiceRadios();
 document.addEventListener("click", createClickRipple, true);
 trackVisit();
 ensureDefaultAdminMember();

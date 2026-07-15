@@ -1814,7 +1814,7 @@ img {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 210px;
   gap: 12px;
-  align-items: end;
+  align-items: start;
   min-width: 0;
 }
 
@@ -1825,7 +1825,9 @@ img {
 .visibility-choice {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  column-gap: 8px;
+  row-gap: 0;
+  align-content: start;
   min-width: 0;
   margin: 0;
   padding: 0;
@@ -1840,24 +1842,29 @@ img {
 }
 
 .visibility-choice label {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
+  height: 52px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
   cursor: pointer;
+  transform: translateY(8px);
 }
 
 .visibility-choice input {
   position: absolute;
+  appearance: none;
   width: 1px;
-  min-height: 1px;
+  height: 1px;
+  min-height: 0;
   margin: 0;
   padding: 0;
   border: 0;
   opacity: 0;
+  pointer-events: none;
 }
 
 .visibility-choice label:has(input:checked) {
@@ -1873,7 +1880,7 @@ img {
 
 .visibility-choice p {
   grid-column: 1 / -1;
-  margin: -2px 0 0;
+  margin: 8px 0 0;
   color: #8a93a3;
   font-size: 12px;
   font-weight: 700;
