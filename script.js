@@ -168,6 +168,48 @@ const communityPosts = [
   },
 ];
 
+const partnerPosts = [
+  {
+    id: "chicken-breast-oem",
+    mode: "OEM",
+    trade: "구매",
+    title: "닭가슴살을 활용한 스프, 육포, 젤리 OEM 업체를 찾습니다. 소중한 인연이 되었으면 합니다.",
+    company: "(유)선신푸드",
+    business: "제조",
+    deadline: "2026-08-31",
+    desc: "닭가슴살 원료를 활용한 간편식 제품을 함께 개발하고 생산할 수 있는 OEM 협력사를 찾습니다.",
+    author: "선신푸드",
+    date: "방금 전",
+    views: 46,
+  },
+  {
+    id: "kimchi-odm-seller",
+    mode: "ODM",
+    trade: "판매",
+    title: "즙제조 odm 업체 찾습니다.",
+    company: "채민근",
+    business: "유통",
+    deadline: "2026-07-31",
+    desc: "소량 테스트와 본생산까지 연결 가능한 즙제조 ODM 협력사를 찾고 있습니다.",
+    author: "채민근",
+    date: "15분 전",
+    views: 15,
+  },
+  {
+    id: "protein-bar-oem",
+    mode: "OEM",
+    trade: "구매",
+    title: "프로틴바 소량 생산 가능한 OEM 업체를 찾습니다.",
+    company: "뉴트리랩",
+    business: "브랜드",
+    deadline: "2026-08-20",
+    desc: "견과, 단백질 원료를 사용한 프로틴바를 월 3천 개 규모로 테스트 생산하고 싶습니다.",
+    author: "뉴트리랩",
+    date: "1시간 전",
+    views: 32,
+  },
+];
+
 const fallbackNewsItems = [
   {
     id: "2026-07-06-food-dye-pledges",
@@ -218,6 +260,20 @@ const communityWriteMessage = document.querySelector("#communityWriteMessage");
 const communityPostTitle = document.querySelector("#communityPostTitle");
 const communityPostAuthor = document.querySelector("#communityPostAuthor");
 const communityPostDesc = document.querySelector("#communityPostDesc");
+const partnerList = document.querySelector("#partnerList");
+const partnerSearch = document.querySelector("#partnerSearch");
+const partnerWriteButton = document.querySelector("#partnerWriteButton");
+const partnerWriteForm = document.querySelector("#partnerWriteForm");
+const partnerWriteCancel = document.querySelector("#partnerWriteCancel");
+const partnerWriteMessage = document.querySelector("#partnerWriteMessage");
+const partnerPostTitle = document.querySelector("#partnerPostTitle");
+const partnerPostAuthor = document.querySelector("#partnerPostAuthor");
+const partnerPostCompany = document.querySelector("#partnerPostCompany");
+const partnerPostMode = document.querySelector("#partnerPostMode");
+const partnerPostTrade = document.querySelector("#partnerPostTrade");
+const partnerPostBusiness = document.querySelector("#partnerPostBusiness");
+const partnerPostDeadline = document.querySelector("#partnerPostDeadline");
+const partnerPostDesc = document.querySelector("#partnerPostDesc");
 const suggestionForm = document.querySelector("#suggestionForm");
 const suggestionMessage = document.querySelector("#suggestionMessage");
 const newsGrid = document.querySelector("#newsGrid");
@@ -271,12 +327,15 @@ const adminOnlyLinks = [...document.querySelectorAll(".admin-only-link")];
 const myIngredientsLinks = [...document.querySelectorAll(".my-ingredients-link")];
 let activeIngredientId = "";
 let activeCommunityPostId = "";
+let activePartnerPostId = "";
 let activeRegisteredIngredientId = "";
 let activeMessagePartner = "";
 let ingredientCurrentPage = 1;
 let ingredientPageSize = 10;
 let communityCurrentPage = 1;
 let communityPageSize = 10;
+let partnerCurrentPage = 1;
+let partnerPageSize = 10;
 
 function getFavoriteKey() {
   const member = getCurrentMember();
@@ -908,6 +967,26 @@ function setSavedCommunityPosts(items) {
 
 function saveCommunityPost(post) {
   setSavedCommunityPosts([post, ...getSavedCommunityPosts()]);
+}
+
+function getPartnerPostKey() {
+  return "foodsourcePartnerPosts";
+}
+
+function getSavedPartnerPosts() {
+  try {
+    return JSON.parse(localStorage.getItem(getPartnerPostKey())) || [];
+  } catch {
+    return [];
+  }
+}
+
+function setSavedPartnerPosts(items) {
+  localStorage.setItem(getPartnerPostKey(), JSON.stringify(items));
+}
+
+function savePartnerPost(post) {
+  setSavedPartnerPosts([post, ...getSavedPartnerPosts()]);
 }
 
 function hasUnreadMessages() {
@@ -1874,6 +1953,149 @@ function getVisibleCommunityPosts() {
   return [...getSavedCommunityPosts(), ...communityPosts];
 }
 
+function getVisiblePartnerPosts() {
+  return [...getSavedPartnerPosts(), ...partnerPosts];
+}
+
+function getPartnerDDay(deadline) {
+  if (!deadline) return "D - ?";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(`${deadline}T00:00:00`);
+  if (Number.isNaN(target.getTime())) return "D - ?";
+  const diff = Math.ceil((target - today) / 86400000);
+  if (diff === 0) return "D-Day";
+  return diff > 0 ? `D - ${diff}` : `D + ${Math.abs(diff)}`;
+}
+
+function renderPartnerPosts(posts) {
+  if (!partnerList) return;
+
+  if (!posts.length) {
+    partnerList.innerHTML = '<div class="empty-state">조건에 맞는 협력업체 글이 없습니다.</div>';
+    return;
+  }
+
+  const pagination = getPaginationState(posts, partnerCurrentPage, partnerPageSize);
+  partnerCurrentPage = pagination.page;
+
+  partnerList.innerHTML = pagination.items
+    .map(
+      (post) => `
+        <article class="partner-post" role="button" tabindex="0" data-partner-post-id="${post.id}">
+          <div class="partner-post-main">
+            <div class="partner-post-title">
+              <span class="partner-badge mode">${escapeHtml(post.mode || "OEM")}</span>
+              <span class="partner-badge trade">${escapeHtml(post.trade || "구매")}</span>
+              <h3>${escapeHtml(post.title)}</h3>
+            </div>
+            <div class="partner-meta">
+              <span>기업명 : ${escapeHtml(post.company || "확인 필요")}</span>
+              <span>신청자업종 : ${escapeHtml(post.business || "확인 필요")}</span>
+              <span>신청기한 : ${escapeHtml(post.deadline || "상시")}</span>
+            </div>
+          </div>
+          <div class="partner-dday"><span></span>${getPartnerDDay(post.deadline)}</div>
+        </article>
+        ${activePartnerPostId === post.id ? getPartnerDetailMarkup(post) : ""}
+      `
+    )
+    .join("");
+
+  partnerList.insertAdjacentHTML("beforeend", getPaginationControls("partners", partnerCurrentPage, pagination.totalPages, partnerPageSize));
+}
+
+function getPartnerDetailMarkup(post) {
+  const comments = getPostComments(post.id);
+  const member = getCurrentMember();
+  const defaultName = getDisplayName(member);
+  const commentsMarkup = comments.length
+    ? comments
+        .map(
+          (comment) => `
+            <article class="comment-item">
+              <div>
+                <button class="message-user-button comment-author" type="button" data-message-user="${escapeHtml(comment.author)}">${escapeHtml(comment.author)}</button>
+                <span>${formatCommentDate(comment.createdAt)}</span>
+              </div>
+              <p>${escapeHtml(comment.body)}</p>
+            </article>
+          `
+        )
+        .join("")
+    : '<p class="comment-empty">아직 댓글이 없습니다.</p>';
+
+  return `
+    <section class="community-detail partner-detail" data-detail-partner-id="${post.id}" aria-label="${escapeHtml(post.title)} 상세">
+      <article class="detail-post">
+        <div class="detail-head">
+          <h2>${escapeHtml(post.title)}</h2>
+          <div class="detail-meta">
+            <span>${escapeHtml(post.mode || "OEM")}</span>
+            <span>${escapeHtml(post.trade || "구매")}</span>
+            <button class="message-user-button detail-author" type="button" data-message-user="${escapeHtml(post.author)}">${escapeHtml(post.author)}</button>
+            <span>조회 ${Number(post.views || 0)}</span>
+            <span>댓글 ${comments.length}</span>
+          </div>
+        </div>
+        <div class="partner-detail-meta">
+          <span>기업명</span><strong>${escapeHtml(post.company || "확인 필요")}</strong>
+          <span>신청자업종</span><strong>${escapeHtml(post.business || "확인 필요")}</strong>
+          <span>신청기한</span><strong>${escapeHtml(post.deadline || "상시")}</strong>
+        </div>
+        <p>${escapeHtml(post.desc || "")}</p>
+      </article>
+      <section class="comment-panel" aria-label="댓글">
+        <div class="comment-title">
+          <h3>댓글</h3>
+          <span>${comments.length}개</span>
+        </div>
+        <div class="comment-list">${commentsMarkup}</div>
+        <form class="comment-form" data-partner-comment-form data-post-id="${post.id}">
+          <input name="author" type="text" placeholder="닉네임" value="${escapeHtml(defaultName)}" ${member ? "readonly" : ""} required />
+          <textarea name="body" placeholder="댓글을 입력하세요" required></textarea>
+          <button class="primary-button" type="submit">댓글 등록</button>
+        </form>
+      </section>
+    </section>
+  `;
+}
+
+function openPartnerDetail(postId) {
+  activePartnerPostId = activePartnerPostId === postId ? "" : postId;
+  updatePartnerPosts();
+}
+
+function updatePartnerPosts() {
+  if (!partnerSearch) return;
+
+  const query = partnerSearch.value.trim().toLowerCase();
+  const posts = getVisiblePartnerPosts().filter((post) => {
+    return (
+      !query ||
+      post.title.toLowerCase().includes(query) ||
+      (post.desc || "").toLowerCase().includes(query) ||
+      (post.company || "").toLowerCase().includes(query) ||
+      (post.business || "").toLowerCase().includes(query) ||
+      (post.mode || "").toLowerCase().includes(query) ||
+      (post.trade || "").toLowerCase().includes(query)
+    );
+  });
+
+  renderPartnerPosts(posts);
+}
+
+function setPartnerPageSize(size) {
+  partnerPageSize = Number(size) === 50 ? 50 : 10;
+  partnerCurrentPage = 1;
+  updatePartnerPosts();
+}
+
+function setPartnerPage(page) {
+  partnerCurrentPage = Number(page) || 1;
+  updatePartnerPosts();
+}
+
 if (grid && searchInput) {
   document.querySelector(".search-panel").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -2106,6 +2328,135 @@ if (communityWriteForm) {
     activeCommunityPostId = "";
     communityCurrentPage = 1;
     updateCommunityPosts();
+  });
+}
+
+if (partnerList && partnerSearch) {
+  partnerList.addEventListener("click", (event) => {
+    const pageSizeButton = event.target.closest("[data-pagination-scope='partners'] [data-page-size]");
+    if (pageSizeButton) {
+      event.stopPropagation();
+      setPartnerPageSize(pageSizeButton.dataset.pageSize);
+      return;
+    }
+    const pageButton = event.target.closest("[data-pagination-scope='partners'] [data-page-number]");
+    if (pageButton) {
+      event.stopPropagation();
+      setPartnerPage(pageButton.dataset.pageNumber);
+      return;
+    }
+    const messageUser = event.target.closest("[data-message-user]");
+    if (messageUser) {
+      event.preventDefault();
+      event.stopPropagation();
+      openMessageComposer(messageUser.dataset.messageUser);
+      return;
+    }
+
+    if (event.target.closest(".partner-detail")) return;
+    const post = event.target.closest(".partner-post");
+    if (!post) return;
+    openPartnerDetail(post.dataset.partnerPostId);
+  });
+
+  partnerList.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const post = event.target.closest(".partner-post");
+    if (!post) return;
+    event.preventDefault();
+    openPartnerDetail(post.dataset.partnerPostId);
+  });
+
+  partnerList.addEventListener("submit", (event) => {
+    const form = event.target.closest("[data-partner-comment-form]");
+    if (!form) return;
+
+    event.preventDefault();
+    const member = getCurrentMember();
+    if (!member) {
+      window.location.href = "login.html";
+      return;
+    }
+    const postId = form.dataset.postId;
+    const author = form.elements.author.value.trim();
+    const body = form.elements.body.value.trim();
+
+    if (!author || !body) return;
+
+    savePostComment(postId, {
+      author,
+      body,
+      createdAt: new Date().toISOString(),
+    });
+    activePartnerPostId = postId;
+    updatePartnerPosts();
+  });
+
+  partnerSearch.addEventListener("input", () => {
+    partnerCurrentPage = 1;
+    updatePartnerPosts();
+  });
+}
+
+if (partnerWriteButton && partnerWriteForm) {
+  partnerWriteButton.addEventListener("click", () => {
+    const member = getCurrentMember();
+    if (!member) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    partnerWriteForm.hidden = !partnerWriteForm.hidden;
+    partnerPostAuthor.value = getDisplayName(member);
+    partnerPostCompany.value = member.company || "";
+    if (!partnerWriteForm.hidden) {
+      partnerPostTitle.focus();
+    }
+  });
+}
+
+if (partnerWriteCancel && partnerWriteForm) {
+  partnerWriteCancel.addEventListener("click", () => {
+    partnerWriteForm.reset();
+    partnerWriteForm.hidden = true;
+    if (partnerWriteMessage) partnerWriteMessage.textContent = "";
+  });
+}
+
+if (partnerWriteForm) {
+  partnerWriteForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const member = getCurrentMember();
+    if (!member) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const title = partnerPostTitle.value.trim();
+    const company = partnerPostCompany.value.trim();
+    const desc = partnerPostDesc.value.trim();
+    if (!title || !company || !desc) return;
+
+    savePartnerPost({
+      id: `partner-${Date.now()}`,
+      mode: partnerPostMode.value,
+      trade: partnerPostTrade.value,
+      title,
+      company,
+      business: partnerPostBusiness.value.trim() || "확인 필요",
+      deadline: partnerPostDeadline.value,
+      desc,
+      author: getDisplayName(member),
+      date: "방금 전",
+      views: 0,
+      createdAt: new Date().toISOString(),
+    });
+    partnerWriteForm.reset();
+    partnerWriteForm.hidden = true;
+    if (partnerWriteMessage) partnerWriteMessage.textContent = "";
+    activePartnerPostId = "";
+    partnerCurrentPage = 1;
+    updatePartnerPosts();
   });
 }
 
@@ -2693,6 +3044,7 @@ updateGrid();
 renderFavorites();
 renderMyIngredients();
 updateCommunityPosts();
+updatePartnerPosts();
 loadNewsCards();
 renderMessagesPage();
 renderAdminPage();
