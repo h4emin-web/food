@@ -1963,24 +1963,18 @@ if (communityWriteForm) {
 if (suggestionForm) {
   suggestionForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const name = suggestionForm.querySelector("#suggestionName").value.trim();
-    const email = suggestionForm.querySelector("#suggestionEmail").value.trim();
-    const subject = suggestionForm.querySelector("#suggestionSubject").value.trim();
     const body = suggestionForm.querySelector("#suggestionBody").value.trim();
 
-    if (!name || !subject || !body) return;
+    if (!body) return;
 
     const mailBody = [
-      `작성자: ${name}`,
-      email ? `답변 이메일: ${email}` : "",
-      "",
       body,
       "",
       `보낸 페이지: ${window.location.href}`,
     ]
       .filter((line) => line !== "")
       .join("\n");
-    const mailto = `mailto:foden_@naver.com?subject=${encodeURIComponent(`[푸드소스 건의사항] ${subject}`)}&body=${encodeURIComponent(mailBody)}`;
+    const mailto = `mailto:foden_@naver.com?subject=${encodeURIComponent("[푸드소스 건의사항]")}&body=${encodeURIComponent(mailBody)}`;
 
     if (suggestionMessage) {
       suggestionMessage.textContent = "메일 앱을 열고 있습니다. 메일 앱에서 전송 버튼을 눌러주세요.";
