@@ -488,9 +488,9 @@ img {
 
 .ingredient-card {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(260px, 1.2fr) minmax(96px, auto) minmax(110px, auto) 44px;
+  grid-template-columns: minmax(220px, 1fr) minmax(130px, 0.55fr) minmax(120px, 0.45fr) minmax(170px, auto) 44px;
   grid-template-areas:
-    "name desc actions actions favorite"
+    "name desc desc actions favorite"
     "type manufacturer origin lead lead";
   column-gap: 24px;
   row-gap: 8px;
