@@ -149,7 +149,32 @@
                 <i data-lucide="search"></i>
                 <input id="communitySearch" type="search" placeholder="원료 문의 검색" />
               </label>
+              <button class="primary-button community-write-button" type="button" id="communityWriteButton">
+                <i data-lucide="square-pen"></i>
+                문의 등록
+              </button>
             </div>
+            <form class="community-write-form" id="communityWriteForm" hidden>
+              <div class="form-grid">
+                <label>
+                  <span>문의 제목</span>
+                  <input id="communityPostTitle" type="text" placeholder="예: 알룰로스 원료 문의" required />
+                </label>
+                <label>
+                  <span>작성자</span>
+                  <input id="communityPostAuthor" type="text" placeholder="닉네임" readonly required />
+                </label>
+              </div>
+              <label>
+                <span>문의 내용</span>
+                <textarea id="communityPostDesc" placeholder="필요한 원료명, 규격, 용도, 희망 수량 등을 입력하세요" required></textarea>
+              </label>
+              <div class="form-actions">
+                <button class="outline-button" type="button" id="communityWriteCancel">취소</button>
+                <button class="primary-button" type="submit">등록하기</button>
+              </div>
+              <p class="form-message" id="communityWriteMessage" aria-live="polite"></p>
+            </form>
             <div class="community-list" id="communityList" aria-live="polite"></div>
           </div>
         </div>

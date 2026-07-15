@@ -211,6 +211,13 @@ const filterInputs = [...document.querySelectorAll(".filter-panel input")];
 const resetButton = document.querySelector("#resetFilters");
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
+const communityWriteButton = document.querySelector("#communityWriteButton");
+const communityWriteForm = document.querySelector("#communityWriteForm");
+const communityWriteCancel = document.querySelector("#communityWriteCancel");
+const communityWriteMessage = document.querySelector("#communityWriteMessage");
+const communityPostTitle = document.querySelector("#communityPostTitle");
+const communityPostAuthor = document.querySelector("#communityPostAuthor");
+const communityPostDesc = document.querySelector("#communityPostDesc");
 const newsGrid = document.querySelector("#newsGrid");
 const newsPrevButton = document.querySelector("[data-news-prev]");
 const newsNextButton = document.querySelector("[data-news-next]");
@@ -657,6 +664,26 @@ function setMessages(items, member = getCurrentMember()) {
 function saveMessageToCurrentUser(message) {
   const messages = getMessages();
   setMessages([message, ...messages]);
+}
+
+function getCommunityPostKey() {
+  return "foodsourceCommunityPosts";
+}
+
+function getSavedCommunityPosts() {
+  try {
+    return JSON.parse(localStorage.getItem(getCommunityPostKey())) || [];
+  } catch {
+    return [];
+  }
+}
+
+function setSavedCommunityPosts(items) {
+  localStorage.setItem(getCommunityPostKey(), JSON.stringify(items));
+}
+
+function saveCommunityPost(post) {
+  setSavedCommunityPosts([post, ...getSavedCommunityPosts()]);
 }
 
 function hasUnreadMessages() {
@@ -1411,7 +1438,7 @@ function updateCommunityPosts() {
   if (!communitySearch) return;
 
   const query = communitySearch.value.trim().toLowerCase();
-  const posts = communityPosts.filter((post) => {
+  const posts = getVisibleCommunityPosts().filter((post) => {
     return (
       !query ||
       post.title.toLowerCase().includes(query) ||
@@ -1421,6 +1448,10 @@ function updateCommunityPosts() {
   });
 
   renderCommunityPosts(posts);
+}
+
+function getVisibleCommunityPosts() {
+  return [...getSavedCommunityPosts(), ...communityPosts];
 }
 
 if (grid && searchInput) {
@@ -1533,6 +1564,62 @@ if (communityList && communitySearch) {
   });
 
   communitySearch.addEventListener("input", updateCommunityPosts);
+}
+
+if (communityWriteButton && communityWriteForm) {
+  communityWriteButton.addEventListener("click", () => {
+    const member = getCurrentMember();
+    if (!member) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    communityWriteForm.hidden = !communityWriteForm.hidden;
+    communityPostAuthor.value = getDisplayName(member);
+    if (!communityWriteForm.hidden) {
+      communityPostTitle.focus();
+    }
+  });
+}
+
+if (communityWriteCancel && communityWriteForm) {
+  communityWriteCancel.addEventListener("click", () => {
+    communityWriteForm.reset();
+    communityWriteForm.hidden = true;
+    if (communityWriteMessage) communityWriteMessage.textContent = "";
+  });
+}
+
+if (communityWriteForm) {
+  communityWriteForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const member = getCurrentMember();
+    if (!member) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const title = communityPostTitle.value.trim();
+    const desc = communityPostDesc.value.trim();
+    if (!title || !desc) return;
+
+    saveCommunityPost({
+      id: `community-${Date.now()}`,
+      category: "원료 문의",
+      title,
+      desc,
+      author: getDisplayName(member),
+      date: "방금 전",
+      comments: 0,
+      views: 0,
+      createdAt: new Date().toISOString(),
+    });
+    communityWriteForm.reset();
+    communityWriteForm.hidden = true;
+    if (communityWriteMessage) communityWriteMessage.textContent = "";
+    activeCommunityPostId = "";
+    updateCommunityPosts();
+  });
 }
 
 if (newsPrevButton) {
@@ -2009,7 +2096,7 @@ if (searchInput) {
 updateGrid();
 renderFavorites();
 renderMyIngredients();
-renderCommunityPosts(communityPosts);
+updateCommunityPosts();
 loadNewsCards();
 renderMessagesPage();
 renderAdminPage();
