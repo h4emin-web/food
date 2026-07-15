@@ -350,6 +350,10 @@ function getSampleRequestButton(item) {
     : "";
 }
 
+function getInquirySubjectText(inquiryType) {
+  return inquiryType === "견적 문의" ? "견적 문의가" : `${inquiryType}이`;
+}
+
 function getPaginationState(items, currentPage, pageSize) {
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const page = Math.min(Math.max(1, currentPage), totalPages);
@@ -1262,7 +1266,7 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
     ingredientId,
   });
   updateAuthLinks();
-  alert(`${inquiryType}이 쪽지로 전달되었습니다.`);
+  alert(`${getInquirySubjectText(inquiryType)} 쪽지로 전달되었습니다.`);
 }
 
 function groupMessagesByPartner(messages) {
