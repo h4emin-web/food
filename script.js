@@ -266,6 +266,7 @@ const logoutLinks = [...document.querySelectorAll("[data-logout-link]")];
 const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
 const guestOnlyLinks = [...document.querySelectorAll(".guest-only")];
 const adminOnlyLinks = [...document.querySelectorAll(".admin-only-link")];
+const myIngredientsLinks = [...document.querySelectorAll(".my-ingredients-link")];
 let activeIngredientId = "";
 let activeCommunityPostId = "";
 let activeRegisteredIngredientId = "";
@@ -848,8 +849,12 @@ function logoutCurrentMember() {
 
 function updateAuthLinks() {
   const member = getCurrentMember();
+  const hasMyIngredients = member ? getRegisteredIngredients().length > 0 : false;
   authOnlyLinks.forEach((link) => {
     link.hidden = !member;
+  });
+  myIngredientsLinks.forEach((link) => {
+    link.hidden = !hasMyIngredients;
   });
   guestOnlyLinks.forEach((link) => {
     link.hidden = Boolean(member);
@@ -2143,6 +2148,7 @@ if (ingredientRegisterForm) {
     }
 
     saveRegisteredIngredient(item);
+    updateAuthLinks();
     ingredientRegisterForm.reset();
     setRegisterMessage("원료가 등록되었습니다. 원료찾기와 마이페이지에서 확인할 수 있습니다.", "success");
     window.setTimeout(updateRegisterPreview, 0);
@@ -2419,6 +2425,7 @@ if (mypageForm) {
       if (!activeRegisteredIngredientId) return;
       deleteRegisteredIngredient(activeRegisteredIngredientId);
       activeRegisteredIngredientId = "";
+      updateAuthLinks();
       renderMyIngredients();
       renderMyIngredientDetail();
     });
