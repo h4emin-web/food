@@ -668,6 +668,21 @@ function saveMessageToCurrentUser(message) {
   setMessages([message, ...messages]);
 }
 
+function saveMessageToMember(member, message) {
+  const messages = getMessages(member);
+  setMessages([message, ...messages], member);
+}
+
+function findMessageRecipient(partnerName) {
+  const target = (partnerName || "").trim().toLowerCase();
+  if (!target) return null;
+  return getMembers().find((member) => {
+    return [member.nickname, member.name, member.email]
+      .filter(Boolean)
+      .some((value) => String(value).trim().toLowerCase() === target);
+  });
+}
+
 function getCommunityPostKey() {
   return "foodsourceCommunityPosts";
 }
@@ -919,24 +934,31 @@ function createMessageThread(partnerName, text) {
   if (!member) return;
 
   const createdAt = new Date().toISOString();
+  const recipient = findMessageRecipient(partnerName);
+  const recipientLabel = recipient ? getDisplayName(recipient) : partnerName;
+  const senderLabel = getDisplayName(member);
+
   saveMessageToCurrentUser({
     id: `sent-${Date.now()}`,
-    partner: partnerName,
-    sender: getDisplayName(member),
+    partner: recipientLabel,
+    sender: senderLabel,
     body: text.trim(),
     direction: "sent",
     read: true,
     createdAt,
   });
-  saveMessageToCurrentUser({
-    id: `received-demo-${Date.now()}`,
-    partner: partnerName,
-    sender: partnerName,
-    body: "쪽지를 보냈습니다. 메시지함에서 대화를 이어갈 수 있습니다.",
-    direction: "received",
-    read: false,
-    createdAt,
-  });
+
+  if (recipient) {
+    saveMessageToMember(recipient, {
+      id: `received-${Date.now()}`,
+      partner: senderLabel,
+      sender: senderLabel,
+      body: text.trim(),
+      direction: "received",
+      read: false,
+      createdAt,
+    });
+  }
   updateAuthLinks();
 }
 
