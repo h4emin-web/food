@@ -774,6 +774,12 @@ img {
   text-underline-offset: 3px;
 }
 
+.private-manufacturer-note {
+  color: #8a93a3;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .detail-actions {
   display: flex;
   gap: 8px;
@@ -1740,6 +1746,75 @@ img {
   min-width: 0;
 }
 
+.manufacturer-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  gap: 12px;
+  align-items: end;
+  min-width: 0;
+}
+
+.manufacturer-field.compact {
+  grid-template-columns: 1fr;
+}
+
+.visibility-choice {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.visibility-choice legend {
+  grid-column: 1 / -1;
+  color: #384252;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.visibility-choice label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.visibility-choice input {
+  position: absolute;
+  width: 1px;
+  min-height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+}
+
+.visibility-choice label:has(input:checked) {
+  border-color: #111827;
+  box-shadow: inset 0 0 0 1px #111827;
+}
+
+.visibility-choice label span {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.visibility-choice p {
+  grid-column: 1 / -1;
+  margin: -2px 0 0;
+  color: #8a93a3;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .register-form label span,
 .signup-form label span {
   color: #384252;
@@ -2428,6 +2503,10 @@ img {
   }
 
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .manufacturer-field {
     grid-template-columns: 1fr;
   }
 

@@ -444,6 +444,10 @@ function getIngredientDetailMarkup(item) {
   const supplier = item.supplier || {};
   const website = supplier.website || "";
   const email = supplier.email || "확인 필요";
+  const manufacturerVisibility = item.manufacturerVisibility || "public";
+  const isManufacturerPublic = manufacturerVisibility !== "private";
+  const manufacturerText = isManufacturerPublic ? item.manufacturer || "확인 필요" : "비공개";
+  const manufacturerNote = isManufacturerPublic ? "" : '<small class="private-manufacturer-note">비공개 시 제조국만 노출됩니다.</small>';
 
   return `
     <section class="ingredient-detail" data-detail-ingredient-id="${item.id}" aria-label="${item.name} 상세">
@@ -458,6 +462,15 @@ function getIngredientDetailMarkup(item) {
         </div>
         <p>${item.desc}</p>
         <div class="supplier-detail-grid">
+          <div>
+            <span>제조국</span>
+            <strong>${item.origin || "확인 필요"}</strong>
+          </div>
+          <div>
+            <span>제조사</span>
+            <strong>${manufacturerText}</strong>
+            ${manufacturerNote}
+          </div>
           <div>
             <span>공급사</span>
             <strong>${supplier.name || "확인 필요"}</strong>
@@ -524,15 +537,62 @@ function updateGrid() {
   renderCards(getFilteredItems());
 }
 
+function getCountryFlagCode(origin) {
+  const normalized = (origin || "").trim().toLowerCase();
+  const countryMap = {
+    "국내": "kr",
+    "한국": "kr",
+    "대한민국": "kr",
+    "korea": "kr",
+    "south korea": "kr",
+    "캐나다": "ca",
+    "canada": "ca",
+    "미국": "us",
+    "usa": "us",
+    "united states": "us",
+    "프랑스": "fr",
+    "france": "fr",
+    "네덜란드": "nl",
+    "netherlands": "nl",
+    "핀란드": "fi",
+    "finland": "fi",
+    "중국": "cn",
+    "china": "cn",
+    "일본": "jp",
+    "japan": "jp",
+    "독일": "de",
+    "germany": "de",
+    "이탈리아": "it",
+    "italy": "it",
+    "스페인": "es",
+    "spain": "es",
+    "호주": "au",
+    "australia": "au",
+    "뉴질랜드": "nz",
+    "new zealand": "nz",
+    "태국": "th",
+    "thailand": "th",
+    "베트남": "vn",
+    "vietnam": "vn",
+    "인도": "in",
+    "india": "in",
+  };
+  return countryMap[normalized] || "";
+}
+
 function normalizeRegisteredIngredient(item) {
   const tags = [item.category, item.cert, item.sample, item.response, item.use].filter(Boolean);
+  const origin = item.origin || "확인 필요";
   return {
     id: item.id,
     name: item.name,
     englishName: item.englishName || "English Name",
     desc: item.desc || `${item.name} 등록 원료입니다. 상세 정보는 등록 회원에게 문의하세요.`,
     type: item.category || "등록 원료",
-    origin: "확인 필요",
+    origin,
+    originFlagCode: item.originFlagCode || getCountryFlagCode(origin),
+    manufacturer: item.manufacturer || "",
+    manufacturerVisibility: item.manufacturerVisibility || "public",
     tags: tags.length ? tags : [item.category || "등록 원료"],
     supplier: {
       name: item.company || item.ownerName || "등록 회원",
@@ -865,7 +925,9 @@ function getFilteredRegisteredIngredients() {
     return (
       item.name.toLowerCase().includes(query) ||
       (item.englishName || "").toLowerCase().includes(query) ||
-      (item.category || "").toLowerCase().includes(query)
+      (item.category || "").toLowerCase().includes(query) ||
+      (item.origin || "").toLowerCase().includes(query) ||
+      (item.manufacturer || "").toLowerCase().includes(query)
     );
   });
 }
@@ -1014,7 +1076,10 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
   const createdAt = new Date().toISOString();
   const senderLabel = getDisplayName(member);
   const recipientLabel = getDisplayName(recipient);
-  const maker = supplier.name || "제조사 확인 필요";
+  const maker =
+    ingredient.manufacturerVisibility === "private"
+      ? `${ingredient.origin || "제조국 확인 필요"} 제조사 비공개`
+      : ingredient.manufacturer || supplier.name || "제조사 확인 필요";
   const body = [
     `${inquiryType}이 들어왔습니다.`,
     `원료: ${ingredient.name} (${ingredient.englishName})`,
@@ -1866,6 +1931,9 @@ if (ingredientRegisterForm) {
   const registerFields = {
     name: document.querySelector("#registerName"),
     englishName: document.querySelector("#registerEnglishName"),
+    origin: document.querySelector("#registerOrigin"),
+    manufacturer: document.querySelector("#registerManufacturer"),
+    manufacturerVisibility: document.querySelectorAll("[name='registerManufacturerVisibility']"),
     category: document.querySelector("#registerCategory"),
     use: document.querySelector("#registerUse"),
     cert: document.querySelector("#registerCert"),
@@ -1895,9 +1963,19 @@ if (ingredientRegisterForm) {
     return selected && selected.value ? selected.textContent.trim() : "";
   }
 
+  function getSelectedManufacturerVisibility() {
+    return (
+      Array.from(registerFields.manufacturerVisibility).find((input) => input.checked)?.value ||
+      "public"
+    );
+  }
+
   function updateRegisterPreview() {
     const name = registerFields.name.value.trim();
     const englishName = registerFields.englishName.value.trim();
+    const origin = registerFields.origin.value.trim();
+    const manufacturer = registerFields.manufacturer.value.trim();
+    const manufacturerVisibility = getSelectedManufacturerVisibility();
     const category = getSelectedRegisterCategory();
     const use = registerFields.use.value.trim();
     const cert = registerFields.cert.value.trim();
@@ -1905,7 +1983,8 @@ if (ingredientRegisterForm) {
     const sample = registerFields.sample.value.trim();
     const response = registerFields.response.value.trim();
     const desc = registerFields.desc.value.trim();
-    const tags = [cert, moq, sample, response, use].filter(Boolean).slice(0, 4);
+    const visibleManufacturer = manufacturerVisibility === "private" ? "제조사 비공개" : manufacturer;
+    const tags = [origin, visibleManufacturer, cert, moq, sample, response, use].filter(Boolean).slice(0, 4);
 
     preview.category.textContent = category || "카테고리";
     preview.name.textContent = name || "원료명";
@@ -1930,6 +2009,10 @@ if (ingredientRegisterForm) {
       id: `registered-${Date.now()}`,
       name: registerFields.name.value.trim(),
       englishName: registerFields.englishName.value.trim(),
+      origin: registerFields.origin.value.trim(),
+      originFlagCode: getCountryFlagCode(registerFields.origin.value.trim()),
+      manufacturer: registerFields.manufacturer.value.trim(),
+      manufacturerVisibility: getSelectedManufacturerVisibility(),
       category: getSelectedRegisterCategory(),
       use: registerFields.use.value.trim(),
       cert: registerFields.cert.value.trim(),
@@ -1949,8 +2032,8 @@ if (ingredientRegisterForm) {
       }).format(new Date()),
     };
 
-    if (!item.name || !item.englishName || !item.category) {
-      setRegisterMessage("원료명, 영문명, 카테고리를 입력해주세요.", "error");
+    if (!item.name || !item.englishName || !item.origin || !item.category) {
+      setRegisterMessage("원료명, 영문명, 제조국, 카테고리를 입력해주세요.", "error");
       return;
     }
 
@@ -2057,6 +2140,9 @@ if (mypageForm) {
   const myIngredientFields = {
     name: document.querySelector("#myIngredientName"),
     englishName: document.querySelector("#myIngredientEnglishName"),
+    origin: document.querySelector("#myIngredientOrigin"),
+    manufacturer: document.querySelector("#myIngredientManufacturer"),
+    manufacturerVisibility: document.querySelectorAll("[name='myIngredientManufacturerVisibility']"),
     category: document.querySelector("#myIngredientCategory"),
     use: document.querySelector("#myIngredientUse"),
     cert: document.querySelector("#myIngredientCert"),
@@ -2097,6 +2183,19 @@ if (mypageForm) {
     myIngredientMessage.className = `form-message ${type}`.trim();
   }
 
+  function setMyIngredientManufacturerVisibility(value) {
+    Array.from(myIngredientFields.manufacturerVisibility).forEach((input) => {
+      input.checked = input.value === (value || "public");
+    });
+  }
+
+  function getMyIngredientManufacturerVisibility() {
+    return (
+      Array.from(myIngredientFields.manufacturerVisibility).find((input) => input.checked)?.value ||
+      "public"
+    );
+  }
+
   function renderMyIngredientDetail() {
     if (!myIngredientDetailForm) return;
 
@@ -2110,6 +2209,9 @@ if (mypageForm) {
     myIngredientDetailForm.hidden = false;
     myIngredientFields.name.value = item.name || "";
     myIngredientFields.englishName.value = item.englishName || "";
+    myIngredientFields.origin.value = item.origin || "";
+    myIngredientFields.manufacturer.value = item.manufacturer || "";
+    setMyIngredientManufacturerVisibility(item.manufacturerVisibility || "public");
     myIngredientFields.category.value = item.category || "";
     myIngredientFields.use.value = item.use || "";
     myIngredientFields.cert.value = item.cert || "";
@@ -2181,6 +2283,10 @@ if (mypageForm) {
       const item = {
         name: myIngredientFields.name.value.trim(),
         englishName: myIngredientFields.englishName.value.trim(),
+        origin: myIngredientFields.origin.value.trim(),
+        originFlagCode: getCountryFlagCode(myIngredientFields.origin.value.trim()),
+        manufacturer: myIngredientFields.manufacturer.value.trim(),
+        manufacturerVisibility: getMyIngredientManufacturerVisibility(),
         category: myIngredientFields.category.value.trim(),
         use: myIngredientFields.use.value.trim(),
         cert: myIngredientFields.cert.value.trim(),
@@ -2191,8 +2297,8 @@ if (mypageForm) {
         updatedAt: new Date().toISOString(),
       };
 
-      if (!item.name || !item.englishName || !item.category) {
-        setMyIngredientMessage("원료명, 영문명, 카테고리를 입력해주세요.", "error");
+      if (!item.name || !item.englishName || !item.origin || !item.category) {
+        setMyIngredientMessage("원료명, 영문명, 제조국, 카테고리를 입력해주세요.", "error");
         return;
       }
 

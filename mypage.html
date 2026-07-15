@@ -224,6 +224,28 @@
                 <input id="myIngredientEnglishName" type="text" required />
               </label>
               <label>
+                <span>제조국</span>
+                <input id="myIngredientOrigin" type="text" required />
+              </label>
+              <div class="manufacturer-field compact">
+                <label>
+                  <span>제조사</span>
+                  <input id="myIngredientManufacturer" type="text" />
+                </label>
+                <fieldset class="visibility-choice">
+                  <legend>제조사 공개 여부</legend>
+                  <label>
+                    <input type="radio" name="myIngredientManufacturerVisibility" value="public" />
+                    <span>공개</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="myIngredientManufacturerVisibility" value="private" />
+                    <span>비공개</span>
+                  </label>
+                  <p>비공개 시 제조국만 노출됩니다.</p>
+                </fieldset>
+              </div>
+              <label>
                 <span>카테고리</span>
                 <select id="myIngredientCategory" required>
                   <option value="">선택</option>
