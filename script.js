@@ -445,9 +445,15 @@ function getIngredientDetailMarkup(item) {
   const website = supplier.website || "";
   const email = supplier.email || "확인 필요";
   const manufacturerVisibility = item.manufacturerVisibility || "public";
-  const isManufacturerPublic = manufacturerVisibility !== "private";
+  const canViewManufacturer = manufacturerVisibility !== "private" || isAdminMember();
+  const isPrivateForAdmin = manufacturerVisibility === "private" && isAdminMember();
+  const isManufacturerPublic = canViewManufacturer;
   const manufacturerText = isManufacturerPublic ? item.manufacturer || "확인 필요" : "비공개";
-  const manufacturerNote = isManufacturerPublic ? "" : '<small class="private-manufacturer-note">비공개 시 제조국만 노출됩니다.</small>';
+  const manufacturerNote = isPrivateForAdmin
+    ? '<small class="private-manufacturer-note">관리자에게만 표시됩니다.</small>'
+    : isManufacturerPublic
+      ? ""
+      : '<small class="private-manufacturer-note">비공개 시 제조국만 노출됩니다.</small>';
 
   return `
     <section class="ingredient-detail" data-detail-ingredient-id="${item.id}" aria-label="${item.name} 상세">
@@ -1369,13 +1375,17 @@ function renderAdminIngredients() {
   adminIngredientList.innerHTML = ingredients.length
     ? ingredients
         .map(
-          (item) => `
-            <article class="admin-list-row">
-              <strong>${escapeHtml(item.name || "원료명 없음")}</strong>
-              <span>${escapeHtml(item.ownerName)} · ${escapeHtml(item.ownerEmail)}</span>
-              <p>${escapeHtml(item.category || "분류 없음")} / ${escapeHtml(item.englishName || "영문명 없음")}</p>
-            </article>
-          `
+          (item) => {
+            const visibilityLabel = item.manufacturerVisibility === "private" ? "비공개" : "공개";
+            return `
+              <article class="admin-list-row">
+                <strong>${escapeHtml(item.name || "원료명 없음")}</strong>
+                <span>${escapeHtml(item.ownerName)} · ${escapeHtml(item.ownerEmail)}</span>
+                <p>${escapeHtml(item.category || "분류 없음")} / ${escapeHtml(item.englishName || "영문명 없음")}</p>
+                <p>제조국: ${escapeHtml(item.origin || "확인 필요")} / 제조사: ${escapeHtml(item.manufacturer || "확인 필요")} / ${visibilityLabel}</p>
+              </article>
+            `;
+          }
         )
         .join("")
     : '<p class="empty-mini">등록된 원료가 없습니다.</p>';
