@@ -507,6 +507,11 @@ function getIngredientDetailMarkup(item) {
             <strong>${supplier.contact || "확인 필요"}</strong>
           </div>
         </div>
+        <div class="detail-actions">
+          <button class="outline-button" type="button" data-message-recipient="${escapeHtml(supplier.contact || supplier.email || supplier.name || "")}">쪽지 보내기</button>
+          <button class="sample-button" type="button" data-inquiry-type="샘플 요청">샘플 요청</button>
+          <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
+        </div>
       </article>
     </section>
   `;
@@ -1754,14 +1759,22 @@ if (grid && searchInput) {
   });
 
   grid.addEventListener("click", (event) => {
-    if (event.target.closest(".ingredient-detail")) return;
     const inquiryButton = event.target.closest("[data-inquiry-type]");
     if (inquiryButton) {
       event.stopPropagation();
+      const detail = inquiryButton.closest(".ingredient-detail");
       const ingredient = inquiryButton.closest(".ingredient-card");
+      if (detail) sendIngredientInquiry(detail.dataset.detailIngredientId, inquiryButton.dataset.inquiryType);
       if (ingredient) sendIngredientInquiry(ingredient.dataset.ingredientId, inquiryButton.dataset.inquiryType);
       return;
     }
+    const messageRecipientButton = event.target.closest("[data-message-recipient]");
+    if (messageRecipientButton) {
+      event.stopPropagation();
+      openMessageComposer(messageRecipientButton.dataset.messageRecipient);
+      return;
+    }
+    if (event.target.closest(".ingredient-detail")) return;
     const favoriteButton = event.target.closest("[data-favorite-id]");
     if (favoriteButton) {
       event.stopPropagation();
@@ -1797,14 +1810,22 @@ if (grid && searchInput) {
 
 if (favoriteGrid) {
   favoriteGrid.addEventListener("click", (event) => {
-    if (event.target.closest(".ingredient-detail")) return;
     const inquiryButton = event.target.closest("[data-inquiry-type]");
     if (inquiryButton) {
       event.stopPropagation();
+      const detail = inquiryButton.closest(".ingredient-detail");
       const ingredient = inquiryButton.closest(".ingredient-card");
+      if (detail) sendIngredientInquiry(detail.dataset.detailIngredientId, inquiryButton.dataset.inquiryType);
       if (ingredient) sendIngredientInquiry(ingredient.dataset.ingredientId, inquiryButton.dataset.inquiryType);
       return;
     }
+    const messageRecipientButton = event.target.closest("[data-message-recipient]");
+    if (messageRecipientButton) {
+      event.stopPropagation();
+      openMessageComposer(messageRecipientButton.dataset.messageRecipient);
+      return;
+    }
+    if (event.target.closest(".ingredient-detail")) return;
     const favoriteButton = event.target.closest("[data-favorite-id]");
     if (favoriteButton) {
       event.stopPropagation();

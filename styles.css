@@ -792,6 +792,16 @@ img {
   gap: 8px;
 }
 
+.detail-actions button {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+}
+
 .supplier-band,
 .community-section {
   padding: 66px clamp(20px, 5vw, 72px);
@@ -2515,6 +2525,69 @@ img {
 
   .ingredient-grid,
   .supplier-list {
+    grid-template-columns: 1fr;
+  }
+
+  .ingredient-board-head,
+  .ingredient-card {
+    grid-template-columns: minmax(0, 1.35fr) minmax(88px, 0.85fr) minmax(70px, 0.55fr);
+    gap: 8px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .ingredient-board-head span:nth-child(2),
+  .ingredient-board-head span:nth-child(3),
+  .ingredient-board-head span:nth-child(6),
+  .ingredient-board-head span:nth-child(7),
+  .ingredient-card .ingredient-type,
+  .ingredient-card .ingredient-desc,
+  .ingredient-card > .card-actions,
+  .ingredient-card > .favorite-button {
+    display: none;
+  }
+
+  .ingredient-board-head span:nth-child(4),
+  .ingredient-board-head span:nth-child(5) {
+    display: inline;
+  }
+
+  .ingredient-card {
+    min-height: 66px;
+  }
+
+  .ingredient-name h3 {
+    display: -webkit-box;
+    font-size: 15px;
+    white-space: normal;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .ingredient-name h3 span {
+    display: none;
+  }
+
+  .ingredient-manufacturer,
+  .ingredient-origin {
+    overflow: hidden;
+    font-size: 13px;
+    text-overflow: ellipsis;
+  }
+
+  .ingredient-origin {
+    justify-content: flex-start;
+    gap: 5px;
+  }
+
+  .origin-flag {
+    width: 20px;
+    height: 14px;
+    flex: 0 0 auto;
+  }
+
+  .detail-actions {
+    display: grid;
     grid-template-columns: 1fr;
   }
 
