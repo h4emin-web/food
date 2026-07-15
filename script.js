@@ -321,6 +321,18 @@ function getIngredientManufacturerText(item) {
   return item.manufacturer || supplier.name || "확인 필요";
 }
 
+function canRequestSample(item) {
+  const sample = String(item.sample || "").trim();
+  const response = String(item.response || "").trim();
+  return sample !== "불가" && response !== "견적 문의 가능";
+}
+
+function getSampleRequestButton(item) {
+  return canRequestSample(item)
+    ? '<button class="sample-button" type="button" data-inquiry-type="샘플 요청">샘플 요청</button>'
+    : "";
+}
+
 function renderCards(items) {
   if (!grid) return;
 
@@ -348,7 +360,7 @@ function renderCards(items) {
             }
           </span>
           <div class="card-actions">
-            <button class="sample-button" type="button" data-inquiry-type="샘플 요청">샘플 요청</button>
+            ${getSampleRequestButton(item)}
             <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
           </div>
           <button
@@ -398,7 +410,7 @@ function getIngredientCardMarkup(item) {
         }
       </span>
       <div class="card-actions">
-        <button class="sample-button" type="button" data-inquiry-type="샘플 요청">샘플 요청</button>
+        ${getSampleRequestButton(item)}
         <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
       </div>
       <button
@@ -505,7 +517,7 @@ function getIngredientDetailMarkup(item) {
         </div>
         <div class="detail-actions">
           <button class="outline-button" type="button" data-message-recipient="${escapeHtml(supplier.contact || supplier.email || supplier.name || "")}">쪽지 보내기</button>
-          <button class="sample-button" type="button" data-inquiry-type="샘플 요청">샘플 요청</button>
+          ${getSampleRequestButton(item)}
           <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
         </div>
       </article>
@@ -613,6 +625,8 @@ function normalizeRegisteredIngredient(item) {
     originFlagCode: item.originFlagCode || getCountryFlagCode(origin),
     manufacturer: item.manufacturer || "",
     manufacturerVisibility: item.manufacturerVisibility || "public",
+    sample: item.sample || "",
+    response: item.response || "",
     tags: tags.length ? tags : [item.category || "등록 원료"],
     supplier: {
       name: item.company || item.ownerName || "등록 회원",
