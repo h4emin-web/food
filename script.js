@@ -599,7 +599,18 @@ function saveMessageToCurrentUser(message) {
 }
 
 function hasUnreadMessages() {
-  return getMessages().some((message) => !message.read && message.direction === "received");
+  return getUnreadMessageCount() > 0;
+}
+
+function getUnreadMessageCount() {
+  return getMessages().filter((message) => !message.read && message.direction === "received").length;
+}
+
+function markAllReceivedMessagesRead() {
+  const messages = getMessages();
+  if (!messages.some((message) => !message.read && message.direction === "received")) return;
+  setMessages(messages.map((message) => (message.direction === "received" ? { ...message, read: true } : message)));
+  updateAuthLinks();
 }
 
 function updateStoredMember(member) {
@@ -644,8 +655,16 @@ function updateAuthLinks() {
   });
 
   messageAlarmButtons.forEach((button) => {
+    const unreadCount = member ? getUnreadMessageCount() : 0;
     button.hidden = !member;
-    button.classList.toggle("has-unread", Boolean(member) && hasUnreadMessages());
+    button.classList.toggle("has-unread", unreadCount > 0);
+    if (unreadCount > 0) {
+      button.dataset.unreadCount = unreadCount > 99 ? "99+" : String(unreadCount);
+      button.setAttribute("aria-label", `받은 쪽지 ${unreadCount}개`);
+    } else {
+      delete button.dataset.unreadCount;
+      button.setAttribute("aria-label", "받은 쪽지");
+    }
   });
 }
 function updateRegisterAccess() {
@@ -1462,6 +1481,12 @@ if (newsPrevButton) {
 if (newsNextButton) {
   newsNextButton.addEventListener("click", () => scrollNewsCarousel(1));
 }
+
+messageAlarmButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    markAllReceivedMessagesRead();
+  });
+});
 
 if (messageThreadList) {
   messageThreadList.addEventListener("click", (event) => {

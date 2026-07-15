@@ -177,6 +177,7 @@ img {
 }
 
 .icon-button {
+  position: relative;
   display: grid;
   width: 40px;
   height: 40px;
@@ -189,6 +190,26 @@ img {
 .message-bell.has-unread {
   color: #2563eb;
   animation: message-alert 1s ease-in-out infinite;
+}
+
+.message-bell[data-unread-count]::after {
+  content: attr(data-unread-count);
+  position: absolute;
+  right: 1px;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 @keyframes message-alert {
