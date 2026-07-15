@@ -2062,6 +2062,7 @@ if (ingredientRegisterForm) {
   const registerFields = {
     name: document.querySelector("#registerName"),
     englishName: document.querySelector("#registerEnglishName"),
+    company: document.querySelector("#registerCompany"),
     origin: document.querySelector("#registerOrigin"),
     manufacturer: document.querySelector("#registerManufacturer"),
     manufacturerVisibility: document.querySelectorAll("[name='registerManufacturerVisibility']"),
@@ -2102,6 +2103,10 @@ if (ingredientRegisterForm) {
   }
 
   function updateRegisterPreview() {
+    const member = getCurrentMember();
+    if (registerFields.company) {
+      registerFields.company.value = member?.company || "";
+    }
     const name = registerFields.name.value.trim();
     const englishName = registerFields.englishName.value.trim();
     const origin = registerFields.origin.value.trim();
@@ -2115,7 +2120,9 @@ if (ingredientRegisterForm) {
     const response = registerFields.response.value.trim();
     const desc = registerFields.desc.value.trim();
     const visibleManufacturer = manufacturerVisibility === "private" ? "제조사 비공개" : manufacturer;
-    const tags = [origin, visibleManufacturer, cert, moq, sample, response, use].filter(Boolean).slice(0, 4);
+    const tags = [registerFields.company?.value, origin, visibleManufacturer, cert, moq, sample, response, use]
+      .filter(Boolean)
+      .slice(0, 4);
 
     preview.category.textContent = category || "카테고리";
     preview.name.textContent = name || "원료명";
@@ -2136,6 +2143,7 @@ if (ingredientRegisterForm) {
     event.preventDefault();
     updateRegisterPreview();
     const member = getCurrentMember();
+    const companyName = member?.company || "";
     const item = {
       id: `registered-${Date.now()}`,
       name: registerFields.name.value.trim(),
@@ -2151,7 +2159,7 @@ if (ingredientRegisterForm) {
       sample: registerFields.sample.value.trim(),
       response: registerFields.response.value.trim(),
       desc: registerFields.desc.value.trim(),
-      company: member?.company || "",
+      company: companyName,
       companyWebsite: member?.companyWebsite || "",
       ownerName: getDisplayName(member),
       ownerEmail: member?.email || "",
@@ -2163,8 +2171,8 @@ if (ingredientRegisterForm) {
       }).format(new Date()),
     };
 
-    if (!item.name || !item.englishName || !item.origin || !item.category) {
-      setRegisterMessage("원료명, 영문명, 제조국, 카테고리를 입력해주세요.", "error");
+    if (!item.name || !item.englishName || !item.origin || !item.category || !item.company) {
+      setRegisterMessage("원료명, 영문명, 제조국, 카테고리와 내정보의 회사명이 필요합니다.", "error");
       return;
     }
 

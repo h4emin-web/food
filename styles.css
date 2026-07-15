@@ -1864,6 +1864,13 @@ img {
   border-color: #111;
 }
 
+.register-form input[readonly],
+.signup-form input[readonly] {
+  background: #f8fafc;
+  color: #4b5563;
+  cursor: default;
+}
+
 .register-form textarea,
 .signup-form textarea {
   min-height: 120px;
