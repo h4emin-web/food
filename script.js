@@ -312,6 +312,14 @@ function toggleFavoriteIngredient(ingredientId) {
   renderFavorites();
 }
 
+function getIngredientManufacturerText(item) {
+  const supplier = item.supplier || {};
+  if (item.manufacturerVisibility === "private" && !isAdminMember()) {
+    return "비공개";
+  }
+  return item.manufacturer || supplier.name || "확인 필요";
+}
+
 function renderCards(items) {
   if (!grid) return;
 
@@ -327,8 +335,9 @@ function renderCards(items) {
           <div class="ingredient-name">
             <h3>${item.name} <span>(${item.englishName})</span></h3>
           </div>
-          <p class="ingredient-desc">${item.desc}</p>
           <span class="ingredient-type">${item.type || "원료"}</span>
+          <p class="ingredient-desc">${item.desc}</p>
+          <span class="ingredient-manufacturer">${getIngredientManufacturerText(item)}</span>
           <span class="ingredient-origin">
             ${item.origin || "확인 필요"}
             ${
@@ -359,8 +368,9 @@ function renderCards(items) {
     `
       <div class="ingredient-board-head" aria-hidden="true">
         <span>원료명</span>
-        <span>설명</span>
         <span>분류</span>
+        <span>설명</span>
+        <span>제조사</span>
         <span>원산지</span>
         <span>문의</span>
         <span>즐겨찾기</span>
@@ -375,8 +385,9 @@ function getIngredientCardMarkup(item) {
       <div class="ingredient-name">
         <h3>${item.name} <span>(${item.englishName})</span></h3>
       </div>
-      <p class="ingredient-desc">${item.desc}</p>
       <span class="ingredient-type">${item.type || "원료"}</span>
+      <p class="ingredient-desc">${item.desc}</p>
+      <span class="ingredient-manufacturer">${getIngredientManufacturerText(item)}</span>
       <span class="ingredient-origin">
         ${item.origin || "확인 필요"}
         ${
@@ -412,8 +423,9 @@ function renderIngredientBoard(target, items, emptyMessage) {
   target.innerHTML = `
     <div class="ingredient-board-head" aria-hidden="true">
       <span>원료명</span>
-      <span>설명</span>
       <span>분류</span>
+      <span>설명</span>
+      <span>제조사</span>
       <span>원산지</span>
       <span>문의</span>
       <span>즐겨찾기</span>

@@ -472,7 +472,7 @@ img {
 .ingredient-board-head,
 .ingredient-card {
   display: grid;
-  grid-template-columns: minmax(220px, 1.18fr) minmax(210px, 1fr) 92px 88px 160px 70px;
+  grid-template-columns: minmax(210px, 1.14fr) 90px minmax(200px, 1fr) minmax(130px, 0.68fr) 96px 160px 70px;
   gap: 12px;
   align-items: center;
   width: 100%;
@@ -588,11 +588,18 @@ img {
 }
 
 .ingredient-origin,
+.ingredient-manufacturer,
 .ingredient-type {
   color: #111827;
   font-size: 14px;
   font-weight: 800;
   white-space: nowrap;
+}
+
+.ingredient-manufacturer {
+  overflow: hidden;
+  color: #374151;
+  text-overflow: ellipsis;
 }
 
 .ingredient-origin {
