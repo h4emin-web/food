@@ -337,8 +337,8 @@ function renderCards(items) {
             }
           </span>
           <div class="card-actions">
-            <button class="sample-button" type="button">샘플 요청</button>
-            <button class="quote-button" type="button">견적 문의</button>
+            <button class="sample-button" type="button" data-inquiry-type="샘플 요청">샘플 요청</button>
+            <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
           </div>
           <button
             class="favorite-button ${isFavoriteIngredient(item.id) ? "active" : ""}"
@@ -385,8 +385,8 @@ function getIngredientCardMarkup(item) {
         }
       </span>
       <div class="card-actions">
-        <button class="sample-button" type="button">샘플 요청</button>
-        <button class="quote-button" type="button">견적 문의</button>
+        <button class="sample-button" type="button" data-inquiry-type="샘플 요청">샘플 요청</button>
+        <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
       </div>
       <button
         class="favorite-button ${isFavoriteIngredient(item.id) ? "active" : ""}"
@@ -547,6 +547,10 @@ function getVisibleIngredients() {
   return [...getAllRegisteredIngredientsByMember().map(normalizeRegisteredIngredient), ...ingredients];
 }
 
+function getVisibleIngredientById(id) {
+  return getVisibleIngredients().find((item) => item.id === id);
+}
+
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, (char) => {
     const entities = {
@@ -663,6 +667,27 @@ function setMessages(items, member = getCurrentMember()) {
   localStorage.setItem(key, JSON.stringify(items));
 }
 
+function getDismissedMessageAlertKey(member = getCurrentMember()) {
+  const key = getMemberKey(member);
+  return key ? `foodsourceDismissedMessageAlerts:${key}` : "";
+}
+
+function getDismissedMessageAlertIds() {
+  const key = getDismissedMessageAlertKey();
+  if (!key) return [];
+  try {
+    return JSON.parse(localStorage.getItem(key)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function setDismissedMessageAlertIds(ids) {
+  const key = getDismissedMessageAlertKey();
+  if (!key) return;
+  localStorage.setItem(key, JSON.stringify(ids));
+}
+
 function saveMessageToCurrentUser(message) {
   const messages = getMessages();
   setMessages([message, ...messages]);
@@ -707,14 +732,19 @@ function hasUnreadMessages() {
   return getUnreadMessageCount() > 0;
 }
 
-function getUnreadMessageCount() {
-  return getMessages().filter((message) => !message.read && message.direction === "received").length;
+function getUnreadReceivedMessages() {
+  return getMessages().filter((message) => !message.read && message.direction === "received");
 }
 
-function markAllReceivedMessagesRead() {
-  const messages = getMessages();
-  if (!messages.some((message) => !message.read && message.direction === "received")) return;
-  setMessages(messages.map((message) => (message.direction === "received" ? { ...message, read: true } : message)));
+function getUnreadMessageCount() {
+  const dismissed = new Set(getDismissedMessageAlertIds());
+  return getUnreadReceivedMessages().filter((message) => !dismissed.has(message.id)).length;
+}
+
+function markMessageBellSeen() {
+  const unreadIds = getUnreadReceivedMessages().map((message) => message.id);
+  if (!unreadIds.length) return;
+  setDismissedMessageAlertIds([...new Set([...getDismissedMessageAlertIds(), ...unreadIds])]);
   updateAuthLinks();
 }
 
@@ -962,6 +992,59 @@ function createMessageThread(partnerName, text) {
   updateAuthLinks();
 }
 
+function sendIngredientInquiry(ingredientId, inquiryType) {
+  const member = getCurrentMember();
+  if (!member) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const ingredient = getVisibleIngredientById(ingredientId);
+  if (!ingredient) return;
+
+  const supplier = ingredient.supplier || {};
+  const recipient =
+    findMessageRecipient(supplier.email) ||
+    findMessageRecipient(supplier.contact) ||
+    findMessageRecipient(supplier.name) ||
+    findMessageRecipient(defaultAdminMember.email);
+  if (!recipient) return;
+
+  const createdAt = new Date().toISOString();
+  const senderLabel = getDisplayName(member);
+  const recipientLabel = getDisplayName(recipient);
+  const maker = supplier.name || "제조사 확인 필요";
+  const body = [
+    `${inquiryType}이 들어왔습니다.`,
+    `원료: ${ingredient.name} (${ingredient.englishName})`,
+    `제조사/공급사: ${maker}`,
+    `문의자: ${senderLabel}`,
+  ].join("\n");
+
+  saveMessageToCurrentUser({
+    id: `sent-inquiry-${Date.now()}`,
+    partner: recipientLabel,
+    sender: senderLabel,
+    body,
+    direction: "sent",
+    read: true,
+    createdAt,
+  });
+  saveMessageToMember(recipient, {
+    id: `received-inquiry-${Date.now()}`,
+    partner: senderLabel,
+    sender: senderLabel,
+    body,
+    direction: "received",
+    read: false,
+    createdAt,
+    inquiryType,
+    ingredientId,
+  });
+  updateAuthLinks();
+  alert(`${inquiryType}이 쪽지로 전달되었습니다.`);
+}
+
 function groupMessagesByPartner(messages) {
   return messages.reduce((groups, message) => {
     const partner = message.partner || message.sender || "알 수 없음";
@@ -995,21 +1078,31 @@ function renderMessagesPage() {
     return;
   }
 
-  const messages = getMessages();
+  let messages = getMessages();
+  if (activeMessagePartner) {
+    const nextMessages = messages.map((message) =>
+      (message.partner || message.sender) === activeMessagePartner ? { ...message, read: true } : message
+    );
+    if (JSON.stringify(nextMessages) !== JSON.stringify(messages)) {
+      setMessages(nextMessages);
+      messages = nextMessages;
+      updateAuthLinks();
+    }
+  }
   const groups = groupMessagesByPartner(messages);
   const partners = Object.keys(groups);
-  if (!activeMessagePartner && partners.length) {
-    activeMessagePartner = partners[0];
+  if (activeMessagePartner && !groups[activeMessagePartner]) {
+    activeMessagePartner = "";
   }
 
   messageThreadList.innerHTML = partners.length
     ? partners
         .map((partner) => {
           const thread = groups[partner];
-          const unread = thread.some((message) => !message.read && message.direction === "received");
+          const unreadCount = thread.filter((message) => !message.read && message.direction === "received").length;
           const latest = thread[0];
           return `
-            <button class="message-thread ${activeMessagePartner === partner ? "active" : ""} ${unread ? "unread" : ""}" type="button" data-message-thread="${escapeHtml(partner)}">
+            <button class="message-thread ${activeMessagePartner === partner ? "active" : ""} ${unreadCount ? "unread" : ""}" type="button" data-message-thread="${escapeHtml(partner)}" ${unreadCount ? `data-thread-unread="${unreadCount > 99 ? "99+" : unreadCount}"` : ""}>
               <strong>${escapeHtml(partner)}</strong>
               <span>${escapeHtml(latest.body)}</span>
             </button>
@@ -1034,12 +1127,6 @@ function renderActiveConversation() {
     if (messageComposer) messageComposer.hidden = true;
     return;
   }
-
-  const nextMessages = messages.map((message) =>
-    (message.partner || message.sender) === activeMessagePartner ? { ...message, read: true } : message
-  );
-  setMessages(nextMessages);
-  updateAuthLinks();
 
   messageConversation.innerHTML = `
     <div class="message-conversation-head">
@@ -1486,6 +1573,13 @@ if (grid && searchInput) {
 
   grid.addEventListener("click", (event) => {
     if (event.target.closest(".ingredient-detail")) return;
+    const inquiryButton = event.target.closest("[data-inquiry-type]");
+    if (inquiryButton) {
+      event.stopPropagation();
+      const ingredient = inquiryButton.closest(".ingredient-card");
+      if (ingredient) sendIngredientInquiry(ingredient.dataset.ingredientId, inquiryButton.dataset.inquiryType);
+      return;
+    }
     const favoriteButton = event.target.closest("[data-favorite-id]");
     if (favoriteButton) {
       event.stopPropagation();
@@ -1522,6 +1616,13 @@ if (grid && searchInput) {
 if (favoriteGrid) {
   favoriteGrid.addEventListener("click", (event) => {
     if (event.target.closest(".ingredient-detail")) return;
+    const inquiryButton = event.target.closest("[data-inquiry-type]");
+    if (inquiryButton) {
+      event.stopPropagation();
+      const ingredient = inquiryButton.closest(".ingredient-card");
+      if (ingredient) sendIngredientInquiry(ingredient.dataset.ingredientId, inquiryButton.dataset.inquiryType);
+      return;
+    }
     const favoriteButton = event.target.closest("[data-favorite-id]");
     if (favoriteButton) {
       event.stopPropagation();
@@ -1686,7 +1787,7 @@ if (newsNextButton) {
 
 messageAlarmButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    markAllReceivedMessagesRead();
+    markMessageBellSeen();
   });
 });
 
