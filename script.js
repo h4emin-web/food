@@ -1653,18 +1653,15 @@ function renderNewsCards(items) {
     .map(
       (item) => `
         <article class="news-card">
-          <a href="${item.url}" target="_blank" rel="noreferrer">
-            <div class="news-card-body">
-              <div class="news-tags">
-                <span>${escapeHtml(item.sourceLabel || item.category || "NEWS")}</span>
-                <span>${escapeHtml(item.source || "Food Source")}</span>
-              </div>
-              <time datetime="${escapeHtml(item.publishedAt || "")}">${formatNewsDate(item.publishedAt)}</time>
-              <h3>${escapeHtml(item.title)}</h3>
-              <p>${escapeHtml(item.summary || "")}</p>
-              <strong>Read More</strong>
+          <div class="news-card-body">
+            <div class="news-tags">
+              <span>${escapeHtml(item.sourceLabel || item.category || "NEWS")}</span>
+              <span>${escapeHtml(item.source || "Food Source")}</span>
             </div>
-          </a>
+            <time datetime="${escapeHtml(item.publishedAt || "")}">${formatNewsDate(item.publishedAt)}</time>
+            <h3>${escapeHtml(item.title)}</h3>
+            <p>${escapeHtml(item.summary || "")}</p>
+          </div>
         </article>
       `
     )
