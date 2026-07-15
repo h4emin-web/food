@@ -1048,26 +1048,39 @@ function createMessageThread(partnerName, text) {
   const recipient = findMessageRecipient(partnerName);
   const recipientLabel = recipient ? getDisplayName(recipient) : partnerName;
   const senderLabel = getDisplayName(member);
+  const senderMeta = {
+    senderCompany: member.company || "",
+    senderEmail: member.email || "",
+    senderWebsite: member.companyWebsite || "",
+  };
 
   saveMessageToCurrentUser({
     id: `sent-${Date.now()}`,
     partner: recipientLabel,
+    partnerCompany: recipient?.company || "",
+    partnerEmail: recipient?.email || "",
+    partnerWebsite: recipient?.companyWebsite || "",
     sender: senderLabel,
     body: text.trim(),
     direction: "sent",
     read: true,
     createdAt,
+    ...senderMeta,
   });
 
   if (recipient) {
     saveMessageToMember(recipient, {
       id: `received-${Date.now()}`,
       partner: senderLabel,
+      partnerCompany: member.company || "",
+      partnerEmail: member.email || "",
+      partnerWebsite: member.companyWebsite || "",
       sender: senderLabel,
       body: text.trim(),
       direction: "received",
       read: false,
       createdAt,
+      ...senderMeta,
     });
   }
   updateAuthLinks();
@@ -1094,21 +1107,34 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
   const createdAt = new Date().toISOString();
   const senderLabel = getDisplayName(member);
   const recipientLabel = getDisplayName(recipient);
+  const senderCompany = member.company || "회사명 확인 필요";
+  const senderEmail = member.email || "";
+  const senderWebsite = member.companyWebsite || "";
   const maker =
     ingredient.manufacturerVisibility === "private"
       ? `${ingredient.origin || "제조국 확인 필요"} 제조사 비공개`
       : ingredient.manufacturer || supplier.name || "제조사 확인 필요";
   const body = [
-    `${inquiryType}이 들어왔습니다.`,
+    `${senderCompany}의 ${senderLabel}님이 ${inquiryType}을 보냈습니다.`,
+    `회사명: ${senderCompany}`,
+    `담당자: ${senderLabel}`,
+    `이메일: ${senderEmail || "확인 필요"}`,
+    `회사 홈페이지: ${senderWebsite || "확인 필요"}`,
     `원료: ${ingredient.name} (${ingredient.englishName})`,
     `제조사/공급사: ${maker}`,
-    `문의자: ${senderLabel}`,
+    "원하면 이 대화창에서 바로 답장할 수 있습니다.",
   ].join("\n");
 
   saveMessageToCurrentUser({
     id: `sent-inquiry-${Date.now()}`,
     partner: recipientLabel,
+    partnerCompany: recipient.company || "",
+    partnerEmail: recipient.email || "",
+    partnerWebsite: recipient.companyWebsite || "",
     sender: senderLabel,
+    senderCompany,
+    senderEmail,
+    senderWebsite,
     body,
     direction: "sent",
     read: true,
@@ -1117,7 +1143,13 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
   saveMessageToMember(recipient, {
     id: `received-inquiry-${Date.now()}`,
     partner: senderLabel,
+    partnerCompany: senderCompany,
+    partnerEmail: senderEmail,
+    partnerWebsite: senderWebsite,
     sender: senderLabel,
+    senderCompany,
+    senderEmail,
+    senderWebsite,
     body,
     direction: "received",
     read: false,
@@ -1136,6 +1168,20 @@ function groupMessagesByPartner(messages) {
     groups[partner].push(message);
     return groups;
   }, {});
+}
+
+function getThreadPartnerMeta(thread) {
+  const received = thread.find((message) => message.direction === "received" && (message.partnerCompany || message.senderCompany));
+  const sent = thread.find((message) => message.direction === "sent" && message.partnerCompany);
+  const source = received || sent || thread[0] || {};
+  const company = source.partnerCompany || source.senderCompany || "";
+  const email = source.partnerEmail || source.senderEmail || "";
+  const website = source.partnerWebsite || source.senderWebsite || "";
+  return { company, email, website };
+}
+
+function getMessagePreview(body) {
+  return String(body || "").split("\n").find(Boolean) || "";
 }
 
 function formatMessageDate(value) {
@@ -1185,10 +1231,13 @@ function renderMessagesPage() {
           const thread = groups[partner];
           const unreadCount = thread.filter((message) => !message.read && message.direction === "received").length;
           const latest = thread[0];
+          const partnerMeta = getThreadPartnerMeta(thread);
+          const metaText = [partnerMeta.company, partnerMeta.email].filter(Boolean).join(" · ");
           return `
             <button class="message-thread ${activeMessagePartner === partner ? "active" : ""} ${unreadCount ? "unread" : ""}" type="button" data-message-thread="${escapeHtml(partner)}" ${unreadCount ? `data-thread-unread="${unreadCount > 99 ? "99+" : unreadCount}"` : ""}>
               <strong>${escapeHtml(partner)}</strong>
-              <span>${escapeHtml(latest.body)}</span>
+              ${metaText ? `<em class="message-thread-meta">${escapeHtml(metaText)}</em>` : ""}
+              <span>${escapeHtml(getMessagePreview(latest.body))}</span>
             </button>
           `;
         })
@@ -1214,8 +1263,15 @@ function renderActiveConversation() {
 
   messageConversation.innerHTML = `
     <div class="message-conversation-head">
-      <h2>${escapeHtml(activeMessagePartner)}</h2>
-      <span>대화</span>
+      <div>
+        <h2>${escapeHtml(activeMessagePartner)}</h2>
+        ${(() => {
+          const meta = getThreadPartnerMeta(thread);
+          const text = [meta.company, meta.email, meta.website].filter(Boolean).join(" · ");
+          return text ? `<p>${escapeHtml(text)}</p>` : "";
+        })()}
+      </div>
+      <span>답장으로 대화 시작</span>
     </div>
     <div class="message-bubbles">
       ${thread
@@ -1237,15 +1293,42 @@ function sendThreadMessage(body) {
   const member = getCurrentMember();
   if (!member || !activeMessagePartner || !body.trim()) return;
 
+  const createdAt = new Date().toISOString();
+  const recipient = findMessageRecipient(activeMessagePartner);
+  const senderLabel = getDisplayName(member);
+  const messageBody = body.trim();
   saveMessageToCurrentUser({
     id: `sent-${Date.now()}`,
     partner: activeMessagePartner,
-    sender: getDisplayName(member),
-    body: body.trim(),
+    partnerCompany: recipient?.company || "",
+    partnerEmail: recipient?.email || "",
+    partnerWebsite: recipient?.companyWebsite || "",
+    sender: senderLabel,
+    senderCompany: member.company || "",
+    senderEmail: member.email || "",
+    senderWebsite: member.companyWebsite || "",
+    body: messageBody,
     direction: "sent",
     read: true,
-    createdAt: new Date().toISOString(),
+    createdAt,
   });
+  if (recipient) {
+    saveMessageToMember(recipient, {
+      id: `received-${Date.now()}`,
+      partner: senderLabel,
+      partnerCompany: member.company || "",
+      partnerEmail: member.email || "",
+      partnerWebsite: member.companyWebsite || "",
+      sender: senderLabel,
+      senderCompany: member.company || "",
+      senderEmail: member.email || "",
+      senderWebsite: member.companyWebsite || "",
+      body: messageBody,
+      direction: "received",
+      read: false,
+      createdAt,
+    });
+  }
   renderMessagesPage();
 }
 
