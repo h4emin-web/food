@@ -426,7 +426,7 @@ function renderFavorites() {
   }
 
   const favoriteIds = getFavoriteIngredients();
-  const favoriteItems = ingredients.filter((item) => favoriteIds.includes(item.id));
+  const favoriteItems = getVisibleIngredients().filter((item) => favoriteIds.includes(item.id));
   renderIngredientBoard(favoriteGrid, favoriteItems, "아직 즐겨찾기한 원료가 없습니다.");
 }
 
@@ -491,12 +491,13 @@ function openIngredientDetail(ingredientId) {
 }
 
 function getFilteredItems() {
-  if (!searchInput) return ingredients;
+  const visibleIngredients = getVisibleIngredients();
+  if (!searchInput) return visibleIngredients;
 
   const query = searchInput.value.trim().toLowerCase();
   const checked = filterInputs.filter((input) => input.checked).map((input) => input.value);
 
-  return ingredients.filter((item) => {
+  return visibleIngredients.filter((item) => {
     const matchesQuery =
       !query ||
       item.name.toLowerCase().includes(query) ||
@@ -511,6 +512,30 @@ function getFilteredItems() {
 
 function updateGrid() {
   renderCards(getFilteredItems());
+}
+
+function normalizeRegisteredIngredient(item) {
+  const tags = [item.category, item.cert, item.sample, item.response, item.use].filter(Boolean);
+  return {
+    id: item.id,
+    name: item.name,
+    englishName: item.englishName || "English Name",
+    desc: item.desc || `${item.name} 등록 원료입니다. 상세 정보는 등록 회원에게 문의하세요.`,
+    type: item.category || "등록 원료",
+    origin: "확인 필요",
+    tags: tags.length ? tags : [item.category || "등록 원료"],
+    supplier: {
+      name: item.company || item.ownerName || "등록 회원",
+      website: item.website || "#",
+      email: item.ownerEmail || "확인 필요",
+      contact: item.ownerName || "등록 회원",
+      spec: item.moq || "규격 확인 필요",
+    },
+  };
+}
+
+function getVisibleIngredients() {
+  return [...getAllRegisteredIngredientsByMember().map(normalizeRegisteredIngredient), ...ingredients];
 }
 
 function escapeHtml(value) {
@@ -1615,10 +1640,15 @@ if (ingredientRegisterForm) {
     registerMessage.className = `form-message ${type}`.trim();
   }
 
+  function getSelectedRegisterCategory() {
+    const selected = registerFields.category.selectedOptions[0];
+    return selected && selected.value ? selected.textContent.trim() : "";
+  }
+
   function updateRegisterPreview() {
     const name = registerFields.name.value.trim();
     const englishName = registerFields.englishName.value.trim();
-    const category = registerFields.category.value.trim();
+    const category = getSelectedRegisterCategory();
     const use = registerFields.use.value.trim();
     const cert = registerFields.cert.value.trim();
     const moq = registerFields.moq.value.trim();
@@ -1649,7 +1679,7 @@ if (ingredientRegisterForm) {
       id: `registered-${Date.now()}`,
       name: registerFields.name.value.trim(),
       englishName: registerFields.englishName.value.trim(),
-      category: registerFields.category.value.trim(),
+      category: getSelectedRegisterCategory(),
       use: registerFields.use.value.trim(),
       cert: registerFields.cert.value.trim(),
       moq: registerFields.moq.value.trim(),
@@ -1671,7 +1701,7 @@ if (ingredientRegisterForm) {
 
     saveRegisteredIngredient(item);
     ingredientRegisterForm.reset();
-    setRegisterMessage("원료가 등록되었습니다. 마이페이지에서 수정하거나 삭제할 수 있습니다.", "success");
+    setRegisterMessage("원료가 등록되었습니다. 원료찾기와 마이페이지에서 확인할 수 있습니다.", "success");
     window.setTimeout(updateRegisterPreview, 0);
   });
 
@@ -1976,7 +2006,7 @@ if (searchInput) {
     searchInput.value = initialSearchQuery;
   }
 }
-renderCards(ingredients);
+updateGrid();
 renderFavorites();
 renderMyIngredients();
 renderCommunityPosts(communityPosts);
