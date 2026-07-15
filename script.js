@@ -231,6 +231,7 @@ const defaultAdminMember = {
   phone: "",
   password: "goals7523@",
   company: "Haim company",
+  companyWebsite: "",
   role: "관리자",
   interest: "식품 원료",
   memo: "푸드소스 기본 관리자 계정",
@@ -441,7 +442,7 @@ function renderFavorites() {
 
 function getIngredientDetailMarkup(item) {
   const supplier = item.supplier || {};
-  const website = supplier.website || "#";
+  const website = supplier.website || "";
   const email = supplier.email || "확인 필요";
 
   return `
@@ -463,7 +464,7 @@ function getIngredientDetailMarkup(item) {
           </div>
           <div>
             <span>공급사 홈페이지</span>
-            <a href="${website}" target="_blank" rel="noreferrer">${website}</a>
+            <a href="${website || "#"}" target="_blank" rel="noreferrer">${website || "확인 필요"}</a>
           </div>
           <div>
             <span>공급사 이메일</span>
@@ -535,7 +536,7 @@ function normalizeRegisteredIngredient(item) {
     tags: tags.length ? tags : [item.category || "등록 원료"],
     supplier: {
       name: item.company || item.ownerName || "등록 회원",
-      website: item.website || "#",
+      website: item.companyWebsite || item.website || "#",
       email: item.ownerEmail || "확인 필요",
       contact: item.ownerName || "등록 회원",
       spec: item.moq || "규격 확인 필요",
@@ -1174,7 +1175,13 @@ function getAllRegisteredIngredientsByMember() {
     } catch {
       items = [];
     }
-    return items.map((item) => ({ ...item, ownerName: getDisplayName(member), ownerEmail: member.email }));
+    return items.map((item) => ({
+      ...item,
+      ownerName: getDisplayName(member),
+      ownerEmail: member.email,
+      company: item.company || member.company || "",
+      companyWebsite: item.companyWebsite || member.companyWebsite || "",
+    }));
   });
 }
 
@@ -1241,7 +1248,7 @@ function renderAdminMembers() {
 
   const query = adminMemberSearch ? adminMemberSearch.value.trim().toLowerCase() : "";
   const members = getMembers().filter((member) => {
-    const text = `${member.name} ${member.nickname || ""} ${member.email} ${member.company || ""} ${member.phone || ""}`.toLowerCase();
+    const text = `${member.name} ${member.nickname || ""} ${member.email} ${member.company || ""} ${member.companyWebsite || ""} ${member.phone || ""}`.toLowerCase();
     return !query || text.includes(query);
   });
 
@@ -1252,7 +1259,7 @@ function renderAdminMembers() {
             <tr>
               <td><strong>${escapeHtml(getDisplayName(member))}</strong><span>${escapeHtml(member.name)} · ${escapeHtml(member.email)}</span></td>
               <td>${escapeHtml(member.phone || "-")}</td>
-              <td>${escapeHtml(member.company || "-")}<span>${escapeHtml(member.role || "")}</span></td>
+              <td>${escapeHtml(member.company || "-")}<span>${escapeHtml([member.companyWebsite, member.role].filter(Boolean).join(" · "))}</span></td>
               <td>${member.joinedAt ? formatNewsDate(member.joinedAt) : "-"}</td>
               <td>
                 <button class="admin-small-button" type="button" data-admin-login="${escapeHtml(member.email)}">보기</button>
@@ -1828,6 +1835,7 @@ if (adminMemberTable) {
           `이메일: ${member.email}`,
           `전화번호: ${member.phone || "-"}`,
           `회사명: ${member.company || "-"}`,
+          `회사 홈페이지: ${member.companyWebsite || "-"}`,
           `담당 업무: ${member.role || "-"}`,
           `관심 원료: ${member.interest || "-"}`,
           `메모: ${member.memo || "-"}`,
@@ -1917,6 +1925,7 @@ if (ingredientRegisterForm) {
   ingredientRegisterForm.addEventListener("submit", (event) => {
     event.preventDefault();
     updateRegisterPreview();
+    const member = getCurrentMember();
     const item = {
       id: `registered-${Date.now()}`,
       name: registerFields.name.value.trim(),
@@ -1928,6 +1937,10 @@ if (ingredientRegisterForm) {
       sample: registerFields.sample.value.trim(),
       response: registerFields.response.value.trim(),
       desc: registerFields.desc.value.trim(),
+      company: member?.company || "",
+      companyWebsite: member?.companyWebsite || "",
+      ownerName: getDisplayName(member),
+      ownerEmail: member?.email || "",
       createdAt: new Date().toISOString(),
       createdAtText: new Intl.DateTimeFormat("ko-KR", {
         year: "numeric",
@@ -1959,6 +1972,7 @@ if (signupForm) {
     password: document.querySelector("#signupPassword"),
     confirm: document.querySelector("#signupPasswordConfirm"),
     company: document.querySelector("#signupCompany"),
+    companyWebsite: document.querySelector("#signupCompanyWebsite"),
     role: document.querySelector("#signupRole"),
     terms: document.querySelector("#signupTerms"),
   };
@@ -1980,6 +1994,7 @@ if (signupForm) {
       phone: signupFields.phone.value.trim(),
       nickname: signupFields.nickname.value.trim(),
       company: signupFields.company.value.trim(),
+      companyWebsite: signupFields.companyWebsite.value.trim(),
       role: signupFields.role.value,
       password,
       joinedAt: new Date().toISOString(),
@@ -2033,6 +2048,7 @@ if (mypageForm) {
     phone: document.querySelector("#mypagePhone"),
     nickname: document.querySelector("#mypageNickname"),
     company: document.querySelector("#mypageCompany"),
+    companyWebsite: document.querySelector("#mypageCompanyWebsite"),
     role: document.querySelector("#mypageRole"),
     interest: document.querySelector("#mypageInterest"),
     memo: document.querySelector("#mypageMemo"),
@@ -2067,6 +2083,7 @@ if (mypageForm) {
     mypageFields.phone.value = member.phone || "";
     mypageFields.nickname.value = member.nickname || member.name || "";
     mypageFields.company.value = member.company || "";
+    mypageFields.companyWebsite.value = member.companyWebsite || "";
     mypageFields.role.value = member.role || "식품 개발";
     mypageFields.interest.value = member.interest || "";
     mypageFields.memo.value = member.memo || "";
@@ -2113,6 +2130,7 @@ if (mypageForm) {
       phone: mypageFields.phone.value.trim(),
       nickname: mypageFields.nickname.value.trim(),
       company: mypageFields.company.value.trim(),
+      companyWebsite: mypageFields.companyWebsite.value.trim(),
       role: mypageFields.role.value,
       interest: mypageFields.interest.value.trim(),
       memo: mypageFields.memo.value.trim(),
