@@ -1650,8 +1650,9 @@ img {
 
 .register-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  grid-template-columns: minmax(0, 980px);
   gap: 24px;
+  justify-content: center;
   align-items: start;
   padding: 34px clamp(20px, 5vw, 72px) 70px;
 }
@@ -1716,7 +1717,6 @@ img {
 }
 
 .register-form,
-.register-preview,
 .signup-form,
 .signup-result {
   border: 1px solid var(--line);
@@ -1888,12 +1888,6 @@ img {
   gap: 10px;
   padding-top: 20px;
   border-top: 1px solid var(--line);
-}
-
-.register-preview {
-  position: sticky;
-  top: 94px;
-  padding: 22px;
 }
 
 .signup-result {
@@ -2398,10 +2392,6 @@ img {
   font-weight: 700;
 }
 
-.preview-card {
-  margin-top: 14px;
-}
-
 .site-footer {
   display: flex;
   justify-content: space-between;
@@ -2480,7 +2470,6 @@ img {
     position: static;
   }
 
-  .register-preview,
   .signup-result {
     position: static;
   }

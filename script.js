@@ -2071,13 +2071,6 @@ if (ingredientRegisterForm) {
     desc: document.querySelector("#registerDesc"),
   };
 
-  const preview = {
-    category: document.querySelector("#previewCategory"),
-    name: document.querySelector("#previewName"),
-    englishName: document.querySelector("#previewEnglishName"),
-    desc: document.querySelector("#previewDesc"),
-    tags: document.querySelector("#previewTags"),
-  };
   const registerMessage = document.querySelector("#registerMessage");
 
   function setRegisterMessage(message, type = "") {
@@ -2098,46 +2091,22 @@ if (ingredientRegisterForm) {
     );
   }
 
-  function updateRegisterPreview() {
+  function syncRegisterCompany() {
     const member = getCurrentMember();
     if (registerFields.company) {
       registerFields.company.value = member?.company || "";
     }
-    const name = registerFields.name.value.trim();
-    const englishName = registerFields.englishName.value.trim();
-    const origin = registerFields.origin.value.trim();
-    const manufacturer = registerFields.manufacturer.value.trim();
-    const manufacturerVisibility = getSelectedManufacturerVisibility();
-    const category = getSelectedRegisterCategory();
-    const use = registerFields.use.value.trim();
-    const cert = registerFields.cert.value.trim();
-    const moq = registerFields.moq.value.trim();
-    const sample = registerFields.sample.value.trim();
-    const response = registerFields.response.value.trim();
-    const desc = registerFields.desc.value.trim();
-    const visibleManufacturer = manufacturerVisibility === "private" ? "제조사 비공개" : manufacturer;
-    const tags = [registerFields.company?.value, origin, visibleManufacturer, cert, moq, sample, response, use]
-      .filter(Boolean)
-      .slice(0, 4);
-
-    preview.category.textContent = category || "카테고리";
-    preview.name.textContent = name || "원료명";
-    preview.englishName.textContent = englishName || "English Name";
-    preview.desc.textContent = use || desc || "사용 용도를 입력하면 여기에 표시됩니다.";
-    preview.tags.innerHTML = (tags.length ? tags : ["인증", "MOQ", "샘플"])
-      .map((tag) => `<span>${escapeHtml(tag)}</span>`)
-      .join("");
   }
 
-  ingredientRegisterForm.addEventListener("input", updateRegisterPreview);
-  ingredientRegisterForm.addEventListener("change", updateRegisterPreview);
+  ingredientRegisterForm.addEventListener("input", syncRegisterCompany);
+  ingredientRegisterForm.addEventListener("change", syncRegisterCompany);
   ingredientRegisterForm.addEventListener("reset", () => {
     setRegisterMessage("", "");
-    window.setTimeout(updateRegisterPreview, 0);
+    window.setTimeout(syncRegisterCompany, 0);
   });
   ingredientRegisterForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    updateRegisterPreview();
+    syncRegisterCompany();
     const member = getCurrentMember();
     const companyName = member?.company || "";
     const item = {
@@ -2176,10 +2145,10 @@ if (ingredientRegisterForm) {
     updateAuthLinks();
     ingredientRegisterForm.reset();
     setRegisterMessage("원료가 등록되었습니다. 원료찾기와 마이페이지에서 확인할 수 있습니다.", "success");
-    window.setTimeout(updateRegisterPreview, 0);
+    window.setTimeout(syncRegisterCompany, 0);
   });
 
-  updateRegisterPreview();
+  syncRegisterCompany();
 }
 
 if (signupForm) {
