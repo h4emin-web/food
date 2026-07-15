@@ -607,7 +607,7 @@ function normalizeRegisteredIngredient(item) {
     id: item.id,
     name: item.name,
     englishName: item.englishName || "English Name",
-    desc: item.desc || `${item.name} 등록 원료입니다. 상세 정보는 등록 회원에게 문의하세요.`,
+    desc: item.use || item.desc || `${item.name} 등록 원료입니다. 상세 정보는 등록 회원에게 문의하세요.`,
     type: item.category || "등록 원료",
     origin,
     originFlagCode: item.originFlagCode || getCountryFlagCode(origin),
@@ -2123,7 +2123,7 @@ if (ingredientRegisterForm) {
     preview.category.textContent = category || "카테고리";
     preview.name.textContent = name || "원료명";
     preview.englishName.textContent = englishName || "English Name";
-    preview.desc.textContent = desc || "입력한 원료 설명이 여기에 표시됩니다.";
+    preview.desc.textContent = use || desc || "사용 용도를 입력하면 여기에 표시됩니다.";
     preview.tags.innerHTML = (tags.length ? tags : ["인증", "MOQ", "샘플"])
       .map((tag) => `<span>${escapeHtml(tag)}</span>`)
       .join("");
