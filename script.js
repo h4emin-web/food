@@ -1980,7 +1980,7 @@ function renderPartnerPosts(posts) {
           <div class="partner-post-main">
             <div class="partner-post-title">
               <span class="partner-badge mode">${escapeHtml(post.mode || "OEM")}</span>
-              <span class="partner-badge trade">${escapeHtml(post.trade || "구매")}</span>
+              <span class="partner-badge trade ${post.trade === "판매" ? "sale" : "buy"}">${escapeHtml(post.trade || "구매")}</span>
               <h3>${escapeHtml(post.title)}</h3>
             </div>
             <div class="partner-meta">

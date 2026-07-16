@@ -1280,6 +1280,11 @@ img {
   color: #e3177f;
 }
 
+.partner-badge.trade.sale {
+  background: #e6f4ff;
+  color: #0875be;
+}
+
 .partner-meta {
   display: flex;
   flex-wrap: wrap;
