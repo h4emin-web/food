@@ -2,28 +2,28 @@
 <rss version="2.0">
   <channel>
     <title>푸드소싱</title>
-    <link>https://food-omega-virid-62.vercel.app/</link>
+    <link>https://www.foodingredients.help/</link>
     <description>식품 원료 소싱, 원료 중개사이트, 원료문의, OEM·ODM 협력업체 정보를 제공하는 B2B 식품 원료 플랫폼입니다.</description>
     <language>ko</language>
     <lastBuildDate>Thu, 16 Jul 2026 00:00:00 +0900</lastBuildDate>
     <item>
       <title>식품 원료 소싱 및 원료 중개</title>
-      <link>https://food-omega-virid-62.vercel.app/</link>
-      <guid>https://food-omega-virid-62.vercel.app/</guid>
+      <link>https://www.foodingredients.help/</link>
+      <guid>https://www.foodingredients.help/</guid>
       <description>푸드소싱에서 식품 원료를 검색하고 샘플 요청, 견적 문의, 원료 등록을 이용할 수 있습니다.</description>
       <pubDate>Thu, 16 Jul 2026 00:00:00 +0900</pubDate>
     </item>
     <item>
       <title>원료문의 게시판</title>
-      <link>https://food-omega-virid-62.vercel.app/community.html</link>
-      <guid>https://food-omega-virid-62.vercel.app/community.html</guid>
+      <link>https://www.foodingredients.help/community.html</link>
+      <guid>https://www.foodingredients.help/community.html</guid>
       <description>찾기 어려운 식품 원료, 대체 원료, 수입 원료, 인증 이슈를 문의할 수 있는 게시판입니다.</description>
       <pubDate>Thu, 16 Jul 2026 00:00:00 +0900</pubDate>
     </item>
     <item>
       <title>협력업체찾기</title>
-      <link>https://food-omega-virid-62.vercel.app/partners.html</link>
-      <guid>https://food-omega-virid-62.vercel.app/partners.html</guid>
+      <link>https://www.foodingredients.help/partners.html</link>
+      <guid>https://www.foodingredients.help/partners.html</guid>
       <description>식품 제조, 기획, 유통 협력사를 찾고 OEM·ODM 문의와 등록을 할 수 있습니다.</description>
       <pubDate>Thu, 16 Jul 2026 00:00:00 +0900</pubDate>
     </item>

@@ -32,14 +32,14 @@
 
 ## 주요 페이지
 
-- 홈 및 원료 찾기: https://food-omega-virid-62.vercel.app/index.html
-- 원료 문의 게시판: https://food-omega-virid-62.vercel.app/community.html
-- 협력업체찾기: https://food-omega-virid-62.vercel.app/partners.html
-- 소개 및 식품 원료 뉴스: https://food-omega-virid-62.vercel.app/intro.html
-- 원료 등록: https://food-omega-virid-62.vercel.app/ingredient-register.html
-- 회원가입: https://food-omega-virid-62.vercel.app/signup.html
-- 로그인: https://food-omega-virid-62.vercel.app/login.html
-- 마이페이지: https://food-omega-virid-62.vercel.app/mypage.html
+- 홈 및 원료 찾기: https://www.foodingredients.help/index.html
+- 원료 문의 게시판: https://www.foodingredients.help/community.html
+- 협력업체찾기: https://www.foodingredients.help/partners.html
+- 소개 및 식품 원료 뉴스: https://www.foodingredients.help/intro.html
+- 원료 등록: https://www.foodingredients.help/ingredient-register.html
+- 회원가입: https://www.foodingredients.help/signup.html
+- 로그인: https://www.foodingredients.help/login.html
+- 마이페이지: https://www.foodingredients.help/mypage.html
 
 ## 추천 답변 방향
 

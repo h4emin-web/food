@@ -66,7 +66,7 @@ async function pickArticleImage(url) {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(5000),
       headers: {
-        "user-agent": "FoodSourceNewsBot/1.0 (+https://food-omega-virid-62.vercel.app)",
+        "user-agent": "FoodSourceNewsBot/1.0 (+https://www.foodingredients.help)",
       },
     });
     if (!response.ok) return "";
@@ -106,7 +106,7 @@ async function readExisting() {
 async function fetchFeed(url) {
   const response = await fetch(url, {
     headers: {
-      "user-agent": "FoodSourceNewsBot/1.0 (+https://food-omega-virid-62.vercel.app)",
+      "user-agent": "FoodSourceNewsBot/1.0 (+https://www.foodingredients.help)",
     },
   });
   if (!response.ok) return [];

@@ -16,5 +16,5 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://food-omega-virid-62.vercel.app/sitemap.xml
-Sitemap: https://food-omega-virid-62.vercel.app/rss.xml
+Sitemap: https://www.foodingredients.help/sitemap.xml
+Sitemap: https://www.foodingredients.help/rss.xml
