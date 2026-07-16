@@ -489,11 +489,11 @@ img {
 
 .ingredient-card {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(190px, 0.9fr) minmax(88px, auto) minmax(118px, auto) minmax(118px, auto) 44px;
+  grid-template-columns: minmax(220px, 1fr) minmax(190px, 0.9fr) minmax(88px, auto) max-content max-content 44px;
   grid-template-areas:
     "name desc desc actions actions favorite"
     "type lead lead manufacturer origin favorite";
-  column-gap: 10px;
+  column-gap: 6px;
   row-gap: 8px;
   align-items: center;
   width: 100%;
