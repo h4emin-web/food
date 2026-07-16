@@ -1280,16 +1280,6 @@ img {
   color: #e3177f;
 }
 
-.partner-badge.post-type.inquiry {
-  background: #e9f5ff;
-  color: #006fbc;
-}
-
-.partner-badge.post-type.register {
-  background: #f1f5f9;
-  color: #334155;
-}
-
 .partner-meta {
   display: flex;
   flex-wrap: wrap;

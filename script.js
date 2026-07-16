@@ -1994,7 +1994,6 @@ function renderPartnerPosts(posts) {
         <article class="partner-post" role="button" tabindex="0" data-partner-post-id="${post.id}">
           <div class="partner-post-main">
             <div class="partner-post-title">
-              <span class="partner-badge post-type ${post.postType === "register" ? "register" : "inquiry"}">${getPartnerPostTypeLabel(post.postType)}</span>
               <span class="partner-badge mode">${escapeHtml(post.mode || "OEM")}</span>
               <span class="partner-badge trade">${escapeHtml(post.trade || "구매")}</span>
               <h3>${escapeHtml(post.title)}</h3>
