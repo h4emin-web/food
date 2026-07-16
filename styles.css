@@ -493,7 +493,7 @@ img {
   grid-template-areas:
     "name desc desc actions actions favorite"
     "type lead lead manufacturer origin favorite";
-  column-gap: 16px;
+  column-gap: 10px;
   row-gap: 8px;
   align-items: center;
   width: 100%;

@@ -390,11 +390,10 @@ function toggleFavoriteIngredient(ingredientId) {
 }
 
 function getIngredientManufacturerText(item) {
-  const supplier = item.supplier || {};
   if (item.manufacturerVisibility === "private" && !isAdminMember()) {
     return "비공개";
   }
-  return item.manufacturer || supplier.name || "확인 필요";
+  return item.manufacturer || "확인 필요";
 }
 
 function canRequestSample(item) {
