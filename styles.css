@@ -4,7 +4,7 @@
   --line: #eceef2;
   --soft: #ffffff;
   --paper: #ffffff;
-  --green: #17845b;
+  --green: #6b7280;
   --teal: #0f766e;
   --blue: #2563eb;
   --shadow: 0 22px 50px rgba(20, 26, 40, 0.11);
@@ -530,7 +530,7 @@ img {
   min-height: 28px;
   padding: 7px 10px;
   border-radius: 8px;
-  background: #edf8f3;
+  background: #f3f4f6;
   color: var(--green);
   font-size: 12px;
   font-weight: 800;
@@ -1144,7 +1144,7 @@ img {
   max-width: 100%;
   padding: 0 9px;
   border-radius: 7px;
-  background: #edf8f3;
+  background: #f3f4f6;
   color: var(--green);
   font-size: 12px;
   font-weight: 800;
@@ -1271,8 +1271,8 @@ img {
 }
 
 .partner-badge.mode {
-  background: #eef3db;
-  color: #476900;
+  background: #f3f4f6;
+  color: #4b5563;
 }
 
 .partner-badge.trade {
