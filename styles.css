@@ -170,6 +170,17 @@ img {
   gap: 10px;
 }
 
+.header-actions .text-button {
+  color: #3d3f45;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.header-actions .text-button:hover {
+  color: var(--green);
+}
+
 .admin-only-link:not([hidden]) {
   display: inline-flex;
   align-items: center;
@@ -2769,6 +2780,11 @@ img {
     flex: 0 0 auto;
     justify-content: flex-end;
     gap: 8px;
+  }
+
+  .header-actions .text-button {
+    font-size: 12px;
+    font-weight: 600;
   }
 
   .search-panel,
