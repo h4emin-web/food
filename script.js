@@ -171,6 +171,7 @@ const communityPosts = [
 const partnerPosts = [
   {
     id: "chicken-breast-oem",
+    postType: "inquiry",
     mode: "OEM",
     trade: "구매",
     title: "닭가슴살을 활용한 스프, 육포, 젤리 OEM 업체를 찾습니다. 소중한 인연이 되었으면 합니다.",
@@ -184,6 +185,7 @@ const partnerPosts = [
   },
   {
     id: "kimchi-odm-seller",
+    postType: "inquiry",
     mode: "ODM",
     trade: "판매",
     title: "즙제조 odm 업체 찾습니다.",
@@ -197,6 +199,7 @@ const partnerPosts = [
   },
   {
     id: "protein-bar-oem",
+    postType: "register",
     mode: "OEM",
     trade: "구매",
     title: "프로틴바 소량 생산 가능한 OEM 업체를 찾습니다.",
@@ -262,10 +265,13 @@ const communityPostAuthor = document.querySelector("#communityPostAuthor");
 const communityPostDesc = document.querySelector("#communityPostDesc");
 const partnerList = document.querySelector("#partnerList");
 const partnerSearch = document.querySelector("#partnerSearch");
-const partnerWriteButton = document.querySelector("#partnerWriteButton");
+const partnerWriteButtons = [...document.querySelectorAll("[data-partner-write-type]")];
 const partnerWriteForm = document.querySelector("#partnerWriteForm");
 const partnerWriteCancel = document.querySelector("#partnerWriteCancel");
 const partnerWriteMessage = document.querySelector("#partnerWriteMessage");
+const partnerFormTitle = document.querySelector("#partnerFormTitle");
+const partnerFormGuide = document.querySelector("#partnerFormGuide");
+const partnerDescLabel = document.querySelector("#partnerDescLabel");
 const partnerPostTitle = document.querySelector("#partnerPostTitle");
 const partnerPostAuthor = document.querySelector("#partnerPostAuthor");
 const partnerPostCompany = document.querySelector("#partnerPostCompany");
@@ -1967,6 +1973,10 @@ function getPartnerDDay(deadline) {
   return diff > 0 ? `D - ${diff}` : `D + ${Math.abs(diff)}`;
 }
 
+function getPartnerPostTypeLabel(type) {
+  return type === "register" ? "등록" : "문의";
+}
+
 function renderPartnerPosts(posts) {
   if (!partnerList) return;
 
@@ -1984,6 +1994,7 @@ function renderPartnerPosts(posts) {
         <article class="partner-post" role="button" tabindex="0" data-partner-post-id="${post.id}">
           <div class="partner-post-main">
             <div class="partner-post-title">
+              <span class="partner-badge post-type ${post.postType === "register" ? "register" : "inquiry"}">${getPartnerPostTypeLabel(post.postType)}</span>
               <span class="partner-badge mode">${escapeHtml(post.mode || "OEM")}</span>
               <span class="partner-badge trade">${escapeHtml(post.trade || "구매")}</span>
               <h3>${escapeHtml(post.title)}</h3>
@@ -2030,6 +2041,7 @@ function getPartnerDetailMarkup(post) {
         <div class="detail-head">
           <h2>${escapeHtml(post.title)}</h2>
           <div class="detail-meta">
+            <span>${getPartnerPostTypeLabel(post.postType)}</span>
             <span>${escapeHtml(post.mode || "OEM")}</span>
             <span>${escapeHtml(post.trade || "구매")}</span>
             <button class="message-user-button detail-author" type="button" data-message-user="${escapeHtml(post.author)}">${escapeHtml(post.author)}</button>
@@ -2076,6 +2088,7 @@ function updatePartnerPosts() {
       (post.desc || "").toLowerCase().includes(query) ||
       (post.company || "").toLowerCase().includes(query) ||
       (post.business || "").toLowerCase().includes(query) ||
+      getPartnerPostTypeLabel(post.postType).toLowerCase().includes(query) ||
       (post.mode || "").toLowerCase().includes(query) ||
       (post.trade || "").toLowerCase().includes(query)
     );
@@ -2093,6 +2106,35 @@ function setPartnerPageSize(size) {
 function setPartnerPage(page) {
   partnerCurrentPage = Number(page) || 1;
   updatePartnerPosts();
+}
+
+function setPartnerWriteType(type) {
+  if (!partnerWriteForm) return;
+  const isRegister = type === "register";
+  partnerWriteForm.dataset.partnerFormType = isRegister ? "register" : "inquiry";
+  if (partnerFormTitle) partnerFormTitle.textContent = isRegister ? "협력사 등록" : "협력사 문의";
+  if (partnerFormGuide) {
+    partnerFormGuide.textContent = isRegister
+      ? "우리 회사가 제공 가능한 OEM, ODM 협력 내용을 등록하세요."
+      : "필요한 OEM, ODM 협력사를 찾는 문의 내용을 입력하세요.";
+  }
+  if (partnerDescLabel) partnerDescLabel.textContent = isRegister ? "제공 가능 내용" : "문의 내용";
+  if (partnerPostTitle) {
+    partnerPostTitle.placeholder = isRegister
+      ? "즙 제조 ODM 협력사로 등록합니다"
+      : "닭가슴살 OEM 업체를 찾습니다";
+  }
+  if (partnerPostCompany) {
+    partnerPostCompany.placeholder = isRegister ? "등록 기업명" : "문의 기업명";
+  }
+  if (partnerPostBusiness) {
+    partnerPostBusiness.placeholder = isRegister ? "제조, OEM, ODM, 유통" : "제조, 유통, 브랜드";
+  }
+  if (partnerPostDesc) {
+    partnerPostDesc.placeholder = isRegister
+      ? "제공 가능한 제품군, 생산 설비, 최소 수량, 인증, 협력 조건을 입력하세요"
+      : "필요한 제품, 생산 규모, 원하는 협력 조건을 입력하세요";
+  }
 }
 
 if (grid && searchInput) {
@@ -2397,21 +2439,24 @@ if (partnerList && partnerSearch) {
   });
 }
 
-if (partnerWriteButton && partnerWriteForm) {
-  partnerWriteButton.addEventListener("click", () => {
+if (partnerWriteButtons.length && partnerWriteForm) {
+  partnerWriteButtons.forEach((button) => button.addEventListener("click", () => {
     const member = getCurrentMember();
     if (!member) {
       window.location.href = "login.html";
       return;
     }
 
-    partnerWriteForm.hidden = !partnerWriteForm.hidden;
+    const type = button.dataset.partnerWriteType || "inquiry";
+    const shouldOpen = partnerWriteForm.hidden || partnerWriteForm.dataset.partnerFormType !== type;
+    setPartnerWriteType(type);
+    partnerWriteForm.hidden = !shouldOpen;
     partnerPostAuthor.value = getDisplayName(member);
     partnerPostCompany.value = member.company || "";
     if (!partnerWriteForm.hidden) {
       partnerPostTitle.focus();
     }
-  });
+  }));
 }
 
 if (partnerWriteCancel && partnerWriteForm) {
@@ -2438,6 +2483,7 @@ if (partnerWriteForm) {
 
     savePartnerPost({
       id: `partner-${Date.now()}`,
+      postType: partnerWriteForm.dataset.partnerFormType || "inquiry",
       mode: partnerPostMode.value,
       trade: partnerPostTrade.value,
       title,

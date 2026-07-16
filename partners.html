@@ -83,13 +83,23 @@
                 <i data-lucide="search"></i>
                 <input id="partnerSearch" type="search" placeholder="OEM, ODM, &#50629;&#52404;&#47749; &#44160;&#49353;" />
               </label>
-              <button class="primary-button community-write-button" type="button" id="partnerWriteButton">
-                <i data-lucide="square-pen"></i>
-                &#54801;&#47141;&#49324; &#46321;&#47197;
-              </button>
+              <div class="partner-write-actions">
+                <button class="outline-button community-write-button" type="button" data-partner-write-type="inquiry">
+                  <i data-lucide="search"></i>
+                  &#54801;&#47141;&#49324; &#47928;&#51032;
+                </button>
+                <button class="primary-button community-write-button" type="button" data-partner-write-type="register">
+                  <i data-lucide="square-pen"></i>
+                  &#54801;&#47141;&#49324; &#46321;&#47197;
+                </button>
+              </div>
             </div>
 
-            <form class="community-write-form" id="partnerWriteForm" hidden>
+            <form class="community-write-form" id="partnerWriteForm" data-partner-form-type="inquiry" hidden>
+              <div class="partner-form-heading">
+                <strong id="partnerFormTitle">&#54801;&#47141;&#49324; &#47928;&#51032;</strong>
+                <p id="partnerFormGuide">&#54596;&#50836;&#54620; OEM, ODM &#54801;&#47141;&#49324;&#47484; &#52286;&#45716; &#45236;&#50857;&#51012; &#51077;&#47141;&#54616;&#49464;&#50836;.</p>
+              </div>
               <div class="form-grid">
                 <label>
                   <span>&#48516;&#47448;</span>
@@ -131,7 +141,7 @@
                 <input id="partnerPostDeadline" type="date" />
               </label>
               <label>
-                <span>&#45236;&#50857;</span>
+                <span id="partnerDescLabel">&#47928;&#51032; &#45236;&#50857;</span>
                 <textarea id="partnerPostDesc" placeholder="&#54596;&#50836;&#54620; &#51228;&#54408;, &#49373;&#49328; &#44508;&#47784;, &#50896;&#54616;&#45716; &#54801;&#47141; &#51312;&#44148;&#51012; &#51077;&#47141;&#54616;&#49464;&#50836;" required></textarea>
               </label>
               <div class="form-actions">
