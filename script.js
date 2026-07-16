@@ -320,6 +320,7 @@ const adminMemberSearch = document.querySelector("#adminMemberSearch");
 const adminMemberTable = document.querySelector("#adminMemberTable");
 const adminVisitList = document.querySelector("#adminVisitList");
 const adminIngredientList = document.querySelector("#adminIngredientList");
+const adminCommunityList = document.querySelector("#adminCommunityList");
 const adminMessageList = document.querySelector("#adminMessageList");
 const authLinks = [...document.querySelectorAll(".auth-link")];
 const logoutLinks = [...document.querySelectorAll("[data-logout-link]")];
@@ -1580,6 +1581,7 @@ function renderAdminPage() {
   renderAdminMembers();
   renderAdminVisits();
   renderAdminIngredients();
+  renderAdminCommunityPosts();
   renderAdminMessages();
 }
 
@@ -1589,6 +1591,7 @@ function renderAdminStats() {
   const members = getMembers();
   const ingredients = getAllRegisteredIngredientsByMember();
   const messages = getAllMessagesByMember();
+  const communityItems = getSavedCommunityPosts();
   const visits = getVisitStats();
   const totalVisits = Object.values(visits).reduce((sum, day) => sum + (day.count || 0), 0);
 
@@ -1597,6 +1600,7 @@ function renderAdminStats() {
     ["누적 접속", `${totalVisits}회`],
     ["회원", `${members.length}명`],
     ["등록 원료", `${ingredients.length}개`],
+    ["원료문의", `${communityItems.length}개`],
     ["쪽지", `${messages.length}개`],
   ];
 
@@ -1697,12 +1701,37 @@ function renderAdminIngredients() {
                 <span>${escapeHtml(item.ownerName)} · ${escapeHtml(item.ownerEmail)}</span>
                 <p>${escapeHtml(item.category || "분류 없음")} / ${escapeHtml(item.englishName || "영문명 없음")}</p>
                 <p>제조국: ${escapeHtml(item.origin || "확인 필요")} / 제조사: ${escapeHtml(item.manufacturer || "확인 필요")} / ${visibilityLabel}</p>
+                <div class="admin-row-actions">
+                  <button class="admin-small-button danger-button" type="button" data-admin-delete-ingredient="${escapeHtml(item.id)}" data-admin-delete-ingredient-owner="${escapeHtml(item.ownerEmail)}">삭제</button>
+                </div>
               </article>
             `;
           }
         )
         .join("")
     : '<p class="empty-mini">등록된 원료가 없습니다.</p>';
+}
+
+function renderAdminCommunityPosts() {
+  if (!adminCommunityList) return;
+
+  const posts = getSavedCommunityPosts();
+  adminCommunityList.innerHTML = posts.length
+    ? posts
+        .map(
+          (post) => `
+            <article class="admin-list-row">
+              <strong>${escapeHtml(post.title || "제목 없음")}</strong>
+              <span>${escapeHtml(post.author || "-")} · ${formatNewsDate(post.createdAt)}</span>
+              <p>${escapeHtml(post.desc || "")}</p>
+              <div class="admin-row-actions">
+                <button class="admin-small-button danger-button" type="button" data-admin-delete-community="${escapeHtml(post.id)}">삭제</button>
+              </div>
+            </article>
+          `
+        )
+        .join("")
+    : '<p class="empty-mini">회원이 등록한 원료문의 글이 없습니다.</p>';
 }
 
 function renderAdminMessages() {
@@ -1736,6 +1765,23 @@ function deleteAdminMember(email) {
     localStorage.removeItem("foodsourceCurrentMember");
   }
   updateAuthLinks();
+  renderAdminPage();
+}
+
+function deleteAdminIngredient(ownerEmail, ingredientId) {
+  if (!ownerEmail || !ingredientId) return;
+  const key = `foodsourceRegisteredIngredients:${ownerEmail}`;
+  const items = getRegisteredIngredientsByEmail(ownerEmail).filter((item) => item.id !== ingredientId);
+  localStorage.setItem(key, JSON.stringify(items));
+  renderAdminPage();
+}
+
+function deleteAdminCommunityPost(postId) {
+  if (!postId) return;
+  setSavedCommunityPosts(getSavedCommunityPosts().filter((post) => post.id !== postId));
+  const comments = getCommunityComments();
+  delete comments[postId];
+  localStorage.setItem("foodsourceCommunityComments", JSON.stringify(comments));
   renderAdminPage();
 }
 
@@ -2595,6 +2641,30 @@ if (adminMemberTable) {
       if (confirm(`${email} 회원과 관련 데이터를 삭제할까요?`)) {
         deleteAdminMember(email);
       }
+    }
+  });
+}
+
+if (adminIngredientList) {
+  adminIngredientList.addEventListener("click", (event) => {
+    const deleteButton = event.target.closest("[data-admin-delete-ingredient]");
+    if (!deleteButton) return;
+
+    const ingredientId = deleteButton.dataset.adminDeleteIngredient;
+    const ownerEmail = deleteButton.dataset.adminDeleteIngredientOwner;
+    if (confirm("이 원료 등록글을 삭제할까요?")) {
+      deleteAdminIngredient(ownerEmail, ingredientId);
+    }
+  });
+}
+
+if (adminCommunityList) {
+  adminCommunityList.addEventListener("click", (event) => {
+    const deleteButton = event.target.closest("[data-admin-delete-community]");
+    if (!deleteButton) return;
+
+    if (confirm("이 원료문의 게시글과 댓글을 삭제할까요?")) {
+      deleteAdminCommunityPost(deleteButton.dataset.adminDeleteCommunity);
     }
   });
 }

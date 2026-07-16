@@ -2652,6 +2652,12 @@ img {
   font-weight: 700;
 }
 
+.admin-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
 .site-footer {
   display: flex;
   justify-content: space-between;
