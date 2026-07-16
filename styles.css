@@ -945,7 +945,7 @@ img {
   display: grid;
   align-items: end;
   justify-items: center;
-  padding: clamp(44px, 7vw, 84px) clamp(20px, 5vw, 72px) 34px;
+  padding: clamp(24px, 4vw, 46px) clamp(20px, 5vw, 72px) 10px;
   background: #fff;
   text-align: center;
 }
@@ -957,7 +957,7 @@ img {
 
 .community-hero p:not(.eyebrow) {
   max-width: 920px;
-  margin: 20px auto 0;
+  margin: 12px auto 0;
   color: #4b5563;
   font-size: 18px;
   line-height: 1.7;
@@ -988,17 +988,18 @@ img {
 .community-toolbar {
   justify-content: center;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .community-search {
-  flex: 0 1 420px;
+  flex: 0 1 720px;
   gap: 10px;
-  min-height: 46px;
-  padding: 0 15px;
+  min-height: 54px;
+  padding: 0 18px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 14px;
   color: var(--muted);
+  background: #fff;
 }
 
 .community-search svg {
@@ -1011,10 +1012,11 @@ img {
   min-width: 0;
   border: 0;
   outline: 0;
+  font-size: 16px;
 }
 
 .community-write-button {
-  min-height: 46px;
+  min-height: 54px;
   white-space: nowrap;
 }
 
