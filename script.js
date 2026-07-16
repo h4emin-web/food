@@ -2055,6 +2055,9 @@ function getPartnerDetailMarkup(post) {
           <span>신청자업종</span><strong>${escapeHtml(post.business || "확인 필요")}</strong>
         </div>
         <p>${escapeHtml(post.desc || "")}</p>
+        <div class="detail-actions">
+          <button class="outline-button" type="button" data-message-user="${escapeHtml(post.author)}">쪽지 보내기</button>
+        </div>
       </article>
       <section class="comment-panel" aria-label="댓글">
         <div class="comment-title">
