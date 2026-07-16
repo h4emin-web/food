@@ -484,7 +484,7 @@ function renderCards(items) {
                 : ""
             }
           </span>
-          <span class="ingredient-lead-time">${item.leadTime || "확인 필요"}</span>
+          <span class="ingredient-lead-time">리드타임 : ${item.leadTime || "확인 필요"}</span>
           <div class="card-actions">
             ${getSampleRequestButton(item)}
             <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
@@ -537,7 +537,7 @@ function getIngredientCardMarkup(item) {
             : ""
         }
       </span>
-      <span class="ingredient-lead-time">${item.leadTime || "확인 필요"}</span>
+      <span class="ingredient-lead-time">리드타임 : ${item.leadTime || "확인 필요"}</span>
       <div class="card-actions">
         ${getSampleRequestButton(item)}
         <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
