@@ -1534,13 +1534,7 @@ function sendThreadMessage(body) {
 
 function getAllRegisteredIngredientsByMember() {
   return getMembers().flatMap((member) => {
-    const key = `foodsourceRegisteredIngredients:${member.email}`;
-    let items = [];
-    try {
-      items = JSON.parse(localStorage.getItem(key)) || [];
-    } catch {
-      items = [];
-    }
+    const items = getRegisteredIngredientsByEmail(member.email);
     return items.map((item) => ({
       ...item,
       ownerName: getDisplayName(member),
@@ -1549,6 +1543,15 @@ function getAllRegisteredIngredientsByMember() {
       companyWebsite: item.companyWebsite || member.companyWebsite || "",
     }));
   });
+}
+
+function getRegisteredIngredientsByEmail(email) {
+  if (!email) return [];
+  try {
+    return JSON.parse(localStorage.getItem(`foodsourceRegisteredIngredients:${email}`)) || [];
+  } catch {
+    return [];
+  }
 }
 
 function getAllMessagesByMember() {
@@ -1614,7 +1617,23 @@ function renderAdminMembers() {
 
   const query = adminMemberSearch ? adminMemberSearch.value.trim().toLowerCase() : "";
   const members = getMembers().filter((member) => {
-    const text = `${member.name} ${member.nickname || ""} ${member.email} ${member.company || ""} ${member.companyWebsite || ""} ${member.phone || ""}`.toLowerCase();
+    const registeredItems = getRegisteredIngredientsByEmail(member.email);
+    const registeredText = registeredItems
+      .map((item) =>
+        [
+          item.company,
+          item.companyWebsite,
+          item.name,
+          item.englishName,
+          item.manufacturer,
+          item.origin,
+          item.category,
+        ]
+          .filter(Boolean)
+          .join(" ")
+      )
+      .join(" ");
+    const text = `${member.name} ${member.nickname || ""} ${member.email} ${member.company || ""} ${member.companyWebsite || ""} ${member.phone || ""} ${registeredText}`.toLowerCase();
     return !query || text.includes(query);
   });
 
