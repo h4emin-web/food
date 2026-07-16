@@ -442,7 +442,9 @@ img {
 }
 
 .content-area {
+  width: min(100%, 1180px);
   min-width: 0;
+  margin: 0 auto;
 }
 
 .section-title {
