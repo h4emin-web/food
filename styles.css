@@ -1215,7 +1215,7 @@ img {
 
 .partner-post {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 92px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 22px;
   align-items: center;
   min-height: 160px;
@@ -1297,24 +1297,6 @@ img {
   margin-left: 16px;
   background: #d1d5db;
   vertical-align: -2px;
-}
-
-.partner-dday {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  color: #006fbc;
-  font-size: 18px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.partner-dday span {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #0b83c9;
 }
 
 .partner-detail-meta {
@@ -2957,11 +2939,6 @@ img {
   .partner-post-title h3 {
     flex-basis: 100%;
     white-space: normal;
-  }
-
-  .partner-dday {
-    justify-content: flex-start;
-    font-size: 15px;
   }
 
   .partner-meta {

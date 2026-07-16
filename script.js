@@ -177,7 +177,6 @@ const partnerPosts = [
     title: "닭가슴살을 활용한 스프, 육포, 젤리 OEM 업체를 찾습니다. 소중한 인연이 되었으면 합니다.",
     company: "(유)선신푸드",
     business: "제조",
-    deadline: "2026-08-31",
     desc: "닭가슴살 원료를 활용한 간편식 제품을 함께 개발하고 생산할 수 있는 OEM 협력사를 찾습니다.",
     author: "선신푸드",
     date: "방금 전",
@@ -191,7 +190,6 @@ const partnerPosts = [
     title: "즙제조 odm 업체 찾습니다.",
     company: "채민근",
     business: "유통",
-    deadline: "2026-07-31",
     desc: "소량 테스트와 본생산까지 연결 가능한 즙제조 ODM 협력사를 찾고 있습니다.",
     author: "채민근",
     date: "15분 전",
@@ -205,7 +203,6 @@ const partnerPosts = [
     title: "프로틴바 소량 생산 가능한 OEM 업체를 찾습니다.",
     company: "뉴트리랩",
     business: "브랜드",
-    deadline: "2026-08-20",
     desc: "견과, 단백질 원료를 사용한 프로틴바를 월 3천 개 규모로 테스트 생산하고 싶습니다.",
     author: "뉴트리랩",
     date: "1시간 전",
@@ -278,7 +275,6 @@ const partnerPostCompany = document.querySelector("#partnerPostCompany");
 const partnerPostMode = document.querySelector("#partnerPostMode");
 const partnerPostTrade = document.querySelector("#partnerPostTrade");
 const partnerPostBusiness = document.querySelector("#partnerPostBusiness");
-const partnerPostDeadline = document.querySelector("#partnerPostDeadline");
 const partnerPostDesc = document.querySelector("#partnerPostDesc");
 const suggestionForm = document.querySelector("#suggestionForm");
 const suggestionMessage = document.querySelector("#suggestionMessage");
@@ -1962,17 +1958,6 @@ function getVisiblePartnerPosts() {
   return [...getSavedPartnerPosts(), ...partnerPosts];
 }
 
-function getPartnerDDay(deadline) {
-  if (!deadline) return "D - ?";
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(`${deadline}T00:00:00`);
-  if (Number.isNaN(target.getTime())) return "D - ?";
-  const diff = Math.ceil((target - today) / 86400000);
-  if (diff === 0) return "D-Day";
-  return diff > 0 ? `D - ${diff}` : `D + ${Math.abs(diff)}`;
-}
-
 function getPartnerPostTypeLabel(type) {
   return type === "register" ? "등록" : "문의";
 }
@@ -2001,10 +1986,8 @@ function renderPartnerPosts(posts) {
             <div class="partner-meta">
               <span>기업명 : ${escapeHtml(post.company || "확인 필요")}</span>
               <span>신청자업종 : ${escapeHtml(post.business || "확인 필요")}</span>
-              <span>신청기한 : ${escapeHtml(post.deadline || "상시")}</span>
             </div>
           </div>
-          <div class="partner-dday"><span></span>${getPartnerDDay(post.deadline)}</div>
         </article>
         ${activePartnerPostId === post.id ? getPartnerDetailMarkup(post) : ""}
       `
@@ -2051,7 +2034,6 @@ function getPartnerDetailMarkup(post) {
         <div class="partner-detail-meta">
           <span>기업명</span><strong>${escapeHtml(post.company || "확인 필요")}</strong>
           <span>신청자업종</span><strong>${escapeHtml(post.business || "확인 필요")}</strong>
-          <span>신청기한</span><strong>${escapeHtml(post.deadline || "상시")}</strong>
         </div>
         <p>${escapeHtml(post.desc || "")}</p>
       </article>
@@ -2488,7 +2470,6 @@ if (partnerWriteForm) {
       title,
       company,
       business: partnerPostBusiness.value.trim() || "확인 필요",
-      deadline: partnerPostDeadline.value,
       desc,
       author: getDisplayName(member),
       date: "방금 전",
