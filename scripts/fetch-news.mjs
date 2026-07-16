@@ -88,7 +88,7 @@ function slugify(value) {
 
 function normalizeSource(title) {
   const parts = title.split(" - ");
-  return parts.length > 1 ? parts.at(-1).trim() : "Food Source News";
+  return parts.length > 1 ? parts.at(-1).trim() : "Food Sourcing News";
 }
 
 function summarize(title) {

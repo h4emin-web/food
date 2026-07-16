@@ -292,7 +292,7 @@ const defaultAdminMember = {
   companyWebsite: "",
   role: "관리자",
   interest: "식품 원료",
-  memo: "푸드소스 기본 관리자 계정",
+  memo: "푸드소싱 기본 관리자 계정",
   isAdmin: true,
   joinedAt: "2026-07-16T00:00:00.000Z",
 };
@@ -1755,7 +1755,7 @@ function renderNewsCards(items) {
           <div class="news-card-body">
             <div class="news-tags">
               <span>${escapeHtml(item.sourceLabel || item.category || "NEWS")}</span>
-              <span>${escapeHtml(item.source || "Food Source")}</span>
+              <span>${escapeHtml(item.source || "Food Sourcing")}</span>
             </div>
             <time datetime="${escapeHtml(item.publishedAt || "")}">${formatNewsDate(item.publishedAt)}</time>
             <h3>${escapeHtml(item.title)}</h3>
@@ -2518,7 +2518,7 @@ if (suggestionForm) {
     ]
       .filter((line) => line !== "")
       .join("\n");
-    const mailto = `mailto:foden_@naver.com?subject=${encodeURIComponent("[푸드소스 건의사항]")}&body=${encodeURIComponent(mailBody)}`;
+    const mailto = `mailto:foden_@naver.com?subject=${encodeURIComponent("[푸드소싱 건의사항]")}&body=${encodeURIComponent(mailBody)}`;
 
     if (suggestionMessage) {
       suggestionMessage.textContent = "메일 앱을 열고 있습니다. 메일 앱에서 전송 버튼을 눌러주세요.";
