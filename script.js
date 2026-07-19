@@ -601,18 +601,44 @@ function escapeHtml(value) {
   });
 }
 
+function normalizeEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function normalizePassword(value) {
+  return String(value || "").trim();
+}
+
+function normalizeMember(member) {
+  const normalized = {
+    ...member,
+    email: normalizeEmail(member?.email),
+    password: normalizePassword(member?.password),
+    name: String(member?.name || "").trim(),
+    phone: String(member?.phone || "").trim(),
+    nickname: String(member?.nickname || member?.name || "").trim(),
+    company: String(member?.company || "").trim(),
+    companyWebsite: String(member?.companyWebsite || "").trim(),
+  };
+  return normalized;
+}
+
 function getMembers() {
   try {
-    return JSON.parse(localStorage.getItem("foodsourceMembers")) || [];
+    return (JSON.parse(localStorage.getItem("foodsourceMembers")) || []).map(normalizeMember);
   } catch {
     return [];
   }
 }
 
+function setMembers(members) {
+  localStorage.setItem("foodsourceMembers", JSON.stringify(members.map(normalizeMember)));
+}
+
 function ensureDefaultAdminMember() {
   const members = getMembers();
-  const adminEmail = defaultAdminMember.email.toLowerCase();
-  const existing = members.find((member) => (member.email || "").toLowerCase() === adminEmail);
+  const adminEmail = normalizeEmail(defaultAdminMember.email);
+  const existing = members.find((member) => normalizeEmail(member.email) === adminEmail);
   const nextAdmin = existing
     ? {
         ...existing,
@@ -621,12 +647,12 @@ function ensureDefaultAdminMember() {
       }
     : defaultAdminMember;
   const nextMembers = existing
-    ? members.map((member) => ((member.email || "").toLowerCase() === adminEmail ? nextAdmin : member))
+    ? members.map((member) => (normalizeEmail(member.email) === adminEmail ? nextAdmin : member))
     : [...members, nextAdmin];
-  localStorage.setItem("foodsourceMembers", JSON.stringify(nextMembers));
+  setMembers(nextMembers);
 
   const current = getCurrentMember();
-  if ((current?.email || "").toLowerCase() === adminEmail) {
+  if (normalizeEmail(current?.email) === adminEmail) {
     setCurrentMember(nextAdmin);
   }
 }
@@ -641,7 +667,7 @@ function getCurrentMember() {
 
 function isAdminMember(member = getCurrentMember()) {
   if (!member) return false;
-  const email = (member.email || "").toLowerCase();
+  const email = normalizeEmail(member.email);
   return email === "foden_@naver.com";
 }
 
@@ -650,13 +676,35 @@ function getDisplayName(member = getCurrentMember()) {
 }
 
 function setCurrentMember(member) {
-  const normalizedMember = { ...member, nickname: member.nickname || member.name };
+  const normalizedMember = normalizeMember({ ...member, nickname: member.nickname || member.name });
   localStorage.setItem("foodsourceCurrentMember", JSON.stringify(normalizedMember));
 }
 
-function trackVisit() {
+function getLocalVisitorId() {
+  const key = "foodsourceVisitorId";
+  let visitorId = localStorage.getItem(key);
+  if (!visitorId) {
+    visitorId = `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(key, visitorId);
+  }
+  return visitorId;
+}
+
+async function getVisitorIpKey() {
+  try {
+    const response = await fetch("https://api.ipify.org?format=json", { cache: "no-store" });
+    if (!response.ok) throw new Error("ip");
+    const data = await response.json();
+    return data.ip ? `ip-${data.ip}` : getLocalVisitorId();
+  } catch {
+    return getLocalVisitorId();
+  }
+}
+
+async function trackVisit() {
   const today = new Date().toISOString().slice(0, 10);
   const path = window.location.pathname.split("/").pop() || "index.html";
+  const visitorKey = await getVisitorIpKey();
   let visits = {};
   try {
     visits = JSON.parse(localStorage.getItem("foodsourceVisits")) || {};
@@ -664,10 +712,22 @@ function trackVisit() {
     visits = {};
   }
 
-  visits[today] = visits[today] || { count: 0, pages: {} };
-  visits[today].count += 1;
-  visits[today].pages[path] = (visits[today].pages[path] || 0) + 1;
+  visits[today] = visits[today] || { count: 0, pages: {}, ips: [] };
+  visits[today].ips = Array.isArray(visits[today].ips) ? visits[today].ips : [];
+  const alreadyCountedToday = visits[today].ips.includes(visitorKey);
+  if (!alreadyCountedToday) {
+    visits[today].ips.push(visitorKey);
+    visits[today].count = visits[today].ips.length;
+  }
+  visits[today].pages[path] = visits[today].pages[path] || [];
+  if (Array.isArray(visits[today].pages[path])) {
+    if (!visits[today].pages[path].includes(visitorKey)) visits[today].pages[path].push(visitorKey);
+  } else {
+    visits[today].pages[path] = [visitorKey];
+  }
   localStorage.setItem("foodsourceVisits", JSON.stringify(visits));
+  renderAdminStats();
+  renderAdminVisits();
 }
 
 function getVisitStats() {
@@ -811,7 +871,7 @@ function updateStoredMember(member) {
   const nextMembers = exists
     ? members.map((item) => (item.email === member.email ? member : item))
     : [...members, member];
-  localStorage.setItem("foodsourceMembers", JSON.stringify(nextMembers));
+  setMembers(nextMembers);
   setCurrentMember(member);
 }
 
@@ -1387,11 +1447,11 @@ function renderAdminStats() {
   const messages = getAllMessagesByMember();
   const communityItems = getSavedCommunityPosts();
   const visits = getVisitStats();
-  const totalVisits = Object.values(visits).reduce((sum, day) => sum + (day.count || 0), 0);
+  const totalVisits = Object.values(visits).reduce((sum, day) => sum + (day.ips?.length || day.count || 0), 0);
 
   const stats = [
-    ["오늘 접속", `${getTodayVisitCount()}회`],
-    ["누적 접속", `${totalVisits}회`],
+    ["오늘 접속", `${getTodayVisitCount()}명`],
+    ["누적 접속", `${totalVisits}명`],
     ["회원", `${members.length}명`],
     ["등록 원료", `${ingredients.length}개`],
     ["원료문의", `${communityItems.length}개`],
@@ -1464,6 +1524,7 @@ function renderAdminVisits() {
     ? days
         .map((day) => {
           const pages = Object.entries(visits[day].pages || {})
+            .map(([page, value]) => [page, Array.isArray(value) ? value.length : value])
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3)
             .map(([page, count]) => `${page} ${count}`)
@@ -1471,7 +1532,7 @@ function renderAdminVisits() {
           return `
             <article class="admin-list-row">
               <strong>${day}</strong>
-              <span>${visits[day].count || 0}회</span>
+              <span>${visits[day].ips?.length || visits[day].count || 0}명</span>
               <p>${escapeHtml(pages || "페이지 기록 없음")}</p>
             </article>
           `;
@@ -1551,7 +1612,7 @@ function renderAdminMessages() {
 function deleteAdminMember(email) {
   const current = getCurrentMember();
   const members = getMembers().filter((member) => member.email !== email);
-  localStorage.setItem("foodsourceMembers", JSON.stringify(members));
+  setMembers(members);
   localStorage.removeItem(`foodsourceFavorites:${email}`);
   localStorage.removeItem(`foodsourceMessages:${email}`);
   localStorage.removeItem(`foodsourceRegisteredIngredients:${email}`);
@@ -2595,11 +2656,11 @@ if (signupForm) {
   signupForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const password = signupFields.password.value;
-    const confirm = signupFields.confirm.value;
+    const password = normalizePassword(signupFields.password.value);
+    const confirm = normalizePassword(signupFields.confirm.value);
     const member = {
       name: signupFields.name.value.trim(),
-      email: signupFields.email.value.trim().toLowerCase(),
+      email: normalizeEmail(signupFields.email.value),
       phone: signupFields.phone.value.trim(),
       nickname: signupFields.nickname.value.trim(),
       company: signupFields.company.value.trim(),
@@ -2630,13 +2691,13 @@ if (signupForm) {
     }
 
     const members = getMembers();
-    if (members.some((item) => item.email === member.email)) {
+    if (members.some((item) => normalizeEmail(item.email) === member.email)) {
       setSignupMessage("이미 가입된 이메일입니다.", "error");
       return;
     }
 
     members.push(member);
-    localStorage.setItem("foodsourceMembers", JSON.stringify(members));
+    setMembers(members);
     setCurrentMember(member);
     signupForm.reset();
     setSignupMessage("회원가입이 완료되었습니다.", "success");
@@ -2915,9 +2976,9 @@ if (loginForm) {
   loginForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const email = loginFields.email.value.trim().toLowerCase();
-    const password = loginFields.password.value;
-    const member = getMembers().find((item) => item.email === email && item.password === password);
+    const email = normalizeEmail(loginFields.email.value);
+    const password = normalizePassword(loginFields.password.value);
+    const member = getMembers().find((item) => normalizeEmail(item.email) === email && normalizePassword(item.password) === password);
 
     if (!member) {
       setLoginMessage("이메일 또는 비밀번호를 확인해주세요.", "error");
