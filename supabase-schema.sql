@@ -19,6 +19,27 @@ create table if not exists public.profiles (
   updated_at timestamptz not null default now()
 );
 
+create unique index if not exists profiles_nickname_unique
+  on public.profiles (lower(nickname))
+  where nickname <> '';
+
+create or replace function public.nickname_exists(check_nickname text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.profiles
+    where lower(nickname) = lower(trim(check_nickname))
+      and nickname <> ''
+  );
+$$;
+
+grant execute on function public.nickname_exists(text) to anon, authenticated;
+
 create table if not exists public.ingredients (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid references auth.users(id) on delete cascade,

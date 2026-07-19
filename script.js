@@ -616,6 +616,10 @@ function normalizePassword(value) {
   return String(value || "").trim();
 }
 
+function normalizeNickname(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 function normalizeWebsite(value) {
   const website = String(value || "").trim();
   if (!website) return "";
@@ -647,6 +651,17 @@ function getMembers() {
 
 function setMembers(members) {
   localStorage.setItem("foodsourceMembers", JSON.stringify(members.map(normalizeMember)));
+}
+
+function isNicknameTakenLocally(nickname, excludeEmail = "") {
+  const target = normalizeNickname(nickname);
+  const email = normalizeEmail(excludeEmail);
+  if (!target) return false;
+  return getMembers().some((member) => {
+    const memberEmail = normalizeEmail(member.email);
+    const memberNickname = normalizeNickname(member.nickname || member.name);
+    return memberNickname === target && memberEmail !== email;
+  });
 }
 
 function ensureDefaultAdminMember() {
@@ -751,6 +766,21 @@ async function signUpWithSupabase(member, password) {
     // The profiles table may not exist until supabase-schema.sql is run.
   }
   return { ok: true, user: data.user };
+}
+
+async function isNicknameTakenInSupabase(nickname) {
+  if (!supabaseClient) return false;
+  const normalizedNickname = String(nickname || "").trim();
+  if (!normalizedNickname) return false;
+  try {
+    const { data, error } = await supabaseClient.rpc("nickname_exists", {
+      check_nickname: normalizedNickname,
+    });
+    if (error) return false;
+    return Boolean(data);
+  } catch {
+    return false;
+  }
 }
 
 async function signInWithSupabase(email, password) {
@@ -3111,6 +3141,12 @@ if (signupForm) {
       return;
     }
 
+    if (isNicknameTakenLocally(member.nickname, member.email) || (await isNicknameTakenInSupabase(member.nickname))) {
+      setSignupMessage("이미 사용 중인 닉네임입니다.", "error");
+      signupFields.nickname.focus();
+      return;
+    }
+
     const remoteSignup = await signUpWithSupabase(member, password);
     if (!remoteSignup.ok && remoteSignup.error) {
       setSignupMessage(`Supabase 가입 오류: ${remoteSignup.error.message}`, "error");
@@ -3127,6 +3163,17 @@ if (signupForm) {
 
   signupForm.addEventListener("reset", () => {
     window.setTimeout(() => setSignupMessage("", ""), 0);
+  });
+
+  signupFields.nickname.addEventListener("input", () => {
+    const nickname = signupFields.nickname.value.trim();
+    if (nickname && isNicknameTakenLocally(nickname, signupFields.email.value)) {
+      setSignupMessage("이미 사용 중인 닉네임입니다.", "error");
+      return;
+    }
+    if (signupMessage.textContent.includes("닉네임")) {
+      setSignupMessage("", "");
+    }
   });
 
   updateAuthLinks();
