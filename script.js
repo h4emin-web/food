@@ -790,82 +790,6 @@ async function signInWithSupabase(email, password) {
   return { ok: true, user: data.user };
 }
 
-async function migrateLocalMemberToSupabase(member) {
-  const normalizedMember = normalizeMember(member);
-  if (!supabaseClient || !normalizedMember.email || normalizePassword(normalizedMember.password).length < 6) {
-    return { ok: false, skipped: true };
-  }
-
-  const signup = await signUpWithSupabase(normalizedMember, normalizedMember.password);
-  if (signup.ok) {
-    return { ok: true, user: signup.user, created: true };
-  }
-
-  const message = String(signup.error?.message || "").toLowerCase();
-  const alreadyRegistered = message.includes("already") || message.includes("registered") || message.includes("exists");
-  if (!alreadyRegistered) {
-    return signup;
-  }
-
-  const login = await signInWithSupabase(normalizedMember.email, normalizedMember.password);
-  if (!login.ok) return login;
-
-  try {
-    await saveSupabaseProfile(login.user?.id, normalizedMember);
-  } catch {
-    // The profiles table may not exist until supabase-schema.sql is run.
-  }
-  return { ok: true, user: login.user, created: false };
-}
-
-async function autoMigrateLocalMembersToSupabase() {
-  if (!supabaseClient) return;
-  const members = getMembers().filter((member) => normalizeEmail(member.email) && normalizePassword(member.password).length >= 6);
-  if (!members.length) return;
-
-  const migrationKey = "foodsourceSupabaseMigratedMembers";
-  let migratedEmailList = [];
-  try {
-    migratedEmailList = JSON.parse(localStorage.getItem(migrationKey) || "[]");
-  } catch {
-    migratedEmailList = [];
-  }
-  const migratedEmails = new Set(migratedEmailList.map(normalizeEmail));
-  const pendingMembers = members.filter((member) => !migratedEmails.has(normalizeEmail(member.email)));
-  if (!pendingMembers.length) return;
-
-  const currentMember = getCurrentMember();
-  const currentEmail = normalizeEmail(currentMember?.email);
-
-  for (const member of pendingMembers) {
-    try {
-      const result = await migrateLocalMemberToSupabase(member);
-      if (result.ok) {
-        migratedEmails.add(normalizeEmail(member.email));
-      }
-    } catch {
-      // Keep failed members pending so they can be retried on the next visit.
-    }
-  }
-
-  localStorage.setItem(migrationKey, JSON.stringify([...migratedEmails]));
-
-  if (currentEmail) {
-    const nextCurrent = members.find((member) => normalizeEmail(member.email) === currentEmail);
-    if (nextCurrent) {
-      await signInWithSupabase(nextCurrent.email, nextCurrent.password);
-      setCurrentMember(nextCurrent);
-      return;
-    }
-  }
-
-  try {
-    await supabaseClient.auth.signOut();
-  } catch {
-    // Sign-out is only cleanup for the migration helper.
-  }
-}
-
 function getLocalVisitorId() {
   const key = "foodsourceVisitorId";
   let visitorId = localStorage.getItem(key);
@@ -3542,9 +3466,6 @@ if (loginForm) {
       updateStoredMember(member);
     } else {
       member = getMembers().find((item) => normalizeEmail(item.email) === email && normalizePassword(item.password) === password);
-      if (member) {
-        await migrateLocalMemberToSupabase(member);
-      }
     }
 
     if (!member) {
