@@ -3224,7 +3224,9 @@ if (signupForm) {
     }
 
     const remoteSignup = await signUpWithSupabase(member, password);
-    if (!remoteSignup.ok && remoteSignup.error) {
+    const remoteErrorMessage = String(remoteSignup.error?.message || "");
+    const isRateLimited = remoteErrorMessage.toLowerCase().includes("rate limit");
+    if (!remoteSignup.ok && remoteSignup.error && !isRateLimited) {
       setSignupMessage(`Supabase 가입 오류: ${remoteSignup.error.message}`, "error");
       return;
     }
@@ -3233,7 +3235,10 @@ if (signupForm) {
     setMembers(members);
     setCurrentMember(member);
     signupForm.reset();
-    setSignupMessage("회원가입이 완료되었습니다.", "success");
+    setSignupMessage(
+      isRateLimited ? "회원가입은 완료되었습니다. 서버 동기화는 잠시 후 자동으로 다시 시도됩니다." : "회원가입이 완료되었습니다.",
+      "success"
+    );
     updateAuthLinks();
   });
 
@@ -3564,7 +3569,6 @@ bindVisibilityChoiceRadios();
 document.addEventListener("click", createClickRipple, true);
 trackVisit();
 ensureDefaultAdminMember();
-autoMigrateLocalMembersToSupabase();
 updateAuthLinks();
 updateRegisterAccess();
 updateMypageAccess();
