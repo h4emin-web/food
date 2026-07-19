@@ -1507,12 +1507,30 @@ function sendThreadMessage(body) {
 }
 
 function getAllRegisteredIngredientsByMember() {
-  return getMembers().flatMap((member) => {
-    const items = getRegisteredIngredientsByEmail(member.email);
+  const members = getMembers();
+  const memberMap = new Map(members.map((member) => [normalizeEmail(member.email), member]));
+  const ingredientEmails = new Set(members.map((member) => normalizeEmail(member.email)).filter(Boolean));
+
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const key = localStorage.key(index);
+    if (!key || !key.startsWith("foodsourceRegisteredIngredients:")) continue;
+    const email = normalizeEmail(key.replace("foodsourceRegisteredIngredients:", ""));
+    if (email) ingredientEmails.add(email);
+  }
+
+  return [...ingredientEmails].flatMap((email) => {
+    const member = memberMap.get(email) || {
+      email,
+      name: email,
+      nickname: email,
+      company: "",
+      companyWebsite: "",
+    };
+    const items = getRegisteredIngredientsByEmail(email);
     return items.map((item) => ({
       ...item,
       ownerName: getDisplayName(member),
-      ownerEmail: member.email,
+      ownerEmail: email,
       company: item.company || member.company || "",
       companyWebsite: item.companyWebsite || member.companyWebsite || "",
     }));
