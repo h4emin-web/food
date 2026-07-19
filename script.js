@@ -119,6 +119,9 @@ const adminVisitList = document.querySelector("#adminVisitList");
 const adminIngredientList = document.querySelector("#adminIngredientList");
 const adminCommunityList = document.querySelector("#adminCommunityList");
 const adminMessageList = document.querySelector("#adminMessageList");
+const adminExportDataButton = document.querySelector("#adminExportData");
+const adminImportDataInput = document.querySelector("#adminImportData");
+const adminBackupMessage = document.querySelector("#adminBackupMessage");
 const authLinks = [...document.querySelectorAll(".auth-link")];
 const logoutLinks = [...document.querySelectorAll("[data-logout-link]")];
 const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
@@ -1777,6 +1780,96 @@ function deleteAdminCommunityPost(postId) {
   renderAdminPage();
 }
 
+function setAdminBackupMessage(message, type = "") {
+  if (!adminBackupMessage) return;
+  adminBackupMessage.textContent = message;
+  adminBackupMessage.className = `form-message ${type}`.trim();
+}
+
+function getFoodSourceStorageSnapshot() {
+  const data = {};
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const key = localStorage.key(index);
+    if (!key || !key.startsWith("foodsource")) continue;
+    data[key] = localStorage.getItem(key);
+  }
+  return {
+    exportedAt: new Date().toISOString(),
+    origin: window.location.origin,
+    data,
+  };
+}
+
+function downloadAdminDataBackup() {
+  const snapshot = getFoodSourceStorageSnapshot();
+  const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `foodsourcing-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+  setAdminBackupMessage("백업 파일을 만들었습니다.", "success");
+}
+
+function parseBackupValue(value) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
+
+function mergeArrayById(currentValue, incomingValue) {
+  const current = Array.isArray(currentValue) ? currentValue : [];
+  const incoming = Array.isArray(incomingValue) ? incomingValue : [];
+  const map = new Map(current.map((item) => [item?.id || JSON.stringify(item), item]));
+  incoming.forEach((item) => {
+    map.set(item?.id || JSON.stringify(item), item);
+  });
+  return [...map.values()];
+}
+
+function mergeObjectArrays(currentValue, incomingValue) {
+  const current = currentValue && typeof currentValue === "object" && !Array.isArray(currentValue) ? currentValue : {};
+  const incoming = incomingValue && typeof incomingValue === "object" && !Array.isArray(incomingValue) ? incomingValue : {};
+  const next = { ...current };
+  Object.entries(incoming).forEach(([key, value]) => {
+    next[key] = mergeArrayById(next[key], value);
+  });
+  return next;
+}
+
+function importAdminDataBackup(snapshot) {
+  const data = snapshot?.data && typeof snapshot.data === "object" ? snapshot.data : snapshot;
+  if (!data || typeof data !== "object") throw new Error("invalid-backup");
+
+  let importedCount = 0;
+  Object.entries(data).forEach(([key, rawValue]) => {
+    if (!key.startsWith("foodsource")) return;
+    const incoming = parseBackupValue(rawValue);
+    const current = parseBackupValue(localStorage.getItem(key));
+    let nextValue = incoming;
+
+    if (key === "foodsourceCommunityComments") {
+      nextValue = mergeObjectArrays(current, incoming);
+    } else if (Array.isArray(current) || Array.isArray(incoming)) {
+      nextValue = mergeArrayById(current, incoming);
+    }
+
+    localStorage.setItem(key, typeof nextValue === "string" ? nextValue : JSON.stringify(nextValue));
+    importedCount += 1;
+  });
+
+  ensureDefaultAdminMember();
+  updateAuthLinks();
+  updateGrid();
+  updateCommunityPosts();
+  updatePartnerPosts();
+  renderAdminPage();
+  return importedCount;
+}
+
 function renderNewsCards(items) {
   if (!newsGrid) return;
 
@@ -2661,6 +2754,28 @@ if (adminCommunityList) {
 
     if (confirm("이 원료문의 게시글과 댓글을 삭제할까요?")) {
       deleteAdminCommunityPost(deleteButton.dataset.adminDeleteCommunity);
+    }
+  });
+}
+
+if (adminExportDataButton) {
+  adminExportDataButton.addEventListener("click", downloadAdminDataBackup);
+}
+
+if (adminImportDataInput) {
+  adminImportDataInput.addEventListener("change", async () => {
+    const file = adminImportDataInput.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const snapshot = JSON.parse(text);
+      const count = importAdminDataBackup(snapshot);
+      setAdminBackupMessage(`${count}개 데이터 묶음을 가져왔습니다. 원료찾기와 원료문의에서 확인해주세요.`, "success");
+    } catch {
+      setAdminBackupMessage("백업 파일을 가져오지 못했습니다. JSON 파일을 확인해주세요.", "error");
+    } finally {
+      adminImportDataInput.value = "";
     }
   });
 }

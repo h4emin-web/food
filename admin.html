@@ -106,6 +106,22 @@
         <section class="admin-panel">
           <div class="admin-panel-head">
             <div>
+              <p class="eyebrow">Backup</p>
+              <h2>기존 데이터 복구</h2>
+            </div>
+          </div>
+          <div class="admin-backup-actions">
+            <button class="outline-button" type="button" id="adminExportData">데이터 백업</button>
+            <label class="outline-button admin-import-button" for="adminImportData">백업 가져오기</label>
+            <input id="adminImportData" type="file" accept=".json,application/json" />
+          </div>
+          <p class="admin-note">예전 주소에서 백업한 파일을 현재 도메인에서 가져오면 기존 원료와 문의글을 합칠 수 있습니다.</p>
+          <p class="form-message" id="adminBackupMessage" aria-live="polite"></p>
+        </section>
+
+        <section class="admin-panel">
+          <div class="admin-panel-head">
+            <div>
               <p class="eyebrow">Ingredients</p>
               <h2>회원 등록 원료</h2>
             </div>

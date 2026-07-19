@@ -2725,6 +2725,24 @@ img {
   gap: 10px;
 }
 
+.admin-backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-import-button {
+  cursor: pointer;
+}
+
+#adminImportData {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
 .admin-list-row {
   display: grid;
   gap: 5px;
