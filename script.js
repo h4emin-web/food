@@ -136,6 +136,7 @@ let communityCurrentPage = 1;
 let communityPageSize = 10;
 let partnerCurrentPage = 1;
 let partnerPageSize = 10;
+const supabaseClient = window.foodSourcingSupabase || null;
 
 function getFavoriteKey() {
   const member = getCurrentMember();
@@ -688,6 +689,72 @@ function getDisplayName(member = getCurrentMember()) {
 function setCurrentMember(member) {
   const normalizedMember = normalizeMember({ ...member, nickname: member.nickname || member.name });
   localStorage.setItem("foodsourceCurrentMember", JSON.stringify(normalizedMember));
+}
+
+function mapSupabaseUserToMember(user) {
+  const meta = user?.user_metadata || {};
+  return normalizeMember({
+    name: meta.name || meta.full_name || "",
+    nickname: meta.nickname || meta.name || "",
+    email: user?.email || "",
+    phone: meta.phone || "",
+    password: "",
+    company: meta.company || "",
+    companyWebsite: meta.companyWebsite || meta.company_website || "",
+    role: meta.role || "식품 개발",
+    interest: meta.interest || "",
+    memo: meta.memo || "",
+    isAdmin: normalizeEmail(user?.email) === "foden_@naver.com",
+    joinedAt: user?.created_at || new Date().toISOString(),
+  });
+}
+
+async function saveSupabaseProfile(userId, member) {
+  if (!supabaseClient || !userId) return;
+  await supabaseClient.from("profiles").upsert({
+    id: userId,
+    email: member.email,
+    name: member.name,
+    nickname: member.nickname || member.name,
+    phone: member.phone,
+    company: member.company,
+    company_website: member.companyWebsite,
+    role: member.role || "식품 개발",
+    is_admin: member.email === "foden_@naver.com",
+    updated_at: new Date().toISOString(),
+  });
+}
+
+async function signUpWithSupabase(member, password) {
+  if (!supabaseClient) return { ok: false, skipped: true };
+  const { data, error } = await supabaseClient.auth.signUp({
+    email: member.email,
+    password,
+    options: {
+      data: {
+        name: member.name,
+        nickname: member.nickname,
+        phone: member.phone,
+        company: member.company,
+        companyWebsite: member.companyWebsite,
+        role: member.role,
+      },
+    },
+  });
+  if (error) return { ok: false, error };
+  try {
+    await saveSupabaseProfile(data.user?.id, member);
+  } catch {
+    // The profiles table may not exist until supabase-schema.sql is run.
+  }
+  return { ok: true, user: data.user };
+}
+
+async function signInWithSupabase(email, password) {
+  if (!supabaseClient) return { ok: false, skipped: true };
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) return { ok: false, error };
+  return { ok: true, user: data.user };
 }
 
 function getLocalVisitorId() {
@@ -2868,7 +2935,7 @@ if (signupForm) {
     signupMessage.className = `form-message ${type}`.trim();
   }
 
-  signupForm.addEventListener("submit", (event) => {
+  signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const password = normalizePassword(signupFields.password.value);
@@ -2908,6 +2975,12 @@ if (signupForm) {
     const members = getMembers();
     if (members.some((item) => normalizeEmail(item.email) === member.email)) {
       setSignupMessage("이미 가입된 이메일입니다.", "error");
+      return;
+    }
+
+    const remoteSignup = await signUpWithSupabase(member, password);
+    if (!remoteSignup.ok && remoteSignup.error) {
+      setSignupMessage(`Supabase 가입 오류: ${remoteSignup.error.message}`, "error");
       return;
     }
 
@@ -3188,15 +3261,30 @@ if (loginForm) {
     loginMessage.className = `form-message ${type}`.trim();
   }
 
-  loginForm.addEventListener("submit", (event) => {
+  loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const email = normalizeEmail(loginFields.email.value);
     const password = normalizePassword(loginFields.password.value);
-    const member = getMembers().find((item) => normalizeEmail(item.email) === email && normalizePassword(item.password) === password);
+    const remoteLogin = await signInWithSupabase(email, password);
+    let member = null;
+
+    if (remoteLogin.ok && remoteLogin.user) {
+      const localMember = getMembers().find((item) => normalizeEmail(item.email) === email);
+      member = normalizeMember({
+        ...mapSupabaseUserToMember(remoteLogin.user),
+        ...localMember,
+        email,
+        password: localMember?.password || "",
+      });
+      updateStoredMember(member);
+    } else {
+      member = getMembers().find((item) => normalizeEmail(item.email) === email && normalizePassword(item.password) === password);
+    }
 
     if (!member) {
-      setLoginMessage("이메일 또는 비밀번호를 확인해주세요.", "error");
+      const remoteMessage = remoteLogin.error?.message ? ` (${remoteLogin.error.message})` : "";
+      setLoginMessage(`이메일 또는 비밀번호를 확인해주세요.${remoteMessage}`, "error");
       return;
     }
 
