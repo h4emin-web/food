@@ -95,6 +95,9 @@ const messageConversation = document.querySelector("#messageConversation");
 const messageComposer = document.querySelector("#messageComposer");
 const messageAlarmButtons = [...document.querySelectorAll("[data-message-link]")];
 const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm");
+const csvIngredientUpload = document.querySelector("#csvIngredientUpload");
+const csvTemplateDownload = document.querySelector("#csvTemplateDownload");
+const csvUploadMessage = document.querySelector("#csvUploadMessage");
 const registerLayout = document.querySelector("#registerLayout");
 const registerAuthRequired = document.querySelector("#registerAuthRequired");
 const signupForm = document.querySelector("#signupForm");
@@ -1017,6 +1020,12 @@ function saveRegisteredIngredient(item) {
   if (!key) return;
   const items = getRegisteredIngredients();
   localStorage.setItem(key, JSON.stringify([item, ...items]));
+}
+
+function saveRegisteredIngredients(items) {
+  const key = getRegisteredIngredientKey();
+  if (!key || !items.length) return;
+  localStorage.setItem(key, JSON.stringify([...items, ...getRegisteredIngredients()]));
 }
 
 function getFilteredRegisteredIngredients() {
@@ -2607,6 +2616,12 @@ if (ingredientRegisterForm) {
     registerMessage.className = `form-message ${type}`.trim();
   }
 
+  function setCsvUploadMessage(message, type = "") {
+    if (!csvUploadMessage) return;
+    csvUploadMessage.textContent = message;
+    csvUploadMessage.className = `form-message ${type}`.trim();
+  }
+
   function getSelectedRegisterCategory() {
     const selected = registerFields.category.selectedOptions[0];
     return selected && selected.value ? selected.textContent.trim() : "";
@@ -2626,12 +2641,165 @@ if (ingredientRegisterForm) {
     }
   }
 
+  function parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let field = "";
+    let inQuotes = false;
+
+    for (let index = 0; index < text.length; index += 1) {
+      const char = text[index];
+      const next = text[index + 1];
+
+      if (char === "\"" && inQuotes && next === "\"") {
+        field += "\"";
+        index += 1;
+      } else if (char === "\"") {
+        inQuotes = !inQuotes;
+      } else if (char === "," && !inQuotes) {
+        row.push(field.trim());
+        field = "";
+      } else if ((char === "\n" || char === "\r") && !inQuotes) {
+        if (char === "\r" && next === "\n") index += 1;
+        row.push(field.trim());
+        if (row.some((value) => value !== "")) rows.push(row);
+        row = [];
+        field = "";
+      } else {
+        field += char;
+      }
+    }
+
+    row.push(field.trim());
+    if (row.some((value) => value !== "")) rows.push(row);
+    return rows;
+  }
+
+  function normalizeCsvHeader(value) {
+    return String(value || "").replace(/^\uFEFF/, "").replace(/\s+/g, "").toLowerCase();
+  }
+
+  function getCsvValue(row, headers, names) {
+    for (const name of names) {
+      const index = headers.indexOf(normalizeCsvHeader(name));
+      if (index >= 0) return row[index] || "";
+    }
+    return "";
+  }
+
+  function normalizeCsvChoice(value, allowed, fallback) {
+    const text = String(value || "").trim();
+    return allowed.includes(text) ? text : fallback;
+  }
+
+  function normalizeManufacturerVisibility(value) {
+    const text = String(value || "").trim().toLowerCase();
+    if (text === "비공개" || text === "private") return "private";
+    return "public";
+  }
+
+  function buildCsvIngredient(row, headers, member, index) {
+    const origin = getCsvValue(row, headers, ["제조국", "원산지", "origin"]);
+    const category = getCsvValue(row, headers, ["카테고리", "분류", "category"]);
+    const now = new Date();
+    return {
+      id: `registered-csv-${Date.now()}-${index}`,
+      name: getCsvValue(row, headers, ["원료명", "name"]),
+      englishName: getCsvValue(row, headers, ["영문명", "englishName", "english"]),
+      origin,
+      originFlagCode: getCountryFlagCode(origin),
+      manufacturer: getCsvValue(row, headers, ["제조사", "manufacturer"]),
+      manufacturerVisibility: normalizeManufacturerVisibility(getCsvValue(row, headers, ["제조사공개여부", "제조사공개", "manufacturerVisibility"])),
+      category,
+      use: getCsvValue(row, headers, ["사용용도", "용도", "use"]),
+      cert: getCsvValue(row, headers, ["인증", "cert"]),
+      moq: getCsvValue(row, headers, ["MOQ", "moq"]),
+      leadTime: getCsvValue(row, headers, ["리드타임", "leadTime"]),
+      sample: normalizeCsvChoice(getCsvValue(row, headers, ["샘플제공", "샘플", "sample"]), ["가능", "협의", "불가"], "가능"),
+      response: normalizeCsvChoice(getCsvValue(row, headers, ["응답방식", "response"]), ["샘플 요청 가능", "견적 문의 가능", "샘플·견적 모두 가능"], "샘플·견적 모두 가능"),
+      desc: getCsvValue(row, headers, ["원료설명", "설명", "desc"]),
+      company: member?.company || "",
+      companyWebsite: member?.companyWebsite || "",
+      ownerName: getDisplayName(member),
+      ownerEmail: member?.email || "",
+      createdAt: now.toISOString(),
+      createdAtText: new Intl.DateTimeFormat("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(now),
+    };
+  }
+
+  function downloadCsvTemplate() {
+    const headers = ["원료명", "영문명", "제조국", "제조사", "제조사공개여부", "카테고리", "사용용도", "인증", "MOQ", "리드타임", "샘플제공", "응답방식", "원료설명"];
+    const sample = ["알룰로스 시럽", "Allulose Syrup", "국내", "ACE Bio", "공개", "기타", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 식품 원료"];
+    const csv = `\uFEFF${headers.join(",")}\n${sample.map((value) => `"${String(value).replace(/"/g, "\"\"")}"`).join(",")}\n`;
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "food-sourcing-ingredients-template.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   ingredientRegisterForm.addEventListener("input", syncRegisterCompany);
   ingredientRegisterForm.addEventListener("change", syncRegisterCompany);
   ingredientRegisterForm.addEventListener("reset", () => {
     setRegisterMessage("", "");
     window.setTimeout(syncRegisterCompany, 0);
   });
+
+  if (csvTemplateDownload) {
+    csvTemplateDownload.addEventListener("click", downloadCsvTemplate);
+  }
+
+  if (csvIngredientUpload) {
+    csvIngredientUpload.addEventListener("change", async () => {
+      const member = getCurrentMember();
+      const file = csvIngredientUpload.files?.[0];
+      if (!member) {
+        window.location.href = "login.html";
+        return;
+      }
+      if (!file) return;
+      if (!member.company) {
+        setCsvUploadMessage("내정보에 회사명을 먼저 입력해주세요.", "error");
+        csvIngredientUpload.value = "";
+        return;
+      }
+
+      try {
+        const text = await file.text();
+        const rows = parseCsv(text);
+        if (rows.length < 2) {
+          setCsvUploadMessage("CSV에 헤더와 원료 데이터를 입력해주세요.", "error");
+          return;
+        }
+
+        const headers = rows[0].map(normalizeCsvHeader);
+        const items = rows
+          .slice(1)
+          .map((row, index) => buildCsvIngredient(row, headers, member, index))
+          .filter((item) => item.name && item.englishName && item.origin && item.category && item.company);
+
+        if (!items.length) {
+          setCsvUploadMessage("등록 가능한 행이 없습니다. 원료명, 영문명, 제조국, 카테고리를 확인해주세요.", "error");
+          return;
+        }
+
+        saveRegisteredIngredients(items);
+        updateAuthLinks();
+        setCsvUploadMessage(`${items.length}개 원료가 등록되었습니다. 원료찾기와 마이페이지에서 확인할 수 있습니다.`, "success");
+      } catch {
+        setCsvUploadMessage("CSV 파일을 읽지 못했습니다. 파일 형식을 확인해주세요.", "error");
+      } finally {
+        csvIngredientUpload.value = "";
+      }
+    });
+  }
+
   ingredientRegisterForm.addEventListener("submit", (event) => {
     event.preventDefault();
     syncRegisterCompany();
