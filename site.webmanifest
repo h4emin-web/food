@@ -1,0 +1,24 @@
+{
+  "name": "푸드소싱",
+  "short_name": "푸드소싱",
+  "description": "식품원료 소싱과 중개, 샘플 요청, 견적 문의, OEM·ODM 협력업체 찾기를 지원합니다.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
