@@ -832,6 +832,24 @@ function saveCommunityPost(post) {
   setSavedCommunityPosts([post, ...getSavedCommunityPosts()]);
 }
 
+function incrementCommunityPostViews(postId) {
+  let updated = false;
+  const savedPosts = getSavedCommunityPosts().map((post) => {
+    if (post.id !== postId) return post;
+    updated = true;
+    return { ...post, views: Number(post.views || 0) + 1 };
+  });
+  if (updated) {
+    setSavedCommunityPosts(savedPosts);
+    return;
+  }
+
+  const defaultPost = communityPosts.find((post) => post.id === postId);
+  if (defaultPost) {
+    defaultPost.views = Number(defaultPost.views || 0) + 1;
+  }
+}
+
 function getPartnerPostKey() {
   return "foodsourcePartnerPosts";
 }
@@ -850,6 +868,24 @@ function setSavedPartnerPosts(items) {
 
 function savePartnerPost(post) {
   setSavedPartnerPosts([post, ...getSavedPartnerPosts()]);
+}
+
+function incrementPartnerPostViews(postId) {
+  let updated = false;
+  const savedPosts = getSavedPartnerPosts().map((post) => {
+    if (post.id !== postId) return post;
+    updated = true;
+    return { ...post, views: Number(post.views || 0) + 1 };
+  });
+  if (updated) {
+    setSavedPartnerPosts(savedPosts);
+    return;
+  }
+
+  const defaultPost = partnerPosts.find((post) => post.id === postId);
+  if (defaultPost) {
+    defaultPost.views = Number(defaultPost.views || 0) + 1;
+  }
 }
 
 function hasUnreadMessages() {
@@ -1843,7 +1879,9 @@ function getCommunityDetailMarkup(post) {
 }
 
 function openCommunityDetail(postId) {
-  activeCommunityPostId = activeCommunityPostId === postId ? "" : postId;
+  const shouldOpen = activeCommunityPostId !== postId;
+  activeCommunityPostId = shouldOpen ? postId : "";
+  if (shouldOpen) incrementCommunityPostViews(postId);
   updateCommunityPosts();
   if (window.lucide) {
     window.lucide.createIcons();
@@ -1984,7 +2022,9 @@ function getPartnerDetailMarkup(post) {
 }
 
 function openPartnerDetail(postId) {
-  activePartnerPostId = activePartnerPostId === postId ? "" : postId;
+  const shouldOpen = activePartnerPostId !== postId;
+  activePartnerPostId = shouldOpen ? postId : "";
+  if (shouldOpen) incrementPartnerPostViews(postId);
   updatePartnerPosts();
 }
 
