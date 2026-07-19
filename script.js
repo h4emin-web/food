@@ -572,7 +572,7 @@ function normalizeRegisteredIngredient(item) {
     tags: tags.length ? tags : [item.category || "등록 원료"],
     supplier: {
       name: item.company || item.ownerName || "등록 회원",
-      website: item.companyWebsite || item.website || "#",
+      website: normalizeWebsite(item.companyWebsite || item.website),
       email: item.ownerEmail || "확인 필요",
       contact: item.ownerName || "등록 회원",
       spec: item.moq || "규격 확인 필요",
@@ -609,6 +609,13 @@ function normalizePassword(value) {
   return String(value || "").trim();
 }
 
+function normalizeWebsite(value) {
+  const website = String(value || "").trim();
+  if (!website) return "";
+  if (/^(https?:)?\/\//i.test(website) || /^mailto:/i.test(website)) return website;
+  return `https://${website}`;
+}
+
 function normalizeMember(member) {
   const normalized = {
     ...member,
@@ -618,7 +625,7 @@ function normalizeMember(member) {
     phone: String(member?.phone || "").trim(),
     nickname: String(member?.nickname || member?.name || "").trim(),
     company: String(member?.company || "").trim(),
-    companyWebsite: String(member?.companyWebsite || "").trim(),
+    companyWebsite: normalizeWebsite(member?.companyWebsite),
   };
   return normalized;
 }
