@@ -3226,7 +3226,11 @@ if (signupForm) {
     const remoteSignup = await signUpWithSupabase(member, password);
     const remoteErrorMessage = String(remoteSignup.error?.message || "");
     const isRateLimited = remoteErrorMessage.toLowerCase().includes("rate limit");
-    if (!remoteSignup.ok && remoteSignup.error && !isRateLimited) {
+    if (!remoteSignup.ok && remoteSignup.error) {
+      if (isRateLimited) {
+        setSignupMessage("요청이 많아 잠시 제한되었습니다. 잠시 후 다시 시도해주세요.", "error");
+        return;
+      }
       setSignupMessage(`Supabase 가입 오류: ${remoteSignup.error.message}`, "error");
       return;
     }
@@ -3235,10 +3239,7 @@ if (signupForm) {
     setMembers(members);
     setCurrentMember(member);
     signupForm.reset();
-    setSignupMessage(
-      isRateLimited ? "회원가입은 완료되었습니다. 서버 동기화는 잠시 후 자동으로 다시 시도됩니다." : "회원가입이 완료되었습니다.",
-      "success"
-    );
+    setSignupMessage("회원가입이 완료되었습니다.", "success");
     updateAuthLinks();
   });
 
