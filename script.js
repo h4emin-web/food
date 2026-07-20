@@ -1284,6 +1284,23 @@ function saveCommunityPost(post) {
 }
 
 function incrementCommunityPostViews(postId) {
+  const clickedPost = getVisibleCommunityPosts().find((post) => post.id === postId);
+  const clickedIdentity = clickedPost ? getCommunityPostIdentity(clickedPost) : "";
+  const remotePost = remoteCommunityPosts.find((post) => post.id === postId || (clickedIdentity && getCommunityPostIdentity(post) === clickedIdentity));
+  if (remotePost) {
+    const nextViews = Number(remotePost.views || 0) + 1;
+    remoteCommunityPosts = remoteCommunityPosts.map((post) => (post.id === remotePost.id ? { ...post, views: nextViews } : post));
+    if (supabaseClient) {
+      supabaseClient
+        .from("community_posts")
+        .update({ views: nextViews })
+        .eq("id", remotePost.id)
+        .then(() => {})
+        .catch(() => {});
+    }
+    return;
+  }
+
   let updated = false;
   const savedPosts = getSavedCommunityPosts().map((post) => {
     if (post.id !== postId) return post;
