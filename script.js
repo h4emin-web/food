@@ -688,7 +688,8 @@ function ensureDefaultAdminMember() {
 
 function getCurrentMember() {
   try {
-    return JSON.parse(localStorage.getItem("foodsourceCurrentMember"));
+    const stored = localStorage.getItem("foodsourceCurrentMember");
+    return stored ? normalizeMember(JSON.parse(stored)) : null;
   } catch {
     return null;
   }
@@ -728,8 +729,8 @@ function mapSupabaseUserToMember(user) {
 }
 
 async function saveSupabaseProfile(userId, member) {
-  if (!supabaseClient || !userId) return;
-  await supabaseClient.from("profiles").upsert({
+  if (!supabaseClient || !userId) return { ok: false, skipped: true };
+  const { data, error } = await supabaseClient.from("profiles").upsert({
     id: userId,
     email: member.email,
     name: member.name,
@@ -740,7 +741,43 @@ async function saveSupabaseProfile(userId, member) {
     role: member.role || "식품 개발",
     is_admin: member.email === "foden_@naver.com",
     updated_at: new Date().toISOString(),
+  }).select().single();
+  if (error) return { ok: false, error };
+  return { ok: true, profile: data };
+}
+
+function mapSupabaseProfileToMember(profile, fallbackUser = null) {
+  const fallback = fallbackUser ? mapSupabaseUserToMember(fallbackUser) : {};
+  return normalizeMember({
+    ...fallback,
+    name: profile?.name || fallback.name || "",
+    nickname: profile?.nickname || fallback.nickname || profile?.name || "",
+    email: profile?.email || fallback.email || "",
+    phone: profile?.phone || fallback.phone || "",
+    password: "",
+    company: profile?.company || fallback.company || "",
+    companyWebsite: profile?.company_website || fallback.companyWebsite || "",
+    role: profile?.role || fallback.role || "식품 개발",
+    interest: profile?.interest || fallback.interest || "",
+    memo: profile?.memo || fallback.memo || "",
+    isAdmin: Boolean(profile?.is_admin) || normalizeEmail(profile?.email || fallback.email) === "foden_@naver.com",
+    joinedAt: profile?.created_at || fallback.joinedAt || new Date().toISOString(),
   });
+}
+
+async function getSupabaseProfileMember(user) {
+  if (!supabaseClient || !user?.id) return null;
+  try {
+    const { data, error } = await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+    if (error || !data) return mapSupabaseUserToMember(user);
+    return mapSupabaseProfileToMember(data, user);
+  } catch {
+    return mapSupabaseUserToMember(user);
+  }
 }
 
 async function signUpWithSupabase(member, password) {
@@ -760,10 +797,9 @@ async function signUpWithSupabase(member, password) {
     },
   });
   if (error) return { ok: false, error };
-  try {
-    await saveSupabaseProfile(data.user?.id, member);
-  } catch {
-    // The profiles table may not exist until supabase-schema.sql is run.
+  const profileResult = await saveSupabaseProfile(data.user?.id, member);
+  if (!profileResult.ok && !profileResult.skipped) {
+    return { ok: false, error: profileResult.error };
   }
   return { ok: true, user: data.user };
 }
@@ -788,6 +824,26 @@ async function signInWithSupabase(email, password) {
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) return { ok: false, error };
   return { ok: true, user: data.user };
+}
+
+async function restoreSupabaseSession() {
+  if (!supabaseClient) return;
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error || !data?.session?.user) return;
+    const member = await getSupabaseProfileMember(data.session.user);
+    if (!member?.email) return;
+    updateStoredMember(member);
+    setCurrentMember(member);
+    updateAuthLinks();
+    updateRegisterAccess();
+    updateMypageAccess();
+    updateAdminAccess();
+    renderFavorites();
+    renderMyIngredients();
+  } catch {
+    // A failed session restore should not block the page.
+  }
 }
 
 function getLocalVisitorId() {
@@ -1021,7 +1077,14 @@ function updateStoredMember(member) {
   setCurrentMember(member);
 }
 
-function logoutCurrentMember() {
+async function logoutCurrentMember() {
+  if (supabaseClient) {
+    try {
+      await supabaseClient.auth.signOut();
+    } catch {
+      // Local logout should still complete if Supabase is temporarily unavailable.
+    }
+  }
   localStorage.removeItem("foodsourceCurrentMember");
   updateAuthLinks();
   updateRegisterAccess();
@@ -2811,11 +2874,11 @@ if (adminImportDataInput) {
 }
 
 logoutLinks.forEach((link) => {
-  link.addEventListener("click", (event) => {
+  link.addEventListener("click", async (event) => {
     if (!getCurrentMember()) return;
 
     event.preventDefault();
-    logoutCurrentMember();
+    await logoutCurrentMember();
     window.location.href = "index.html";
   });
 });
@@ -3148,6 +3211,10 @@ if (signupForm) {
     }
 
     const remoteSignup = await signUpWithSupabase(member, password);
+    if (remoteSignup.skipped) {
+      setSignupMessage("서버 연결을 확인한 뒤 다시 시도해주세요.", "error");
+      return;
+    }
     const remoteErrorMessage = String(remoteSignup.error?.message || "");
     const isRateLimited = remoteErrorMessage.toLowerCase().includes("rate limit");
     if (!remoteSignup.ok && remoteSignup.error) {
@@ -3457,9 +3524,10 @@ if (loginForm) {
 
     if (remoteLogin.ok && remoteLogin.user) {
       const localMember = getMembers().find((item) => normalizeEmail(item.email) === email);
+      const remoteMember = await getSupabaseProfileMember(remoteLogin.user);
       member = normalizeMember({
-        ...mapSupabaseUserToMember(remoteLogin.user),
         ...localMember,
+        ...remoteMember,
         email,
         password: localMember?.password || "",
       });
@@ -3491,6 +3559,7 @@ bindVisibilityChoiceRadios();
 document.addEventListener("click", createClickRipple, true);
 trackVisit();
 ensureDefaultAdminMember();
+restoreSupabaseSession();
 updateAuthLinks();
 updateRegisterAccess();
 updateMypageAccess();
