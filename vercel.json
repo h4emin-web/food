@@ -1,4 +1,4 @@
 {
-  "buildCommand": "node scripts/build-static.cjs",
+  "buildCommand": "npm run build",
   "outputDirectory": "public"
 }
