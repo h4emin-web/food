@@ -3645,7 +3645,7 @@ if (mypageForm) {
     myIngredientFields.moq.value = item.moq || "";
     myIngredientFields.leadTime.value = item.leadTime || "";
     myIngredientFields.sample.value = item.sample || "가능";
-    myIngredientFields.response.value = item.response || "샘플 요청 가능";
+    myIngredientFields.response.value = item.response || "샘플·견적 모두 가능";
     myIngredientFields.desc.value = item.desc || "";
   }
 
