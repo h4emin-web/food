@@ -3026,7 +3026,7 @@ if (ingredientRegisterForm) {
 
   function downloadCsvTemplate() {
     const headers = ["원료명", "영문명", "제조국", "제조사", "제조사공개여부", "카테고리", "사용용도", "인증", "MOQ", "리드타임", "샘플제공", "응답방식", "원료설명"];
-    const sample = ["알룰로스 시럽", "Allulose Syrup", "국내", "ACE Bio", "공개", "기타", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 식품 원료"];
+    const sample = ["알룰로스 시럽", "Allulose Syrup", "국내", "hubei", "공개", "기타", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 식품 원료"];
     const csv = `\uFEFF${headers.join(",")}\n${sample.map((value) => `"${String(value).replace(/"/g, "\"\"")}"`).join(",")}\n`;
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
