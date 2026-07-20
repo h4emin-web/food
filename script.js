@@ -1986,9 +1986,9 @@ function renderAdminStats() {
   if (!adminStatGrid) return;
 
   const members = getMembers();
-  const ingredients = getAllRegisteredIngredientsByMember();
+  const ingredients = getVisibleRegisteredIngredientsForAdmin();
   const messages = getAllMessagesByMember();
-  const communityItems = getSavedCommunityPosts();
+  const communityItems = getVisibleCommunityPosts();
   const visits = getVisitStats();
   const totalVisits = Object.values(visits).reduce((sum, day) => sum + (day.ips?.length || day.count || 0), 0);
 
@@ -2084,10 +2084,17 @@ function renderAdminVisits() {
     : '<p class="empty-mini">아직 접속 기록이 없습니다.</p>';
 }
 
+function getVisibleRegisteredIngredientsForAdmin() {
+  return [...remoteRegisteredIngredients, ...getAllRegisteredIngredientsByMember()].filter((item, index, items) => {
+    const identity = getIngredientIdentity(item);
+    return items.findIndex((next) => next.id === item.id || getIngredientIdentity(next) === identity) === index;
+  });
+}
+
 function renderAdminIngredients() {
   if (!adminIngredientList) return;
 
-  const ingredients = getAllRegisteredIngredientsByMember();
+  const ingredients = getVisibleRegisteredIngredientsForAdmin();
   adminIngredientList.innerHTML = ingredients.length
     ? ingredients
         .map(
@@ -2113,7 +2120,7 @@ function renderAdminIngredients() {
 function renderAdminCommunityPosts() {
   if (!adminCommunityList) return;
 
-  const posts = getSavedCommunityPosts();
+  const posts = getVisibleCommunityPosts();
   adminCommunityList.innerHTML = posts.length
     ? posts
         .map(
@@ -2166,20 +2173,49 @@ function deleteAdminMember(email) {
   renderAdminPage();
 }
 
-function deleteAdminIngredient(ownerEmail, ingredientId) {
-  if (!ownerEmail || !ingredientId) return;
-  const key = `foodsourceRegisteredIngredients:${ownerEmail}`;
-  const items = getRegisteredIngredientsByEmail(ownerEmail).filter((item) => item.id !== ingredientId);
-  localStorage.setItem(key, JSON.stringify(items));
+async function deleteAdminIngredient(ownerEmail, ingredientId) {
+  if (!ingredientId) return;
+  const target = getVisibleRegisteredIngredientsForAdmin().find((item) => item.id === ingredientId);
+  const identity = target ? getIngredientIdentity(target) : "";
+  const remoteIds = target
+    ? [ingredientId, ...remoteRegisteredIngredients.filter((item) => getIngredientIdentity(item) === identity).map((item) => item.id)]
+    : [ingredientId];
+  if (ownerEmail) {
+    const key = `foodsourceRegisteredIngredients:${ownerEmail}`;
+    const items = getRegisteredIngredientsByEmail(ownerEmail).filter((item) => item.id !== ingredientId && (!identity || getIngredientIdentity(item) !== identity));
+    localStorage.setItem(key, JSON.stringify(items));
+  }
+  remoteRegisteredIngredients = remoteRegisteredIngredients.filter((item) => item.id !== ingredientId && (!identity || getIngredientIdentity(item) !== identity));
+  if (supabaseClient) {
+    try {
+      await supabaseClient.from("ingredients").delete().in("id", [...new Set(remoteIds)]);
+    } catch {
+      // Local admin deletion already completed.
+    }
+  }
+  updateGrid();
   renderAdminPage();
 }
 
-function deleteAdminCommunityPost(postId) {
+async function deleteAdminCommunityPost(postId) {
   if (!postId) return;
-  setSavedCommunityPosts(getSavedCommunityPosts().filter((post) => post.id !== postId));
-  const comments = getCommunityComments();
-  delete comments[postId];
-  localStorage.setItem("foodsourceCommunityComments", JSON.stringify(comments));
+  const target = getVisibleCommunityPosts().find((post) => post.id === postId);
+  const identity = target ? getCommunityPostIdentity(target) : "";
+  const remoteIds = target
+    ? [postId, ...remoteCommunityPosts.filter((post) => getCommunityPostIdentity(post) === identity).map((post) => post.id)]
+    : [postId];
+  setSavedCommunityPosts(getSavedCommunityPosts().filter((post) => post.id !== postId && (!identity || getCommunityPostIdentity(post) !== identity)));
+  remoteCommunityPosts = remoteCommunityPosts.filter((post) => post.id !== postId && (!identity || getCommunityPostIdentity(post) !== identity));
+  removeCommunityComments(postId);
+  if (activeCommunityPostId === postId) activeCommunityPostId = "";
+  if (supabaseClient && remoteIds.length) {
+    try {
+      await supabaseClient.from("community_posts").delete().in("id", [...new Set(remoteIds)]);
+    } catch {
+      // Local admin deletion already completed.
+    }
+  }
+  updateCommunityPosts();
   renderAdminPage();
 }
 
@@ -3162,25 +3198,25 @@ if (adminMemberTable) {
 }
 
 if (adminIngredientList) {
-  adminIngredientList.addEventListener("click", (event) => {
+  adminIngredientList.addEventListener("click", async (event) => {
     const deleteButton = event.target.closest("[data-admin-delete-ingredient]");
     if (!deleteButton) return;
 
     const ingredientId = deleteButton.dataset.adminDeleteIngredient;
     const ownerEmail = deleteButton.dataset.adminDeleteIngredientOwner;
     if (confirm("이 원료 등록글을 삭제할까요?")) {
-      deleteAdminIngredient(ownerEmail, ingredientId);
+      await deleteAdminIngredient(ownerEmail, ingredientId);
     }
   });
 }
 
 if (adminCommunityList) {
-  adminCommunityList.addEventListener("click", (event) => {
+  adminCommunityList.addEventListener("click", async (event) => {
     const deleteButton = event.target.closest("[data-admin-delete-community]");
     if (!deleteButton) return;
 
     if (confirm("이 원료문의 게시글과 댓글을 삭제할까요?")) {
-      deleteAdminCommunityPost(deleteButton.dataset.adminDeleteCommunity);
+      await deleteAdminCommunityPost(deleteButton.dataset.adminDeleteCommunity);
     }
   });
 }
