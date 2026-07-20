@@ -3222,6 +3222,10 @@ if (signupForm) {
         setSignupMessage("요청이 많아 잠시 제한되었습니다. 잠시 후 다시 시도해주세요.", "error");
         return;
       }
+      if (remoteErrorMessage.includes("public.profiles") || remoteErrorMessage.toLowerCase().includes("schema cache")) {
+        setSignupMessage("서버 회원 테이블 설정이 필요합니다. 관리자에게 문의해주세요.", "error");
+        return;
+      }
       setSignupMessage(`Supabase 가입 오류: ${remoteSignup.error.message}`, "error");
       return;
     }
