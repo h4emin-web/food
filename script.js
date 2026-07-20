@@ -1037,6 +1037,59 @@ async function savePartnerPostToSupabase(post) {
   }
 }
 
+function getMigratedBoardItemIds() {
+  try {
+    return JSON.parse(localStorage.getItem("foodsourceMigratedBoardItems") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function setMigratedBoardItemIds(ids) {
+  localStorage.setItem("foodsourceMigratedBoardItems", JSON.stringify([...new Set(ids)]));
+}
+
+function isIngredientAlreadyRemote(item) {
+  const identity = getIngredientIdentity(item);
+  return remoteRegisteredIngredients.some((remoteItem) => getIngredientIdentity(remoteItem) === identity);
+}
+
+function isCommunityPostAlreadyRemote(post) {
+  const identity = `${post.title || ""}|${post.author || ""}|${post.desc || ""}`.toLowerCase();
+  return remoteCommunityPosts.some((remotePost) => `${remotePost.title || ""}|${remotePost.author || ""}|${remotePost.desc || ""}`.toLowerCase() === identity);
+}
+
+async function syncLocalBoardsToSupabase() {
+  if (!supabaseClient || !getCurrentMember()) return;
+  const migratedIds = new Set(getMigratedBoardItemIds());
+  const nextMigratedIds = new Set(migratedIds);
+
+  const localIngredients = getRegisteredIngredients().filter((item) => item.id && !migratedIds.has(`ingredient:${item.id}`));
+  for (const item of localIngredients) {
+    if (!isIngredientAlreadyRemote(item)) {
+      await saveIngredientToSupabase(item);
+    }
+    nextMigratedIds.add(`ingredient:${item.id}`);
+  }
+
+  const localCommunityPosts = getSavedCommunityPosts().filter((post) => post.id && !migratedIds.has(`community:${post.id}`));
+  for (const post of localCommunityPosts) {
+    if (!isCommunityPostAlreadyRemote(post)) {
+      await saveCommunityPostToSupabase(post);
+    }
+    nextMigratedIds.add(`community:${post.id}`);
+  }
+
+  setMigratedBoardItemIds([...nextMigratedIds]);
+}
+
+async function initializeSupabaseBoards() {
+  await restoreSupabaseSession();
+  await loadSupabaseBoardData();
+  await syncLocalBoardsToSupabase();
+  await loadSupabaseBoardData();
+}
+
 function getLocalVisitorId() {
   const key = "foodsourceVisitorId";
   let visitorId = localStorage.getItem(key);
@@ -3783,8 +3836,7 @@ bindVisibilityChoiceRadios();
 document.addEventListener("click", createClickRipple, true);
 trackVisit();
 ensureDefaultAdminMember();
-restoreSupabaseSession();
-loadSupabaseBoardData();
+initializeSupabaseBoards();
 updateAuthLinks();
 updateRegisterAccess();
 updateMypageAccess();
