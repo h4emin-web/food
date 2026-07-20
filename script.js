@@ -142,6 +142,7 @@ let partnerPageSize = 10;
 let remoteRegisteredIngredients = [];
 let remoteCommunityPosts = [];
 let remotePartnerPosts = [];
+let currentSupabaseUserId = "";
 const supabaseClient = window.foodSourcingSupabase || null;
 
 function getFavoriteKey() {
@@ -871,7 +872,8 @@ async function getSupabaseUserId() {
   if (!supabaseClient) return "";
   try {
     const { data } = await supabaseClient.auth.getSession();
-    return data?.session?.user?.id || "";
+    currentSupabaseUserId = data?.session?.user?.id || "";
+    return currentSupabaseUserId;
   } catch {
     return "";
   }
@@ -915,6 +917,7 @@ function mapCommunityRow(row) {
     title: row.title || "",
     desc: row.description || "",
     author: row.author || "",
+    ownerId: row.owner_id || "",
     date: formatRelativeDate(row.created_at),
     comments: 0,
     views: Number(row.views || 0),
@@ -1059,6 +1062,49 @@ function isCommunityPostAlreadyRemote(post) {
   return remoteCommunityPosts.some((remotePost) => `${remotePost.title || ""}|${remotePost.author || ""}|${remotePost.desc || ""}`.toLowerCase() === identity);
 }
 
+function canManageCommunityPost(post) {
+  const member = getCurrentMember();
+  if (!member) return false;
+  if (isAdminMember(member)) return true;
+  if (post.ownerId && currentSupabaseUserId && post.ownerId === currentSupabaseUserId) return true;
+  if (post.ownerEmail && normalizeEmail(post.ownerEmail) === normalizeEmail(member.email)) return true;
+  return normalizeNickname(post.author) === normalizeNickname(getDisplayName(member));
+}
+
+function getCommunityPostIdentity(post) {
+  return `${post.title || ""}|${post.author || ""}|${post.desc || ""}`.toLowerCase();
+}
+
+function removeCommunityComments(postId) {
+  const comments = getCommunityComments();
+  delete comments[postId];
+  localStorage.setItem("foodsourceCommunityComments", JSON.stringify(comments));
+}
+
+async function deleteCommunityPost(postId) {
+  const post = getVisibleCommunityPosts().find((item) => item.id === postId);
+  if (!post || !canManageCommunityPost(post)) return;
+
+  const identity = getCommunityPostIdentity(post);
+  const remoteIds = remoteCommunityPosts
+    .filter((item) => item.id === post.id || getCommunityPostIdentity(item) === identity)
+    .map((item) => item.id);
+  if (post.ownerId) remoteIds.push(post.id);
+  setSavedCommunityPosts(getSavedCommunityPosts().filter((item) => item.id !== postId && getCommunityPostIdentity(item) !== identity));
+  remoteCommunityPosts = remoteCommunityPosts.filter((item) => item.id !== postId && getCommunityPostIdentity(item) !== identity);
+  removeCommunityComments(postId);
+  activeCommunityPostId = "";
+  updateCommunityPosts();
+
+  if (!supabaseClient) return;
+  if (!remoteIds.length) return;
+  try {
+    await supabaseClient.from("community_posts").delete().in("id", [...new Set(remoteIds)]);
+  } catch {
+    // The local removal already completed; Supabase can be retried by reloading if needed.
+  }
+}
+
 async function syncLocalBoardsToSupabase() {
   if (!supabaseClient || !getCurrentMember()) return;
   const migratedIds = new Set(getMigratedBoardItemIds());
@@ -1085,6 +1131,7 @@ async function syncLocalBoardsToSupabase() {
 
 async function initializeSupabaseBoards() {
   await restoreSupabaseSession();
+  await getSupabaseUserId();
   await loadSupabaseBoardData();
   await syncLocalBoardsToSupabase();
   await loadSupabaseBoardData();
@@ -2375,6 +2422,9 @@ function getCommunityDetailMarkup(post) {
   const comments = getPostComments(post.id);
   const member = getCurrentMember();
   const defaultName = getDisplayName(member);
+  const deleteAction = canManageCommunityPost(post)
+    ? `<button class="outline-button danger-button" type="button" data-delete-community-post="${escapeHtml(post.id)}">삭제</button>`
+    : "";
   const commentsMarkup = comments.length
     ? comments
         .map(
@@ -2402,6 +2452,7 @@ function getCommunityDetailMarkup(post) {
             <span>조회 ${post.views}</span>
             <span>댓글 ${comments.length}</span>
           </div>
+          ${deleteAction ? `<div class="detail-actions">${deleteAction}</div>` : ""}
         </div>
         <p>${post.desc}</p>
       </article>
@@ -2778,6 +2829,15 @@ if (communityList && communitySearch) {
       openMessageComposer(messageUser.dataset.messageUser);
       return;
     }
+    const deletePostButton = event.target.closest("[data-delete-community-post]");
+    if (deletePostButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (confirm("이 원료문의 게시글을 삭제할까요?")) {
+        deleteCommunityPost(deletePostButton.dataset.deleteCommunityPost);
+      }
+      return;
+    }
 
     if (event.target.closest(".community-detail")) return;
     const post = event.target.closest(".community-post");
@@ -2862,6 +2922,7 @@ if (communityWriteForm) {
       title,
       desc,
       author: getDisplayName(member),
+      ownerEmail: member.email,
       date: "방금 전",
       comments: 0,
       views: 0,
