@@ -139,6 +139,9 @@ let communityCurrentPage = 1;
 let communityPageSize = 10;
 let partnerCurrentPage = 1;
 let partnerPageSize = 10;
+let remoteRegisteredIngredients = [];
+let remoteCommunityPosts = [];
+let remotePartnerPosts = [];
 const supabaseClient = window.foodSourcingSupabase || null;
 
 function getFavoriteKey() {
@@ -587,8 +590,26 @@ function normalizeRegisteredIngredient(item) {
   };
 }
 
+function getIngredientIdentity(item) {
+  return [
+    item.name,
+    item.englishName,
+    item.ownerEmail,
+    item.company,
+    item.manufacturer,
+  ]
+    .map((value) => String(value || "").trim().toLowerCase())
+    .join("|");
+}
+
 function getVisibleIngredients() {
-  return [...getAllRegisteredIngredientsByMember().map(normalizeRegisteredIngredient), ...ingredients];
+  const registered = [...remoteRegisteredIngredients, ...getAllRegisteredIngredientsByMember()]
+    .filter((item, index, items) => {
+      const identity = getIngredientIdentity(item);
+      return items.findIndex((next) => next.id === item.id || getIngredientIdentity(next) === identity) === index;
+    })
+    .map(normalizeRegisteredIngredient);
+  return [...registered, ...ingredients];
 }
 
 function getVisibleIngredientById(id) {
@@ -846,6 +867,176 @@ async function restoreSupabaseSession() {
   }
 }
 
+async function getSupabaseUserId() {
+  if (!supabaseClient) return "";
+  try {
+    const { data } = await supabaseClient.auth.getSession();
+    return data?.session?.user?.id || "";
+  } catch {
+    return "";
+  }
+}
+
+function mapIngredientRow(row) {
+  const createdAt = row.created_at || new Date().toISOString();
+  return {
+    id: row.id,
+    name: row.name || "",
+    englishName: row.english_name || "",
+    origin: row.origin || "",
+    originFlagCode: row.origin_flag_code || getCountryFlagCode(row.origin || ""),
+    manufacturer: row.manufacturer || "",
+    manufacturerVisibility: row.manufacturer_visibility || "public",
+    category: row.category || "",
+    use: row.use || "",
+    cert: row.cert || "",
+    moq: row.moq || "",
+    leadTime: row.lead_time || "",
+    sample: row.sample || "가능",
+    response: row.response || "샘플·견적 모두 가능",
+    desc: row.description || "",
+    company: row.company || "",
+    companyWebsite: row.company_website || "",
+    ownerName: row.owner_name || "",
+    ownerEmail: row.owner_email || "",
+    createdAt,
+    createdAtText: new Intl.DateTimeFormat("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(createdAt)),
+  };
+}
+
+function mapCommunityRow(row) {
+  return {
+    id: row.id,
+    category: "원료 문의",
+    title: row.title || "",
+    desc: row.description || "",
+    author: row.author || "",
+    date: formatRelativeDate(row.created_at),
+    comments: 0,
+    views: Number(row.views || 0),
+    createdAt: row.created_at || new Date().toISOString(),
+  };
+}
+
+function mapPartnerRow(row) {
+  return {
+    id: row.id,
+    postType: row.post_type || "inquiry",
+    mode: row.mode || "OEM",
+    trade: row.trade || "구매",
+    title: row.title || "",
+    company: row.company || "",
+    business: row.business || "",
+    desc: row.description || "",
+    author: row.author || "",
+    date: formatRelativeDate(row.created_at),
+    views: Number(row.views || 0),
+    createdAt: row.created_at || new Date().toISOString(),
+  };
+}
+
+async function loadSupabaseBoardData() {
+  if (!supabaseClient) return;
+  try {
+    const [ingredientsResult, communityResult, partnerResult] = await Promise.all([
+      supabaseClient.from("ingredients").select("*").order("created_at", { ascending: false }).limit(500),
+      supabaseClient.from("community_posts").select("*").order("created_at", { ascending: false }).limit(500),
+      supabaseClient.from("partner_posts").select("*").order("created_at", { ascending: false }).limit(500),
+    ]);
+    if (!ingredientsResult.error) remoteRegisteredIngredients = (ingredientsResult.data || []).map(mapIngredientRow);
+    if (!communityResult.error) remoteCommunityPosts = (communityResult.data || []).map(mapCommunityRow);
+    if (!partnerResult.error) remotePartnerPosts = (partnerResult.data || []).map(mapPartnerRow);
+    updateGrid();
+    updateCommunityPosts();
+    updatePartnerPosts();
+  } catch {
+    // Local data remains available if Supabase tables are not ready yet.
+  }
+}
+
+async function saveIngredientToSupabase(item) {
+  if (!supabaseClient) return;
+  const ownerId = await getSupabaseUserId();
+  if (!ownerId) return;
+  const { data, error } = await supabaseClient
+    .from("ingredients")
+    .insert({
+      owner_id: ownerId,
+      owner_email: item.ownerEmail || "",
+      owner_name: item.ownerName || "",
+      company: item.company || "",
+      company_website: normalizeWebsite(item.companyWebsite || ""),
+      name: item.name,
+      english_name: item.englishName || "",
+      origin: item.origin || "",
+      origin_flag_code: item.originFlagCode || getCountryFlagCode(item.origin || ""),
+      manufacturer: item.manufacturer || "",
+      manufacturer_visibility: item.manufacturerVisibility || "public",
+      category: item.category || "",
+      use: item.use || "",
+      cert: item.cert || "",
+      moq: item.moq || "",
+      lead_time: item.leadTime || "",
+      sample: item.sample || "가능",
+      response: item.response || "샘플·견적 모두 가능",
+      description: item.desc || "",
+    })
+    .select()
+    .single();
+  if (!error && data) {
+    remoteRegisteredIngredients = [mapIngredientRow(data), ...remoteRegisteredIngredients.filter((next) => next.id !== data.id)];
+  }
+}
+
+async function saveCommunityPostToSupabase(post) {
+  if (!supabaseClient) return;
+  const ownerId = await getSupabaseUserId();
+  if (!ownerId) return;
+  const { data, error } = await supabaseClient
+    .from("community_posts")
+    .insert({
+      owner_id: ownerId,
+      author: post.author || "",
+      title: post.title,
+      description: post.desc || "",
+      views: Number(post.views || 0),
+    })
+    .select()
+    .single();
+  if (!error && data) {
+    remoteCommunityPosts = [mapCommunityRow(data), ...remoteCommunityPosts.filter((next) => next.id !== data.id)];
+  }
+}
+
+async function savePartnerPostToSupabase(post) {
+  if (!supabaseClient) return;
+  const ownerId = await getSupabaseUserId();
+  if (!ownerId) return;
+  const { data, error } = await supabaseClient
+    .from("partner_posts")
+    .insert({
+      owner_id: ownerId,
+      post_type: post.postType || "inquiry",
+      mode: post.mode || "OEM",
+      trade: post.trade || "구매",
+      title: post.title,
+      company: post.company || "",
+      business: post.business || "",
+      description: post.desc || "",
+      author: post.author || "",
+      views: Number(post.views || 0),
+    })
+    .select()
+    .single();
+  if (!error && data) {
+    remotePartnerPosts = [mapPartnerRow(data), ...remotePartnerPosts.filter((next) => next.id !== data.id)];
+  }
+}
+
 function getLocalVisitorId() {
   const key = "foodsourceVisitorId";
   let visitorId = localStorage.getItem(key);
@@ -989,6 +1180,7 @@ function setSavedCommunityPosts(items) {
 
 function saveCommunityPost(post) {
   setSavedCommunityPosts([post, ...getSavedCommunityPosts()]);
+  saveCommunityPostToSupabase(post).then(() => updateCommunityPosts()).catch(() => {});
 }
 
 function incrementCommunityPostViews(postId) {
@@ -1027,6 +1219,7 @@ function setSavedPartnerPosts(items) {
 
 function savePartnerPost(post) {
   setSavedPartnerPosts([post, ...getSavedPartnerPosts()]);
+  savePartnerPostToSupabase(post).then(() => updatePartnerPosts()).catch(() => {});
 }
 
 function incrementPartnerPostViews(postId) {
@@ -1183,12 +1376,14 @@ function saveRegisteredIngredient(item) {
   if (!key) return;
   const items = getRegisteredIngredients();
   localStorage.setItem(key, JSON.stringify([item, ...items]));
+  saveIngredientToSupabase(item).then(() => updateGrid()).catch(() => {});
 }
 
 function saveRegisteredIngredients(items) {
   const key = getRegisteredIngredientKey();
   if (!key || !items.length) return;
   localStorage.setItem(key, JSON.stringify([...items, ...getRegisteredIngredients()]));
+  Promise.all(items.map((item) => saveIngredientToSupabase(item))).then(() => updateGrid()).catch(() => {});
 }
 
 function getFilteredRegisteredIngredients() {
@@ -1460,6 +1655,21 @@ function formatMessageDate(value) {
     }).format(new Date(value));
   } catch {
     return "";
+  }
+}
+
+function formatRelativeDate(value) {
+  try {
+    const diff = Date.now() - new Date(value).getTime();
+    if (Number.isNaN(diff) || diff < 60000) return "방금 전";
+    if (diff < 3600000) return `${Math.floor(diff / 60000)}분 전`;
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)}시간 전`;
+    return new Intl.DateTimeFormat("ko-KR", {
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(value));
+  } catch {
+    return "방금 전";
   }
 }
 
@@ -2196,11 +2406,21 @@ function setCommunityPage(page) {
 }
 
 function getVisibleCommunityPosts() {
-  return [...getSavedCommunityPosts(), ...communityPosts];
+  return [...remoteCommunityPosts, ...getSavedCommunityPosts(), ...communityPosts].filter(
+    (post, index, posts) => {
+      const identity = `${post.title || ""}|${post.author || ""}|${post.desc || ""}`.toLowerCase();
+      return posts.findIndex((next) => next.id === post.id || `${next.title || ""}|${next.author || ""}|${next.desc || ""}`.toLowerCase() === identity) === index;
+    }
+  );
 }
 
 function getVisiblePartnerPosts() {
-  return [...getSavedPartnerPosts(), ...partnerPosts];
+  return [...remotePartnerPosts, ...getSavedPartnerPosts(), ...partnerPosts].filter(
+    (post, index, posts) => {
+      const identity = `${post.title || ""}|${post.author || ""}|${post.company || ""}|${post.desc || ""}`.toLowerCase();
+      return posts.findIndex((next) => next.id === post.id || `${next.title || ""}|${next.author || ""}|${next.company || ""}|${next.desc || ""}`.toLowerCase() === identity) === index;
+    }
+  );
 }
 
 function getPartnerPostTypeLabel(type) {
@@ -3564,6 +3784,7 @@ document.addEventListener("click", createClickRipple, true);
 trackVisit();
 ensureDefaultAdminMember();
 restoreSupabaseSession();
+loadSupabaseBoardData();
 updateAuthLinks();
 updateRegisterAccess();
 updateMypageAccess();
