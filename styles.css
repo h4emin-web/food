@@ -810,9 +810,9 @@ img {
 
 .page-size-toggle button.active,
 .page-number-list button.active {
-  border-color: #111827;
-  background: #111827;
-  color: #fff;
+  border-color: #d1d5db;
+  background: #eef1f4;
+  color: #374151;
 }
 
 .ingredient-detail {
@@ -2870,14 +2870,12 @@ img {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     height: auto;
-    gap: 12px;
+    gap: 10px;
     padding: 12px 16px;
   }
 
   .site-header .brand {
-    display: inline-flex;
-    min-width: 0;
-    font-size: 17px;
+    display: none;
   }
 
   .site-header .brand-mark {
@@ -2889,18 +2887,16 @@ img {
 
   .main-nav {
     display: flex;
-    grid-column: 1 / -1;
-    grid-row: 2;
-    gap: 6px;
+    grid-column: 1;
+    grid-row: 1;
+    gap: 14px;
     min-width: 0;
-    margin: 0 -16px;
-    padding: 0 16px 4px;
-    overflow-x: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
     font-size: 13px;
     line-height: 1;
-    scrollbar-width: none;
     white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
   }
 
   .main-nav::-webkit-scrollbar,
@@ -2913,30 +2909,28 @@ img {
     align-items: center;
     min-height: 40px;
     flex: 0 0 auto;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0 14px;
-    background: #fff;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
     font-weight: 800;
   }
 
   .main-nav a[href="intro.html"] {
-    display: inline-flex;
+    display: none;
   }
 
   .header-actions {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    width: calc(100% + 32px);
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
     min-width: 0;
-    margin: -2px -16px 0;
-    padding: 2px 16px 4px;
-    overflow-x: auto;
-    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    justify-content: flex-end;
     gap: 8px;
     white-space: nowrap;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
   }
 
   .header-actions > * {
@@ -2946,10 +2940,10 @@ img {
 
   .header-actions .text-button,
   .header-actions .primary-button {
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0 13px;
-    background: #fff;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
     font-size: 12px;
     font-weight: 800;
   }
@@ -2965,6 +2959,62 @@ img {
     min-width: 40px;
     border: 1px solid var(--line);
     border-radius: 50%;
+  }
+
+  .header-actions .auth-only:not(.logout-link):not(.message-bell),
+  .header-actions .admin-only-link {
+    display: none !important;
+  }
+
+  .community-post {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "title title title"
+      "author date stats";
+    gap: 10px 8px;
+    min-height: 0;
+    padding: 16px 14px;
+  }
+
+  .community-post h3 {
+    grid-area: title;
+    font-size: 16px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .community-post .post-author {
+    grid-area: author;
+  }
+
+  .community-post .post-date {
+    grid-area: date;
+  }
+
+  .community-post .post-stats {
+    grid-area: stats;
+  }
+
+  .community-post .post-author,
+  .community-post .post-date,
+  .community-post .post-stats {
+    min-width: 0;
+    font-size: 11px;
+  }
+
+  .community-post .post-stats {
+    gap: 4px;
+    justify-content: flex-end;
+  }
+
+  .community-post .post-stats span {
+    min-width: 0;
+    gap: 3px;
+  }
+
+  .community-post .post-stats svg {
+    width: 13px;
+    height: 13px;
   }
 
   body {
@@ -3114,8 +3164,8 @@ img {
   }
 
   .pagination-bar {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: 14px 12px;
   }
 
@@ -3278,10 +3328,13 @@ img {
 
   .main-nav,
   .header-actions {
-    margin-right: -12px;
-    margin-left: -12px;
-    padding-right: 12px;
-    padding-left: 12px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .main-nav {
+    gap: 10px;
+    font-size: 12px;
   }
 
   .hero h1,

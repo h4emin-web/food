@@ -237,17 +237,6 @@ function getPaginationControls(scope, page, totalPages, pageSize) {
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
   return `
     <div class="pagination-bar" data-pagination-scope="${scope}">
-      <div class="page-size-toggle" aria-label="보기 개수">
-        ${[10, 50]
-          .map(
-            (size) => `
-              <button class="${pageSize === size ? "active" : ""}" type="button" data-page-size="${size}">
-                ${size}개씩 보기
-              </button>
-            `
-          )
-          .join("")}
-      </div>
       <div class="page-number-list" aria-label="페이지">
         ${pages
           .map(
@@ -2521,7 +2510,7 @@ function renderCommunityPosts(posts) {
           <button class="post-author message-user-button" type="button" data-message-user="${escapeHtml(post.author)}">${post.author}</button>
           <span class="post-date">${post.date}</span>
           <div class="post-stats" aria-label="게시글 반응">
-            <span><i data-lucide="message-circle"></i>${getPostComments(post.id, "partner").length}</span>
+            <span><i data-lucide="message-circle"></i>${getPostComments(post.id, "community").length}</span>
             <span><i data-lucide="eye"></i>${post.views}</span>
           </div>
         </article>
@@ -2697,7 +2686,7 @@ function renderPartnerPosts(posts) {
 }
 
 function getPartnerDetailMarkup(post) {
-  const comments = getPostComments(post.id);
+  const comments = getPostComments(post.id, "partner");
   const member = getCurrentMember();
   const defaultName = getDisplayName(member);
   const commentsMarkup = comments.length
