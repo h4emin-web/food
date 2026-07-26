@@ -81,7 +81,7 @@ const defaultAdminMember = {
   nickname: "관리자",
   email: "foden_@naver.com",
   phone: "",
-  password: "goals7523@",
+  password: "",
   company: "Haim company",
   companyWebsite: "",
   role: "관리자",
@@ -142,6 +142,8 @@ let partnerPageSize = 10;
 let remoteRegisteredIngredients = [];
 let remoteCommunityPosts = [];
 let remotePartnerPosts = [];
+let remoteMembers = [];
+let remoteComments = {};
 let currentSupabaseUserId = "";
 const supabaseClient = window.foodSourcingSupabase || null;
 
@@ -665,9 +667,13 @@ function normalizeMember(member) {
 
 function getMembers() {
   try {
-    return (JSON.parse(localStorage.getItem("foodsourceMembers")) || []).map(normalizeMember);
+    const localMembers = (JSON.parse(localStorage.getItem("foodsourceMembers")) || []).map(normalizeMember);
+    return [...remoteMembers, ...localMembers].filter(
+      (member, index, items) =>
+        items.findIndex((item) => normalizeEmail(item.email) === normalizeEmail(member.email)) === index
+    );
   } catch {
-    return [];
+    return [...remoteMembers];
   }
 }
 
@@ -802,6 +808,22 @@ async function getSupabaseProfileMember(user) {
   }
 }
 
+async function loadAdminProfiles() {
+  if (!supabaseClient || !isAdminMember()) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from("profiles")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) return;
+    remoteMembers = (data || []).map((profile) => mapSupabaseProfileToMember(profile));
+    renderAdminStats();
+    renderAdminMembers();
+  } catch {
+    // Keep the locally cached member list available if the server is temporarily unavailable.
+  }
+}
+
 async function signUpWithSupabase(member, password) {
   if (!supabaseClient) return { ok: false, skipped: true };
   const { data, error } = await supabaseClient.auth.signUp({
@@ -861,6 +883,7 @@ async function restoreSupabaseSession() {
     updateRegisterAccess();
     updateMypageAccess();
     updateAdminAccess();
+    await loadAdminProfiles();
     renderFavorites();
     renderMyIngredients();
   } catch {
@@ -925,6 +948,17 @@ function mapCommunityRow(row) {
   };
 }
 
+function mapCommentRow(row) {
+  return {
+    id: row.id,
+    postId: row.post_id,
+    postScope: row.post_scope || "community",
+    author: row.author || "",
+    body: row.body || "",
+    createdAt: row.created_at || new Date().toISOString(),
+  };
+}
+
 function mapPartnerRow(row) {
   return {
     id: row.id,
@@ -945,13 +979,21 @@ function mapPartnerRow(row) {
 async function loadSupabaseBoardData() {
   if (!supabaseClient) return;
   try {
-    const [ingredientsResult, communityResult, partnerResult] = await Promise.all([
+    const [ingredientsResult, communityResult, commentsResult, partnerResult] = await Promise.all([
       supabaseClient.from("ingredients").select("*").order("created_at", { ascending: false }).limit(500),
       supabaseClient.from("community_posts").select("*").order("created_at", { ascending: false }).limit(500),
+      supabaseClient.from("comments").select("*").order("created_at", { ascending: true }).limit(2000),
       supabaseClient.from("partner_posts").select("*").order("created_at", { ascending: false }).limit(500),
     ]);
     if (!ingredientsResult.error) remoteRegisteredIngredients = (ingredientsResult.data || []).map(mapIngredientRow);
     if (!communityResult.error) remoteCommunityPosts = (communityResult.data || []).map(mapCommunityRow);
+    if (!commentsResult.error) {
+      remoteComments = (commentsResult.data || []).map(mapCommentRow).reduce((groups, comment) => {
+        const key = `${comment.postScope}:${comment.postId}`;
+        groups[key] = [...(groups[key] || []), comment];
+        return groups;
+      }, {});
+    }
     if (!partnerResult.error) remotePartnerPosts = (partnerResult.data || []).map(mapPartnerRow);
     updateGrid();
     updateCommunityPosts();
@@ -2402,14 +2444,49 @@ function getCommunityComments() {
   }
 }
 
-function getPostComments(postId) {
-  return getCommunityComments()[postId] || [];
+function getPostComments(postId, postScope = "community") {
+  const remote = remoteComments[`${postScope}:${postId}`] || [];
+  const local = getCommunityComments()[postId] || [];
+  return [...remote, ...local].filter(
+    (comment, index, items) =>
+      items.findIndex(
+        (item) =>
+          item.id === comment.id ||
+          (item.author === comment.author &&
+            item.body === comment.body &&
+            item.createdAt === comment.createdAt)
+      ) === index
+  );
 }
 
-function savePostComment(postId, comment) {
+async function savePostComment(postId, comment, postScope = "community") {
+  if (supabaseClient) {
+    const ownerId = await getSupabaseUserId();
+    if (ownerId) {
+      const { data, error } = await supabaseClient
+        .from("comments")
+        .insert({
+          post_scope: postScope,
+          post_id: postId,
+          owner_id: ownerId,
+          author: comment.author,
+          body: comment.body,
+        })
+        .select()
+        .single();
+      if (!error && data) {
+        const saved = mapCommentRow(data);
+        const key = `${postScope}:${postId}`;
+        remoteComments[key] = [...(remoteComments[key] || []), saved];
+        return true;
+      }
+    }
+  }
+
   const comments = getCommunityComments();
   comments[postId] = [...(comments[postId] || []), comment];
   localStorage.setItem("foodsourceCommunityComments", JSON.stringify(comments));
+  return false;
 }
 
 function formatCommentDate(value) {
@@ -2444,7 +2521,7 @@ function renderCommunityPosts(posts) {
           <button class="post-author message-user-button" type="button" data-message-user="${escapeHtml(post.author)}">${post.author}</button>
           <span class="post-date">${post.date}</span>
           <div class="post-stats" aria-label="게시글 반응">
-            <span><i data-lucide="message-circle"></i>${getPostComments(post.id).length}</span>
+            <span><i data-lucide="message-circle"></i>${getPostComments(post.id, "partner").length}</span>
             <span><i data-lucide="eye"></i>${post.views}</span>
           </div>
         </article>
@@ -2472,7 +2549,7 @@ function renderCommunityPosts(posts) {
 }
 
 function getCommunityDetailMarkup(post) {
-  const comments = getPostComments(post.id);
+  const comments = getPostComments(post.id, "partner");
   const member = getCurrentMember();
   const defaultName = getDisplayName(member);
   const deleteAction = canManageCommunityPost(post)
@@ -2906,7 +2983,7 @@ if (communityList && communitySearch) {
     openCommunityDetail(post.dataset.postId);
   });
 
-  communityList.addEventListener("submit", (event) => {
+  communityList.addEventListener("submit", async (event) => {
     const form = event.target.closest("[data-comment-form]");
     if (!form) return;
 
@@ -2917,7 +2994,8 @@ if (communityList && communitySearch) {
 
     if (!author || !body) return;
 
-    savePostComment(postId, {
+    await savePostComment(postId, {
+      id: `local-comment-${Date.now()}`,
       author,
       body,
       createdAt: new Date().toISOString(),
@@ -3026,7 +3104,7 @@ if (partnerList && partnerSearch) {
     openPartnerDetail(post.dataset.partnerPostId);
   });
 
-  partnerList.addEventListener("submit", (event) => {
+  partnerList.addEventListener("submit", async (event) => {
     const form = event.target.closest("[data-partner-comment-form]");
     if (!form) return;
 
@@ -3042,11 +3120,12 @@ if (partnerList && partnerSearch) {
 
     if (!author || !body) return;
 
-    savePostComment(postId, {
+    await savePostComment(postId, {
+      id: `local-comment-${Date.now()}`,
       author,
       body,
       createdAt: new Date().toISOString(),
-    });
+    }, "partner");
     activePartnerPostId = postId;
     updatePartnerPosts();
   });
