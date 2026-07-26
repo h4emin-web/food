@@ -160,13 +160,21 @@ create policy "profiles_select_own_or_admin" on public.profiles
 for select using (id = auth.uid() or public.is_admin());
 
 drop policy if exists "profiles_update_own_or_admin" on public.profiles;
-create policy "profiles_update_own_or_admin" on public.profiles
-for update using (id = auth.uid() or public.is_admin())
-with check (id = auth.uid() or public.is_admin());
+drop policy if exists "profiles_update_own" on public.profiles;
+create policy "profiles_update_own" on public.profiles
+for update
+using (id = auth.uid())
+with check (id = auth.uid() and is_admin = false);
+
+drop policy if exists "profiles_update_admin" on public.profiles;
+create policy "profiles_update_admin" on public.profiles
+for update
+using (public.is_admin())
+with check (public.is_admin());
 
 drop policy if exists "profiles_insert_own" on public.profiles;
 create policy "profiles_insert_own" on public.profiles
-for insert with check (id = auth.uid());
+for insert with check (id = auth.uid() and is_admin = false);
 
 drop policy if exists "ingredients_select_all" on public.ingredients;
 create policy "ingredients_select_all" on public.ingredients
