@@ -3382,9 +3382,9 @@ if (ingredientRegisterForm) {
     );
   }
 
-  function syncRegisterCompany() {
+  function syncRegisterCompany(force = false) {
     const member = getCurrentMember();
-    if (registerFields.company) {
+    if (registerFields.company && (force || !registerFields.company.value.trim())) {
       registerFields.company.value = member?.company || "";
     }
   }
@@ -3492,11 +3492,9 @@ if (ingredientRegisterForm) {
     URL.revokeObjectURL(url);
   }
 
-  ingredientRegisterForm.addEventListener("input", syncRegisterCompany);
-  ingredientRegisterForm.addEventListener("change", syncRegisterCompany);
   ingredientRegisterForm.addEventListener("reset", () => {
     setRegisterMessage("", "");
-    window.setTimeout(syncRegisterCompany, 0);
+    window.setTimeout(() => syncRegisterCompany(true), 0);
   });
 
   if (csvTemplateDownload) {
@@ -3550,9 +3548,8 @@ if (ingredientRegisterForm) {
 
   ingredientRegisterForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    syncRegisterCompany();
     const member = getCurrentMember();
-    const companyName = member?.company || "";
+    const companyName = registerFields.company.value.trim() || member?.company || "";
     const item = {
       id: `registered-${Date.now()}`,
       name: registerFields.name.value.trim(),
