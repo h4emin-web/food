@@ -2538,7 +2538,7 @@ function renderCommunityPosts(posts) {
 }
 
 function getCommunityDetailMarkup(post) {
-  const comments = getPostComments(post.id, "partner");
+  const comments = getPostComments(post.id, "community");
   const member = getCurrentMember();
   const defaultName = getDisplayName(member);
   const deleteAction = canManageCommunityPost(post)
@@ -3828,7 +3828,7 @@ if (mypageForm) {
     myIngredientFields.desc.value = item.desc || "";
   }
 
-  mypageForm.addEventListener("submit", (event) => {
+  mypageForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const member = getCurrentMember();
     if (!member) return;
@@ -3851,7 +3851,23 @@ if (mypageForm) {
       return;
     }
 
-    updateStoredMember(updatedMember);
+    const userId = await getSupabaseUserId();
+    if (!userId) {
+      setMypageMessage("로그인 세션을 확인할 수 없습니다. 다시 로그인한 뒤 저장해주세요.", "error");
+      return;
+    }
+
+    const profileResult = await saveSupabaseProfile(userId, updatedMember);
+    if (!profileResult.ok) {
+      setMypageMessage(
+        `서버에 저장하지 못했습니다.${profileResult.error?.message ? ` (${profileResult.error.message})` : ""}`,
+        "error"
+      );
+      return;
+    }
+
+    const persistedMember = mapSupabaseProfileToMember(profileResult.profile);
+    updateStoredMember(persistedMember);
     updateAuthLinks();
     setMypageMessage("내 정보가 저장되었습니다.", "success");
   });
