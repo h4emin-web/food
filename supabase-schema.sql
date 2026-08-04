@@ -76,21 +76,55 @@ create table if not exists public.community_posts (
   updated_at timestamptz not null default now()
 );
 
-create table if not exists public.partner_posts (
-  id uuid primary key default gen_random_uuid(),
-  owner_id uuid references auth.users(id) on delete set null,
-  post_type text not null default 'inquiry',
-  mode text not null default 'OEM',
-  trade text not null default '구매',
-  title text not null,
-  company text not null default '',
-  business text not null default '',
-  description text not null default '',
-  author text not null default '',
-  views integer not null default 0,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
+create or replace function public.increment_community_post_views(post_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  next_views integer;
+begin
+  update public.community_posts
+  set views = views + 1,
+      updated_at = now()
+  where id = post_id
+  returning views into next_views;
+
+  return next_views;
+end;
+$$;
+
+grant execute on function public.increment_community_post_views(uuid) to anon, authenticated;
+
+create or replace function public.delete_community_post(post_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  deleted_count integer;
+begin
+  delete from public.community_posts post
+  where post.id = post_id
+    and (
+      post.owner_id = auth.uid()
+      or public.is_admin()
+      or exists (
+        select 1
+        from public.profiles profile
+        where profile.id = auth.uid()
+          and lower(profile.nickname) = lower(post.author)
+      )
+    );
+
+  get diagnostics deleted_count = row_count;
+  return deleted_count;
+end;
+$$;
+
+grant execute on function public.delete_community_post(uuid) to authenticated;
 
 create table if not exists public.comments (
   id uuid primary key default gen_random_uuid(),
@@ -131,7 +165,6 @@ create table if not exists public.daily_visits (
 alter table public.profiles enable row level security;
 alter table public.ingredients enable row level security;
 alter table public.community_posts enable row level security;
-alter table public.partner_posts enable row level security;
 alter table public.comments enable row level security;
 alter table public.messages enable row level security;
 alter table public.favorites enable row level security;
@@ -191,15 +224,6 @@ for select using (true);
 
 drop policy if exists "community_modify_owner_or_admin" on public.community_posts;
 create policy "community_modify_owner_or_admin" on public.community_posts
-for all using (owner_id = auth.uid() or public.is_admin())
-with check (owner_id = auth.uid() or public.is_admin());
-
-drop policy if exists "partner_select_all" on public.partner_posts;
-create policy "partner_select_all" on public.partner_posts
-for select using (true);
-
-drop policy if exists "partner_modify_owner_or_admin" on public.partner_posts;
-create policy "partner_modify_owner_or_admin" on public.partner_posts
 for all using (owner_id = auth.uid() or public.is_admin())
 with check (owner_id = auth.uid() or public.is_admin());
 

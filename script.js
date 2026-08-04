@@ -968,11 +968,10 @@ function mapPartnerRow(row) {
 async function loadSupabaseBoardData() {
   if (!supabaseClient) return;
   try {
-    const [ingredientsResult, communityResult, commentsResult, partnerResult] = await Promise.all([
+    const [ingredientsResult, communityResult, commentsResult] = await Promise.all([
       supabaseClient.from("ingredients").select("*").order("created_at", { ascending: false }).limit(500),
       supabaseClient.from("community_posts").select("*").order("created_at", { ascending: false }).limit(500),
       supabaseClient.from("comments").select("*").order("created_at", { ascending: true }).limit(2000),
-      supabaseClient.from("partner_posts").select("*").order("created_at", { ascending: false }).limit(500),
     ]);
     if (!ingredientsResult.error) remoteRegisteredIngredients = (ingredientsResult.data || []).map(mapIngredientRow);
     if (!communityResult.error) remoteCommunityPosts = (communityResult.data || []).map(mapCommunityRow);
@@ -983,10 +982,8 @@ async function loadSupabaseBoardData() {
         return groups;
       }, {});
     }
-    if (!partnerResult.error) remotePartnerPosts = (partnerResult.data || []).map(mapPartnerRow);
     updateGrid();
     updateCommunityPosts();
-    updatePartnerPosts();
   } catch {
     // Local data remains available if Supabase tables are not ready yet.
   }
@@ -1121,6 +1118,7 @@ async function deleteCommunityPost(postId) {
     .filter((item) => item.id === post.id || getCommunityPostIdentity(item) === identity)
     .map((item) => item.id);
   if (post.ownerId) remoteIds.push(post.id);
+  markCommunityPostDeleted(post);
   setSavedCommunityPosts(getSavedCommunityPosts().filter((item) => item.id !== postId && getCommunityPostIdentity(item) !== identity));
   remoteCommunityPosts = remoteCommunityPosts.filter((item) => item.id !== postId && getCommunityPostIdentity(item) !== identity);
   removeCommunityComments(postId);
@@ -1128,9 +1126,28 @@ async function deleteCommunityPost(postId) {
   updateCommunityPosts();
 
   if (!supabaseClient) return;
-  if (!remoteIds.length) return;
   try {
-    await supabaseClient.from("community_posts").delete().in("id", [...new Set(remoteIds)]);
+    const uniqueRemoteIds = [...new Set(remoteIds)];
+    if (uniqueRemoteIds.length) {
+      const { data: deletedCount, error } = await supabaseClient.rpc("delete_community_post", { post_id: uniqueRemoteIds[0] });
+      if (!error && Number(deletedCount || 0) > 0) return;
+      await supabaseClient.from("community_posts").delete().in("id", uniqueRemoteIds);
+      return;
+    }
+
+    const { data } = await supabaseClient
+      .from("community_posts")
+      .select("id")
+      .eq("title", post.title || "")
+      .eq("author", post.author || "")
+      .eq("description", post.desc || "")
+      .limit(10);
+    const matchedIds = (data || []).map((item) => item.id).filter(Boolean);
+    if (matchedIds.length) {
+      const { data: deletedCount, error } = await supabaseClient.rpc("delete_community_post", { post_id: matchedIds[0] });
+      if (!error && Number(deletedCount || 0) > 0) return;
+      await supabaseClient.from("community_posts").delete().in("id", matchedIds);
+    }
   } catch {
     // The local removal already completed; Supabase can be retried by reloading if needed.
   }
@@ -1189,6 +1206,33 @@ async function getVisitorIpKey() {
   }
 }
 
+async function getVisitHash(value) {
+  try {
+    const data = new TextEncoder().encode(String(value || ""));
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  } catch {
+    return String(value || "unknown");
+  }
+}
+
+async function saveVisitToSupabase(today, path, visitorKey) {
+  if (!supabaseClient) return;
+  try {
+    const ipHash = await getVisitHash(visitorKey);
+    await supabaseClient.from("daily_visits").upsert(
+      {
+        visit_date: today,
+        ip_hash: ipHash,
+        page: path,
+      },
+      { onConflict: "visit_date,ip_hash,page", ignoreDuplicates: true }
+    );
+  } catch {
+    // Local visit stats still work if remote analytics are unavailable.
+  }
+}
+
 async function trackVisit() {
   const today = new Date().toISOString().slice(0, 10);
   const path = window.location.pathname.split("/").pop() || "index.html";
@@ -1214,6 +1258,7 @@ async function trackVisit() {
     visits[today].pages[path] = [visitorKey];
   }
   localStorage.setItem("foodsourceVisits", JSON.stringify(visits));
+  saveVisitToSupabase(today, path, visitorKey);
   renderAdminStats();
   renderAdminVisits();
 }
@@ -1309,9 +1354,104 @@ function setSavedCommunityPosts(items) {
   localStorage.setItem(getCommunityPostKey(), JSON.stringify(items));
 }
 
+function getDeletedCommunityPostMarkers() {
+  try {
+    return JSON.parse(localStorage.getItem("foodsourceDeletedCommunityPosts") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function setDeletedCommunityPostMarkers(markers) {
+  localStorage.setItem("foodsourceDeletedCommunityPosts", JSON.stringify([...new Set(markers)].slice(-300)));
+}
+
+function getCommunityPostMarkers(post) {
+  if (!post) return [];
+  return [post.id, getCommunityPostIdentity(post)].filter(Boolean);
+}
+
+function isDeletedCommunityPost(post) {
+  const deletedMarkers = new Set(getDeletedCommunityPostMarkers());
+  return getCommunityPostMarkers(post).some((marker) => deletedMarkers.has(marker));
+}
+
+function markCommunityPostDeleted(post) {
+  setDeletedCommunityPostMarkers([...getDeletedCommunityPostMarkers(), ...getCommunityPostMarkers(post)]);
+}
+
 function saveCommunityPost(post) {
   setSavedCommunityPosts([post, ...getSavedCommunityPosts()]);
   saveCommunityPostToSupabase(post).then(() => updateCommunityPosts()).catch(() => {});
+}
+
+function setCommunityPostViewCount(postId, views) {
+  const nextViews = Number(views || 0);
+  const targetPost = getVisibleCommunityPosts().find((post) => post.id === postId);
+  const targetIdentity = targetPost ? getCommunityPostIdentity(targetPost) : "";
+
+  remoteCommunityPosts = remoteCommunityPosts.map((post) =>
+    post.id === postId || (targetIdentity && getCommunityPostIdentity(post) === targetIdentity)
+      ? { ...post, views: nextViews }
+      : post
+  );
+
+  const savedPosts = getSavedCommunityPosts().map((post) =>
+    post.id === postId || (targetIdentity && getCommunityPostIdentity(post) === targetIdentity)
+      ? { ...post, views: nextViews }
+      : post
+  );
+  setSavedCommunityPosts(savedPosts);
+
+  communityPosts.forEach((post) => {
+    if (post.id === postId || (targetIdentity && getCommunityPostIdentity(post) === targetIdentity)) {
+      post.views = nextViews;
+    }
+  });
+}
+
+function incrementRemoteCommunityPostViews(remotePostId, optimisticViews) {
+  if (!supabaseClient || !remotePostId) return;
+
+  const fallbackUpdate = () =>
+    supabaseClient
+      .from("community_posts")
+      .update({ views: optimisticViews })
+      .eq("id", remotePostId)
+      .then(() => {})
+      .catch(() => {});
+
+  supabaseClient
+    .rpc("increment_community_post_views", { post_id: remotePostId })
+    .then(({ data, error }) => {
+      if (!error && data != null) {
+        setCommunityPostViewCount(remotePostId, data);
+        updateCommunityPosts();
+        return;
+      }
+      fallbackUpdate();
+    })
+    .catch(fallbackUpdate);
+}
+
+function incrementMatchingRemoteCommunityPostViews(post, optimisticViews) {
+  if (!supabaseClient || !post) return;
+
+  supabaseClient
+    .from("community_posts")
+    .select("*")
+    .eq("title", post.title || "")
+    .eq("author", post.author || "")
+    .eq("description", post.desc || "")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .then(({ data, error }) => {
+      if (error || !data?.length) return;
+      const remotePost = mapCommunityRow(data[0]);
+      remoteCommunityPosts = [remotePost, ...remoteCommunityPosts.filter((next) => next.id !== remotePost.id)];
+      incrementRemoteCommunityPostViews(remotePost.id, Number(remotePost.views || 0) + 1);
+    })
+    .catch(() => {});
 }
 
 function incrementCommunityPostViews(postId) {
@@ -1321,14 +1461,7 @@ function incrementCommunityPostViews(postId) {
   if (remotePost) {
     const nextViews = Number(remotePost.views || 0) + 1;
     remoteCommunityPosts = remoteCommunityPosts.map((post) => (post.id === remotePost.id ? { ...post, views: nextViews } : post));
-    if (supabaseClient) {
-      supabaseClient
-        .from("community_posts")
-        .update({ views: nextViews })
-        .eq("id", remotePost.id)
-        .then(() => {})
-        .catch(() => {});
-    }
+    incrementRemoteCommunityPostViews(remotePost.id, nextViews);
     return;
   }
 
@@ -1340,12 +1473,14 @@ function incrementCommunityPostViews(postId) {
   });
   if (updated) {
     setSavedCommunityPosts(savedPosts);
+    incrementMatchingRemoteCommunityPostViews(clickedPost, Number(clickedPost?.views || 0) + 1);
     return;
   }
 
   const defaultPost = communityPosts.find((post) => post.id === postId);
   if (defaultPost) {
     defaultPost.views = Number(defaultPost.views || 0) + 1;
+    incrementMatchingRemoteCommunityPostViews(defaultPost, Number(defaultPost.views || 0));
   }
 }
 
@@ -2631,6 +2766,7 @@ function setCommunityPage(page) {
 function getVisibleCommunityPosts() {
   return [...remoteCommunityPosts, ...getSavedCommunityPosts(), ...communityPosts].filter(
     (post, index, posts) => {
+      if (isDeletedCommunityPost(post)) return false;
       const identity = `${post.title || ""}|${post.author || ""}|${post.desc || ""}`.toLowerCase();
       return posts.findIndex((next) => next.id === post.id || `${next.title || ""}|${next.author || ""}|${next.desc || ""}`.toLowerCase() === identity) === index;
     }
@@ -4046,7 +4182,6 @@ updateGrid();
 renderFavorites();
 renderMyIngredients();
 updateCommunityPosts();
-updatePartnerPosts();
 loadNewsCards();
 renderMessagesPage();
 renderAdminPage();
