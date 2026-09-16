@@ -43,6 +43,18 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.foodingredients.help/pharma-ingredient-sourcing.html</loc>
+    <lastmod>2026-09-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.foodingredients.help/cosmetic-ingredient-sourcing.html</loc>
+    <lastmod>2026-09-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.foodingredients.help/ingredient-register.html</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>monthly</changefreq>
