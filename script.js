@@ -626,13 +626,13 @@ function getCountryFlagCode(origin) {
 
 function normalizeRegisteredIngredient(item) {
   const sector = normalizeSector(item.sector);
-  const tags = [sector, item.cert, item.sample, item.response, item.use].filter(Boolean);
+  const tags = [sector, item.cert, item.sample, item.response].filter(Boolean);
   const origin = item.origin || "확인 필요";
   return {
     id: item.id,
     name: item.name,
     englishName: item.englishName || "English Name",
-    desc: item.use || item.desc || `${item.name} 등록 원료입니다. 상세 정보는 등록 회원에게 문의하세요.`,
+    desc: item.desc || `${item.name} 등록 원료입니다. 상세 정보는 등록 회원에게 문의하세요.`,
     sector,
     type: sector,
     origin,
@@ -974,7 +974,7 @@ function mapIngredientRow(row) {
     manufacturerVisibility: row.manufacturer_visibility || "public",
     sector: normalizeSector(row.sector),
     category: row.category || "",
-    use: row.use || "",
+    use: "",
     cert: row.cert || "",
     moq: row.moq || "",
     leadTime: row.lead_time || "",
@@ -1080,7 +1080,7 @@ async function saveIngredientToSupabase(item) {
       manufacturer_visibility: item.manufacturerVisibility || "public",
       sector: normalizeSector(item.sector),
       category: item.category || "",
-      use: item.use || "",
+      use: "",
       cert: item.cert || "",
       moq: item.moq || "",
       lead_time: item.leadTime || "",
@@ -3606,7 +3606,6 @@ if (ingredientRegisterForm) {
     origin: document.querySelector("#registerOrigin"),
     manufacturer: document.querySelector("#registerManufacturer"),
     manufacturerVisibility: document.querySelectorAll("[name='registerManufacturerVisibility']"),
-    use: document.querySelector("#registerUse"),
     cert: document.querySelector("#registerCert"),
     moq: document.querySelector("#registerMoq"),
     leadTime: document.querySelector("#registerLeadTime"),
@@ -3714,7 +3713,7 @@ if (ingredientRegisterForm) {
       manufacturerVisibility: normalizeManufacturerVisibility(getCsvValue(row, headers, ["제조사공개여부", "제조사공개", "manufacturerVisibility"])),
       sector,
       category: "",
-      use: getCsvValue(row, headers, ["사용용도", "용도", "use"]),
+      use: "",
       cert: getCsvValue(row, headers, ["인증", "cert"]),
       moq: getCsvValue(row, headers, ["MOQ", "moq"]),
       leadTime: getCsvValue(row, headers, ["리드타임", "leadTime"]),
@@ -3735,8 +3734,8 @@ if (ingredientRegisterForm) {
   }
 
   function downloadCsvTemplate() {
-    const headers = ["원료명", "영문명", "분야", "제조국", "제조사", "제조사공개여부", "사용용도", "인증", "MOQ", "리드타임", "샘플제공", "응답방식", "원료설명"];
-    const sample = ["알룰로스 시럽", "Allulose Syrup", "식품", "국내", "hubei", "공개", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 모든 원료"];
+    const headers = ["원료명", "영문명", "분야", "제조국", "제조사", "제조사공개여부", "인증", "MOQ", "리드타임", "샘플제공", "응답방식", "원료설명"];
+    const sample = ["알룰로스 시럽", "Allulose Syrup", "식품", "국내", "hubei", "공개", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 모든 원료"];
     const csv = `\uFEFF${headers.join(",")}\n${sample.map((value) => `"${String(value).replace(/"/g, "\"\"")}"`).join(",")}\n`;
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -3815,7 +3814,7 @@ if (ingredientRegisterForm) {
       manufacturerVisibility: getSelectedManufacturerVisibility(),
       sector: normalizeSector(registerFields.sector.value),
       category: "",
-      use: registerFields.use.value.trim(),
+      use: "",
       cert: registerFields.cert.value.trim(),
       moq: registerFields.moq.value.trim(),
       leadTime: registerFields.leadTime.value.trim(),
@@ -3984,7 +3983,6 @@ if (mypageForm) {
     sector: document.querySelector("#myIngredientSector"),
     manufacturer: document.querySelector("#myIngredientManufacturer"),
     manufacturerVisibility: document.querySelectorAll("[name='myIngredientManufacturerVisibility']"),
-    use: document.querySelector("#myIngredientUse"),
     cert: document.querySelector("#myIngredientCert"),
     moq: document.querySelector("#myIngredientMoq"),
     leadTime: document.querySelector("#myIngredientLeadTime"),
@@ -4075,7 +4073,6 @@ if (mypageForm) {
     myIngredientFields.sector.value = normalizeSector(item.sector);
     myIngredientFields.manufacturer.value = item.manufacturer || "";
     setMyIngredientManufacturerVisibility(item.manufacturerVisibility || "public");
-    myIngredientFields.use.value = item.use || "";
     myIngredientFields.cert.value = item.cert || "";
     myIngredientFields.moq.value = item.moq || "";
     myIngredientFields.leadTime.value = item.leadTime || "";
@@ -4194,7 +4191,7 @@ if (mypageForm) {
         manufacturer: myIngredientFields.manufacturer.value.trim(),
         manufacturerVisibility: getMyIngredientManufacturerVisibility(),
         category: "",
-        use: myIngredientFields.use.value.trim(),
+        use: "",
         cert: myIngredientFields.cert.value.trim(),
         moq: myIngredientFields.moq.value.trim(),
         leadTime: myIngredientFields.leadTime.value.trim(),
