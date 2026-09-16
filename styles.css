@@ -621,6 +621,11 @@ img {
   white-space: nowrap;
 }
 
+.sector-label.sector-식품 {
+  background: #edf7f1;
+  color: #16834f;
+}
+
 .sector-label.sector-제약 {
   background: #eef6ff;
   color: #2563eb;
@@ -637,10 +642,10 @@ img {
 
 .ingredient-card {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) max-content minmax(180px, 0.85fr) minmax(88px, auto) max-content max-content 44px;
+  grid-template-columns: minmax(220px, 1fr) max-content minmax(220px, 1fr) minmax(88px, auto) max-content max-content 44px;
   grid-template-areas:
     "name sector desc desc actions actions favorite"
-    "type type lead manufacturer origin origin favorite";
+    "name sector lead manufacturer origin origin favorite";
   column-gap: 6px;
   row-gap: 8px;
   align-items: center;
@@ -3261,10 +3266,9 @@ img {
   }
 
   .ingredient-board-head span:nth-child(3),
-  .ingredient-board-head span:nth-child(4),
+  .ingredient-board-head span:nth-child(6),
   .ingredient-board-head span:nth-child(7),
   .ingredient-board-head span:nth-child(8),
-  .ingredient-board-head span:nth-child(9),
   .ingredient-card .ingredient-type,
   .ingredient-card .ingredient-desc,
   .ingredient-card .ingredient-lead-time,
@@ -3274,8 +3278,8 @@ img {
   }
 
   .ingredient-board-head span:nth-child(2),
+  .ingredient-board-head span:nth-child(4),
   .ingredient-board-head span:nth-child(5),
-  .ingredient-board-head span:nth-child(6),
   .ingredient-card .sector-label {
     display: inline;
   }

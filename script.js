@@ -320,7 +320,6 @@ function renderCards(items) {
       <div class="ingredient-board-head" aria-hidden="true">
         <span>원료명</span>
         <span>분야</span>
-        <span>분류</span>
         <span>설명</span>
         <span>제조사</span>
         <span>제조국</span>
@@ -340,7 +339,6 @@ function getIngredientCardMarkup(item) {
         <h3>${item.name} <span>(${item.englishName})</span></h3>
       </div>
       <span class="sector-label ${getSectorClass(item.sector)}">${normalizeSector(item.sector)}</span>
-      <span class="ingredient-type">${item.type || "원료"}</span>
       <p class="ingredient-desc">${item.desc}</p>
       <span class="ingredient-manufacturer">${getIngredientManufacturerText(item)}</span>
       <span class="ingredient-origin">
@@ -380,7 +378,6 @@ function renderIngredientBoard(target, items, emptyMessage) {
     <div class="ingredient-board-head" aria-hidden="true">
       <span>원료명</span>
       <span>분야</span>
-      <span>분류</span>
       <span>설명</span>
       <span>제조사</span>
       <span>제조국</span>
@@ -514,6 +511,58 @@ function getFilteredItems() {
 
 function updateGrid() {
   renderCards(getFilteredItems());
+  updateIngredientStructuredData();
+}
+
+function updateIngredientStructuredData() {
+  if (!grid) return;
+  const scriptId = "dynamicIngredientStructuredData";
+  const items = getVisibleIngredients().slice(0, 100).map((item, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    item: {
+      "@type": "Product",
+      name: `${item.name} (${item.englishName})`,
+      category: `${normalizeSector(item.sector)} 원료`,
+      description: item.desc || `${item.name} 원료 정보`,
+      brand: {
+        "@type": "Brand",
+        name: item.supplier?.name || "푸드소싱 등록 공급사",
+      },
+      additionalProperty: [
+        {
+          "@type": "PropertyValue",
+          name: "분야",
+          value: normalizeSector(item.sector),
+        },
+        {
+          "@type": "PropertyValue",
+          name: "제조국",
+          value: item.origin || "확인 필요",
+        },
+        {
+          "@type": "PropertyValue",
+          name: "제조사",
+          value: getIngredientManufacturerText(item),
+        },
+      ],
+    },
+  }));
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": "https://www.foodingredients.help/index.html#registered-ingredient-list",
+    name: "식품·제약·화장품 원료 목록",
+    itemListElement: items,
+  };
+  let node = document.querySelector(`#${scriptId}`);
+  if (!node) {
+    node = document.createElement("script");
+    node.type = "application/ld+json";
+    node.id = scriptId;
+    document.head.appendChild(node);
+  }
+  node.textContent = JSON.stringify(data);
 }
 
 function setIngredientPageSize(size) {
@@ -577,7 +626,7 @@ function getCountryFlagCode(origin) {
 
 function normalizeRegisteredIngredient(item) {
   const sector = normalizeSector(item.sector);
-  const tags = [sector, item.category, item.cert, item.sample, item.response, item.use].filter(Boolean);
+  const tags = [sector, item.cert, item.sample, item.response, item.use].filter(Boolean);
   const origin = item.origin || "확인 필요";
   return {
     id: item.id,
@@ -585,7 +634,7 @@ function normalizeRegisteredIngredient(item) {
     englishName: item.englishName || "English Name",
     desc: item.use || item.desc || `${item.name} 등록 원료입니다. 상세 정보는 등록 회원에게 문의하세요.`,
     sector,
-    type: item.category || "등록 원료",
+    type: sector,
     origin,
     originFlagCode: item.originFlagCode || getCountryFlagCode(origin),
     manufacturer: item.manufacturer || "",
@@ -593,7 +642,7 @@ function normalizeRegisteredIngredient(item) {
     leadTime: item.leadTime || "",
     sample: item.sample || "",
     response: item.response || "",
-    tags: tags.length ? tags : [item.category || "등록 원료"],
+    tags: tags.length ? tags : [sector],
     supplier: {
       name: item.company || item.ownerName || "등록 회원",
       website: normalizeWebsite(item.companyWebsite || item.website),
@@ -1718,7 +1767,6 @@ function getFilteredRegisteredIngredients() {
     return (
       item.name.toLowerCase().includes(query) ||
       (item.englishName || "").toLowerCase().includes(query) ||
-      (item.category || "").toLowerCase().includes(query) ||
       normalizeSector(item.sector).toLowerCase().includes(query) ||
       (item.origin || "").toLowerCase().includes(query) ||
       (item.manufacturer || "").toLowerCase().includes(query)
@@ -1741,7 +1789,7 @@ function renderMyIngredients() {
         <article class="my-ingredient-item ${activeRegisteredIngredientId === item.id ? "active" : ""}" role="button" tabindex="0" data-my-ingredient-id="${item.id}">
           <strong>${escapeHtml(item.name)}</strong>
           <span>${escapeHtml(item.englishName || "영문명 없음")}</span>
-          <p>${normalizeSector(item.sector)} · ${escapeHtml(item.category || "분류 없음")} · ${escapeHtml(item.createdAtText || "")}</p>
+          <p>${normalizeSector(item.sector)} · ${escapeHtml(item.createdAtText || "")}</p>
         </article>
       `
     )
@@ -2328,7 +2376,7 @@ function renderAdminIngredients() {
               <article class="admin-list-row">
                 <strong>${escapeHtml(item.name || "원료명 없음")}</strong>
                 <span>${escapeHtml(item.ownerName)} · ${escapeHtml(item.ownerEmail)}</span>
-                <p>${normalizeSector(item.sector)} / ${escapeHtml(item.category || "분류 없음")} / ${escapeHtml(item.englishName || "영문명 없음")}</p>
+                <p>${normalizeSector(item.sector)} / ${escapeHtml(item.englishName || "영문명 없음")}</p>
                 <p>제조국: ${escapeHtml(item.origin || "확인 필요")} / 제조사: ${escapeHtml(item.manufacturer || "확인 필요")} / ${visibilityLabel}</p>
                 <div class="admin-row-actions">
                   <button class="admin-small-button danger-button" type="button" data-admin-delete-ingredient="${escapeHtml(item.id)}" data-admin-delete-ingredient-owner="${escapeHtml(item.ownerEmail)}">삭제</button>
@@ -3558,7 +3606,6 @@ if (ingredientRegisterForm) {
     origin: document.querySelector("#registerOrigin"),
     manufacturer: document.querySelector("#registerManufacturer"),
     manufacturerVisibility: document.querySelectorAll("[name='registerManufacturerVisibility']"),
-    category: document.querySelector("#registerCategory"),
     use: document.querySelector("#registerUse"),
     cert: document.querySelector("#registerCert"),
     moq: document.querySelector("#registerMoq"),
@@ -3580,11 +3627,6 @@ if (ingredientRegisterForm) {
     if (!csvUploadMessage) return;
     csvUploadMessage.textContent = message;
     csvUploadMessage.className = `form-message ${type}`.trim();
-  }
-
-  function getSelectedRegisterCategory() {
-    const selected = registerFields.category.selectedOptions[0];
-    return selected && selected.value ? selected.textContent.trim() : "";
   }
 
   function getSelectedManufacturerVisibility() {
@@ -3660,7 +3702,6 @@ if (ingredientRegisterForm) {
 
   function buildCsvIngredient(row, headers, member, index) {
     const origin = getCsvValue(row, headers, ["제조국", "원산지", "origin"]);
-    const category = getCsvValue(row, headers, ["카테고리", "분류", "category"]);
     const sector = normalizeSector(getCsvValue(row, headers, ["분야", "업종", "sector"]));
     const now = new Date();
     return {
@@ -3672,7 +3713,7 @@ if (ingredientRegisterForm) {
       manufacturer: getCsvValue(row, headers, ["제조사", "manufacturer"]),
       manufacturerVisibility: normalizeManufacturerVisibility(getCsvValue(row, headers, ["제조사공개여부", "제조사공개", "manufacturerVisibility"])),
       sector,
-      category,
+      category: "",
       use: getCsvValue(row, headers, ["사용용도", "용도", "use"]),
       cert: getCsvValue(row, headers, ["인증", "cert"]),
       moq: getCsvValue(row, headers, ["MOQ", "moq"]),
@@ -3694,8 +3735,8 @@ if (ingredientRegisterForm) {
   }
 
   function downloadCsvTemplate() {
-    const headers = ["원료명", "영문명", "분야", "제조국", "제조사", "제조사공개여부", "카테고리", "사용용도", "인증", "MOQ", "리드타임", "샘플제공", "응답방식", "원료설명"];
-    const sample = ["알룰로스 시럽", "Allulose Syrup", "식품", "국내", "hubei", "공개", "기타", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 식품 원료"];
+    const headers = ["원료명", "영문명", "분야", "제조국", "제조사", "제조사공개여부", "사용용도", "인증", "MOQ", "리드타임", "샘플제공", "응답방식", "원료설명"];
+    const sample = ["알룰로스 시럽", "Allulose Syrup", "식품", "국내", "hubei", "공개", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 식품 원료"];
     const csv = `\uFEFF${headers.join(",")}\n${sample.map((value) => `"${String(value).replace(/"/g, "\"\"")}"`).join(",")}\n`;
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -3742,10 +3783,10 @@ if (ingredientRegisterForm) {
         const items = rows
           .slice(1)
           .map((row, index) => buildCsvIngredient(row, headers, member, index))
-          .filter((item) => item.name && item.englishName && item.origin && item.category && item.company);
+          .filter((item) => item.name && item.englishName && item.origin && item.company);
 
         if (!items.length) {
-          setCsvUploadMessage("등록 가능한 행이 없습니다. 원료명, 영문명, 제조국, 카테고리를 확인해주세요.", "error");
+          setCsvUploadMessage("등록 가능한 행이 없습니다. 원료명, 영문명, 제조국을 확인해주세요.", "error");
           return;
         }
 
@@ -3773,7 +3814,7 @@ if (ingredientRegisterForm) {
       manufacturer: registerFields.manufacturer.value.trim(),
       manufacturerVisibility: getSelectedManufacturerVisibility(),
       sector: normalizeSector(registerFields.sector.value),
-      category: getSelectedRegisterCategory(),
+      category: "",
       use: registerFields.use.value.trim(),
       cert: registerFields.cert.value.trim(),
       moq: registerFields.moq.value.trim(),
@@ -3793,8 +3834,8 @@ if (ingredientRegisterForm) {
       }).format(new Date()),
     };
 
-    if (!item.name || !item.englishName || !item.origin || !item.category || !item.company) {
-      setRegisterMessage("원료명, 영문명, 제조국, 카테고리와 내정보의 회사명이 필요합니다.", "error");
+    if (!item.name || !item.englishName || !item.origin || !item.company) {
+      setRegisterMessage("원료명, 영문명, 제조국과 내정보의 회사명이 필요합니다.", "error");
       return;
     }
 
@@ -3943,7 +3984,6 @@ if (mypageForm) {
     sector: document.querySelector("#myIngredientSector"),
     manufacturer: document.querySelector("#myIngredientManufacturer"),
     manufacturerVisibility: document.querySelectorAll("[name='myIngredientManufacturerVisibility']"),
-    category: document.querySelector("#myIngredientCategory"),
     use: document.querySelector("#myIngredientUse"),
     cert: document.querySelector("#myIngredientCert"),
     moq: document.querySelector("#myIngredientMoq"),
@@ -4035,7 +4075,6 @@ if (mypageForm) {
     myIngredientFields.sector.value = normalizeSector(item.sector);
     myIngredientFields.manufacturer.value = item.manufacturer || "";
     setMyIngredientManufacturerVisibility(item.manufacturerVisibility || "public");
-    myIngredientFields.category.value = item.category || "";
     myIngredientFields.use.value = item.use || "";
     myIngredientFields.cert.value = item.cert || "";
     myIngredientFields.moq.value = item.moq || "";
@@ -4154,7 +4193,7 @@ if (mypageForm) {
         sector: normalizeSector(myIngredientFields.sector.value),
         manufacturer: myIngredientFields.manufacturer.value.trim(),
         manufacturerVisibility: getMyIngredientManufacturerVisibility(),
-        category: myIngredientFields.category.value.trim(),
+        category: "",
         use: myIngredientFields.use.value.trim(),
         cert: myIngredientFields.cert.value.trim(),
         moq: myIngredientFields.moq.value.trim(),
@@ -4165,8 +4204,8 @@ if (mypageForm) {
         updatedAt: new Date().toISOString(),
       };
 
-      if (!item.name || !item.englishName || !item.origin || !item.category) {
-        setMyIngredientMessage("원료명, 영문명, 제조국, 카테고리를 입력해주세요.", "error");
+      if (!item.name || !item.englishName || !item.origin) {
+        setMyIngredientMessage("원료명, 영문명, 제조국을 입력해주세요.", "error");
         return;
       }
 
