@@ -18,23 +18,23 @@ const fallbackNewsItems = [
   },
   {
     id: "2026-07-06-functional-ingredients-market",
-    title: "기능성 식품 원료 시장, 2034년까지 성장 전망",
+    title: "기능성 원료 시장, 2034년까지 성장 전망",
     source: "Fortune Business Insights",
     sourceLabel: "MARKET",
     category: "기능성 원료",
     publishedAt: "2026-07-06",
-    summary: "기능성 식품 원료 시장은 단백질, 식이섬유, 프로바이오틱스, 천연 기능성 소재 중심으로 확대될 전망입니다.",
+    summary: "기능성 원료 시장은 단백질, 식이섬유, 프로바이오틱스, 천연 기능성 소재 중심으로 확대될 전망입니다.",
     url: "https://www.fortunebusinessinsights.com/industry-reports/functional-food-ingredients-market-100224",
     image: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=900&q=80",
   },
   {
     id: "2026-07-06-food-ingredient-safety",
-    title: "식품 원료 안전성 검토와 GRAS 제도 이슈 재부각",
+    title: "모든 원료 안전성 검토와 GRAS 제도 이슈 재부각",
     source: "The Guardian",
     sourceLabel: "SAFETY",
     category: "원료 안전성",
     publishedAt: "2026-07-06",
-    summary: "미국 식품 원료 안전성 검토와 GRAS 제도에 대한 논의가 이어지고 있습니다. 신규 원료 도입 시 안전성 자료 확인이 중요해지고 있습니다.",
+    summary: "미국 원료 안전성 검토와 GRAS 제도에 대한 논의가 이어지고 있습니다. 신규 원료 도입 시 안전성 자료 확인이 중요해지고 있습니다.",
     url: "https://www.theguardian.com/us-news/2026/mar/07/fda-food-product-safety-checks-substances",
     image: "https://images.unsplash.com/photo-1581093458791-9d15482442f6?auto=format&fit=crop&w=900&q=80",
   },
@@ -88,8 +88,8 @@ const defaultAdminMember = {
   company: "Haim company",
   companyWebsite: "",
   role: "관리자",
-  interest: "식품 원료",
-  memo: "푸드소싱 기본 관리자 계정",
+  interest: "모든 원료",
+  memo: "인그리디언 기본 관리자 계정",
   isAdmin: true,
   joinedAt: "2026-07-16T00:00:00.000Z",
 };
@@ -527,7 +527,7 @@ function updateIngredientStructuredData() {
       description: item.desc || `${item.name} 원료 정보`,
       brand: {
         "@type": "Brand",
-        name: item.supplier?.name || "푸드소싱 등록 공급사",
+        name: item.supplier?.name || "인그리디언 등록 공급사",
       },
       additionalProperty: [
         {
@@ -552,7 +552,7 @@ function updateIngredientStructuredData() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": "https://www.foodingredients.help/index.html#registered-ingredient-list",
-    name: "식품·제약·화장품 원료 목록",
+    name: "모든 원료 목록",
     itemListElement: items,
   };
   let node = document.querySelector(`#${scriptId}`);
@@ -2597,7 +2597,7 @@ function renderNewsCards(items) {
           <div class="news-card-body">
             <div class="news-tags">
               <span>${escapeHtml(item.sourceLabel || item.category || "NEWS")}</span>
-              <span>${escapeHtml(item.source || "Food Sourcing")}</span>
+              <span>${escapeHtml(item.source || "Ingredient")}</span>
             </div>
             <time datetime="${escapeHtml(item.publishedAt || "")}">${formatNewsDate(item.publishedAt)}</time>
             <h3>${escapeHtml(item.title)}</h3>
@@ -2885,7 +2885,7 @@ function renderPartnerPosts(posts) {
   if (!partnerList) return;
 
   if (!posts.length) {
-    partnerList.innerHTML = '<div class="empty-state">조건에 맞는 협력업체 글이 없습니다.</div>';
+    partnerList.innerHTML = '<div class="empty-state">조건에 맞는 글이 없습니다.</div>';
     return;
   }
 
@@ -3463,7 +3463,7 @@ if (suggestionForm) {
     ]
       .filter((line) => line !== "")
       .join("\n");
-    const mailto = `mailto:foden_@naver.com?subject=${encodeURIComponent("[푸드소싱 건의사항]")}&body=${encodeURIComponent(mailBody)}`;
+    const mailto = `mailto:foden_@naver.com?subject=${encodeURIComponent("[인그리디언 건의사항]")}&body=${encodeURIComponent(mailBody)}`;
 
     if (suggestionMessage) {
       suggestionMessage.textContent = "메일 앱을 열고 있습니다. 메일 앱에서 전송 버튼을 눌러주세요.";
@@ -3736,7 +3736,7 @@ if (ingredientRegisterForm) {
 
   function downloadCsvTemplate() {
     const headers = ["원료명", "영문명", "분야", "제조국", "제조사", "제조사공개여부", "사용용도", "인증", "MOQ", "리드타임", "샘플제공", "응답방식", "원료설명"];
-    const sample = ["알룰로스 시럽", "Allulose Syrup", "식품", "국내", "hubei", "공개", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 식품 원료"];
+    const sample = ["알룰로스 시럽", "Allulose Syrup", "식품", "국내", "hubei", "공개", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 모든 원료"];
     const csv = `\uFEFF${headers.join(",")}\n${sample.map((value) => `"${String(value).replace(/"/g, "\"\"")}"`).join(",")}\n`;
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);

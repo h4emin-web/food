@@ -1,7 +1,7 @@
 {
-  "name": "푸드소싱",
-  "short_name": "푸드소싱",
-  "description": "식품원료 소싱과 중개, 샘플 요청, 견적 문의, OEM·ODM 협력업체 찾기를 지원합니다.",
+  "name": "인그리디언",
+  "short_name": "인그리디언",
+  "description": "모든 원료 소싱과 중개, 샘플 요청, 견적 문의, 원료 등록과 원료 문의를 지원합니다.",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
