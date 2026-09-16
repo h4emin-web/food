@@ -53,6 +53,7 @@ create table if not exists public.ingredients (
   origin_flag_code text not null default '',
   manufacturer text not null default '',
   manufacturer_visibility text not null default 'public',
+  sector text not null default '식품',
   category text not null default '',
   use text not null default '',
   cert text not null default '',
@@ -69,12 +70,19 @@ create table if not exists public.community_posts (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid references auth.users(id) on delete set null,
   author text not null default '',
+  sector text not null default '식품',
   title text not null,
   description text not null default '',
   views integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.ingredients
+  add column if not exists sector text not null default '식품';
+
+alter table public.community_posts
+  add column if not exists sector text not null default '식품';
 
 create or replace function public.increment_community_post_views(post_id uuid)
 returns integer

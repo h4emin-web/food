@@ -176,6 +176,14 @@
                 <input id="registerCompany" type="text" placeholder="공급사명을 입력하세요" required />
               </label>
               <label>
+                <span>분야</span>
+                <select id="registerSector" required>
+                  <option value="식품">식품</option>
+                  <option value="제약">제약</option>
+                  <option value="화장품">화장품</option>
+                </select>
+              </label>
+              <label>
                 <span>제조국</span>
                 <input id="registerOrigin" type="text" placeholder="예: 캐나다, 국내, 프랑스" required />
               </label>
@@ -265,7 +273,7 @@
             <div>
               <p class="eyebrow">CSV 업로드</p>
               <h2 id="csv-upload-title">여러 원료를 한 번에 등록</h2>
-              <p>CSV 파일로 원료명, 영문명, 제조국, 카테고리 등을 일괄 등록할 수 있습니다.</p>
+              <p>CSV 파일로 원료명, 영문명, 분야, 제조국, 카테고리 등을 일괄 등록할 수 있습니다.</p>
             </div>
             <div class="csv-upload-actions">
               <button class="outline-button" type="button" id="csvTemplateDownload">CSV 양식 다운로드</button>

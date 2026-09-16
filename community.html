@@ -9,7 +9,7 @@
     <meta name="msapplication-TileColor" content="#111827" />
     <meta name="msapplication-TileImage" content="/favicon-96x96.png" />
     <title>원료문의 게시판 | 푸드소싱</title>
-    <meta name="description" content="식품원료 소싱과 식품원료 중개 과정에서 찾기 어려운 원료, 대체 규격, 인증 조건, 수입 원료 이슈를 문의하는 푸드소싱 원료문의 게시판입니다." />
+    <meta name="description" content="식품, 제약, 화장품 원료 소싱 과정에서 찾기 어려운 원료, 대체 규격, 인증 조건, 수입 원료 이슈를 문의하는 푸드소싱 원료문의 게시판입니다." />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="author" content="Haim company" />
     <meta name="keywords" content="식품원료 문의, 원료 문의, 식품 원료 문의, 식품원료 소싱, 식품원료 중개, 식품 원료 소싱, 식품 원료 중개, 대체 원료, 수입 원료, 인증 원료, B2B 원료, 원료 중개사이트, 푸드소싱" />
@@ -25,11 +25,11 @@
     <meta property="og:site_name" content="푸드소싱" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="원료문의 게시판 | 푸드소싱" />
-    <meta property="og:description" content="식품원료 소싱과 중개 과정에서 찾기 어려운 원료, 대체 규격, 인증 조건, 수입 원료 이슈를 문의하는 게시판입니다." />
+    <meta property="og:description" content="식품, 제약, 화장품 원료 소싱 과정에서 찾기 어려운 원료, 대체 규격, 인증 조건, 수입 원료 이슈를 문의하는 게시판입니다." />
     <meta property="og:url" content="https://www.foodingredients.help/community.html" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="원료문의 게시판 | 푸드소싱" />
-    <meta name="twitter:description" content="식품원료 소싱과 중개 과정에서 찾기 어려운 원료, 대체 규격, 인증 조건, 수입 원료 이슈를 문의하는 게시판입니다." />
+    <meta name="twitter:description" content="식품, 제약, 화장품 원료 소싱 과정에서 찾기 어려운 원료, 대체 규격, 인증 조건, 수입 원료 이슈를 문의하는 게시판입니다." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -87,7 +87,7 @@
                        "@id":  "https://www.foodingredients.help/community.html#webpage",
                        "url":  "https://www.foodingredients.help/community.html",
                        "name":  "원료문의 게시판",
-                       "description":  "식품원료 소싱과 식품원료 중개 과정에서 찾기 어려운 식품 원료와 규격, 인증, 수입 이슈를 문의하는 게시판입니다.",
+                       "description":  "식품, 제약, 화장품 원료 소싱 과정에서 찾기 어려운 원료와 규격, 인증, 수입 이슈를 문의하는 게시판입니다.",
                        "inLanguage":  "ko-KR",
                        "isPartOf":  {
                                         "@id":  "https://www.foodingredients.help/#website"
@@ -158,6 +158,12 @@
       <section class="community-section" id="community">
         <div class="community-layout">
           <div class="community-main">
+            <div class="sector-tabs community-sector-tabs" role="tablist" aria-label="문의 분야">
+              <button class="active" type="button" data-community-sector="전체">전체보기</button>
+              <button type="button" data-community-sector="식품">식품</button>
+              <button type="button" data-community-sector="제약">제약</button>
+              <button type="button" data-community-sector="화장품">화장품</button>
+            </div>
             <div class="community-toolbar">
               <label class="community-search">
                 <i data-lucide="search"></i>
@@ -177,6 +183,14 @@
                 <label>
                   <span>작성자</span>
                   <input id="communityPostAuthor" type="text" placeholder="닉네임" readonly required />
+                </label>
+                <label>
+                  <span>문의 분야</span>
+                  <select id="communityPostSector" required>
+                    <option value="식품">식품</option>
+                    <option value="제약">제약</option>
+                    <option value="화장품">화장품</option>
+                  </select>
                 </label>
               </div>
               <label>
@@ -198,7 +212,7 @@
     <footer class="site-footer">
       <div class="footer-brand-block">
         <strong>푸드소싱</strong>
-        <p>식품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p>
+        <p>식품·제약·화장품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p>
         <div class="company-info">
           <p>[08814] 서울 관악구 신림동 신림로11길</p>
           <p>대표 : 하임 / E-mail : foden_@naver.com</p>

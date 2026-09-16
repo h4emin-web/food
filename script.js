@@ -44,15 +44,18 @@ const grid = document.querySelector("#ingredientGrid");
 const favoriteGrid = document.querySelector("#favoriteGrid");
 const searchInput = document.querySelector("#heroSearch");
 const filterInputs = [...document.querySelectorAll(".filter-panel input")];
+const ingredientSectorButtons = [...document.querySelectorAll("[data-ingredient-sector]")];
 const resetButton = document.querySelector("#resetFilters");
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
+const communitySectorButtons = [...document.querySelectorAll("[data-community-sector]")];
 const communityWriteButton = document.querySelector("#communityWriteButton");
 const communityWriteForm = document.querySelector("#communityWriteForm");
 const communityWriteCancel = document.querySelector("#communityWriteCancel");
 const communityWriteMessage = document.querySelector("#communityWriteMessage");
 const communityPostTitle = document.querySelector("#communityPostTitle");
 const communityPostAuthor = document.querySelector("#communityPostAuthor");
+const communityPostSector = document.querySelector("#communityPostSector");
 const communityPostDesc = document.querySelector("#communityPostDesc");
 const partnerList = document.querySelector("#partnerList");
 const partnerSearch = document.querySelector("#partnerSearch");
@@ -137,6 +140,8 @@ let ingredientCurrentPage = 1;
 let ingredientPageSize = 10;
 let communityCurrentPage = 1;
 let communityPageSize = 10;
+let activeIngredientSector = "전체";
+let activeCommunitySector = "전체";
 let partnerCurrentPage = 1;
 let partnerPageSize = 10;
 let remoteRegisteredIngredients = [];
@@ -218,6 +223,15 @@ function getSampleRequestButton(item) {
     : "";
 }
 
+function normalizeSector(value) {
+  const sector = String(value || "").trim();
+  return ["식품", "제약", "화장품"].includes(sector) ? sector : "식품";
+}
+
+function getSectorClass(value) {
+  return `sector-${normalizeSector(value)}`;
+}
+
 function getInquirySubjectText(inquiryType) {
   return inquiryType === "견적 문의" ? "견적 문의가" : `${inquiryType}이`;
 }
@@ -270,6 +284,7 @@ function renderCards(items) {
           <div class="ingredient-name">
             <h3>${item.name} <span>(${item.englishName})</span></h3>
           </div>
+          <span class="sector-label ${getSectorClass(item.sector)}">${normalizeSector(item.sector)}</span>
           <span class="ingredient-type">${item.type || "원료"}</span>
           <p class="ingredient-desc">${item.desc}</p>
           <span class="ingredient-manufacturer">${getIngredientManufacturerText(item)}</span>
@@ -304,6 +319,7 @@ function renderCards(items) {
     `
       <div class="ingredient-board-head" aria-hidden="true">
         <span>원료명</span>
+        <span>분야</span>
         <span>분류</span>
         <span>설명</span>
         <span>제조사</span>
@@ -323,6 +339,7 @@ function getIngredientCardMarkup(item) {
       <div class="ingredient-name">
         <h3>${item.name} <span>(${item.englishName})</span></h3>
       </div>
+      <span class="sector-label ${getSectorClass(item.sector)}">${normalizeSector(item.sector)}</span>
       <span class="ingredient-type">${item.type || "원료"}</span>
       <p class="ingredient-desc">${item.desc}</p>
       <span class="ingredient-manufacturer">${getIngredientManufacturerText(item)}</span>
@@ -362,6 +379,7 @@ function renderIngredientBoard(target, items, emptyMessage) {
   target.innerHTML = `
     <div class="ingredient-board-head" aria-hidden="true">
       <span>원료명</span>
+      <span>분야</span>
       <span>분류</span>
       <span>설명</span>
       <span>제조사</span>
@@ -414,6 +432,7 @@ function getIngredientDetailMarkup(item) {
           <h2>${item.name} <span>(${item.englishName})</span></h2>
           <div class="detail-meta">
             <span>${item.type || "원료"}</span>
+            <span>${normalizeSector(item.sector)}</span>
             <span>${item.origin || "제조국 확인 필요"}</span>
             <span>${supplier.spec || "규격 확인 필요"}</span>
           </div>
@@ -480,6 +499,7 @@ function getFilteredItems() {
   const checked = filterInputs.filter((input) => input.checked).map((input) => input.value);
 
   return visibleIngredients.filter((item) => {
+    const matchesSector = activeIngredientSector === "전체" || normalizeSector(item.sector) === activeIngredientSector;
     const matchesQuery =
       !query ||
       item.name.toLowerCase().includes(query) ||
@@ -488,7 +508,7 @@ function getFilteredItems() {
       item.tags.some((tag) => tag.toLowerCase().includes(query));
 
     const matchesFilters = checked.every((tag) => item.tags.includes(tag));
-    return matchesQuery && matchesFilters;
+    return matchesSector && matchesQuery && matchesFilters;
   });
 }
 
@@ -556,13 +576,15 @@ function getCountryFlagCode(origin) {
 }
 
 function normalizeRegisteredIngredient(item) {
-  const tags = [item.category, item.cert, item.sample, item.response, item.use].filter(Boolean);
+  const sector = normalizeSector(item.sector);
+  const tags = [sector, item.category, item.cert, item.sample, item.response, item.use].filter(Boolean);
   const origin = item.origin || "확인 필요";
   return {
     id: item.id,
     name: item.name,
     englishName: item.englishName || "English Name",
     desc: item.use || item.desc || `${item.name} 등록 원료입니다. 상세 정보는 등록 회원에게 문의하세요.`,
+    sector,
     type: item.category || "등록 원료",
     origin,
     originFlagCode: item.originFlagCode || getCountryFlagCode(origin),
@@ -901,6 +923,7 @@ function mapIngredientRow(row) {
     originFlagCode: row.origin_flag_code || getCountryFlagCode(row.origin || ""),
     manufacturer: row.manufacturer || "",
     manufacturerVisibility: row.manufacturer_visibility || "public",
+    sector: normalizeSector(row.sector),
     category: row.category || "",
     use: row.use || "",
     cert: row.cert || "",
@@ -926,6 +949,7 @@ function mapCommunityRow(row) {
   return {
     id: row.id,
     category: "원료 문의",
+    sector: normalizeSector(row.sector),
     title: row.title || "",
     desc: row.description || "",
     author: row.author || "",
@@ -993,9 +1017,7 @@ async function saveIngredientToSupabase(item) {
   if (!supabaseClient) return;
   const ownerId = await getSupabaseUserId();
   if (!ownerId) return;
-  const { data, error } = await supabaseClient
-    .from("ingredients")
-    .insert({
+  const payload = {
       owner_id: ownerId,
       owner_email: item.ownerEmail || "",
       owner_name: item.ownerName || "",
@@ -1007,6 +1029,7 @@ async function saveIngredientToSupabase(item) {
       origin_flag_code: item.originFlagCode || getCountryFlagCode(item.origin || ""),
       manufacturer: item.manufacturer || "",
       manufacturer_visibility: item.manufacturerVisibility || "public",
+      sector: normalizeSector(item.sector),
       category: item.category || "",
       use: item.use || "",
       cert: item.cert || "",
@@ -1015,9 +1038,18 @@ async function saveIngredientToSupabase(item) {
       sample: item.sample || "가능",
       response: item.response || "샘플·견적 모두 가능",
       description: item.desc || "",
-    })
+    };
+  let { data, error } = await supabaseClient
+    .from("ingredients")
+    .insert(payload)
     .select()
     .single();
+  if (error && /sector/i.test(error.message || "")) {
+    const { sector, ...legacyPayload } = payload;
+    const retry = await supabaseClient.from("ingredients").insert(legacyPayload).select().single();
+    data = retry.data;
+    error = retry.error;
+  }
   if (!error && data) {
     remoteRegisteredIngredients = [mapIngredientRow(data), ...remoteRegisteredIngredients.filter((next) => next.id !== data.id)];
   }
@@ -1027,17 +1059,25 @@ async function saveCommunityPostToSupabase(post) {
   if (!supabaseClient) return;
   const ownerId = await getSupabaseUserId();
   if (!ownerId) return;
-  const { data, error } = await supabaseClient
-    .from("community_posts")
-    .insert({
+  const payload = {
       owner_id: ownerId,
       author: post.author || "",
+      sector: normalizeSector(post.sector),
       title: post.title,
       description: post.desc || "",
       views: Number(post.views || 0),
-    })
+    };
+  let { data, error } = await supabaseClient
+    .from("community_posts")
+    .insert(payload)
     .select()
     .single();
+  if (error && /sector/i.test(error.message || "")) {
+    const { sector, ...legacyPayload } = payload;
+    const retry = await supabaseClient.from("community_posts").insert(legacyPayload).select().single();
+    data = retry.data;
+    error = retry.error;
+  }
   if (!error && data) {
     remoteCommunityPosts = [mapCommunityRow(data), ...remoteCommunityPosts.filter((next) => next.id !== data.id)];
   }
@@ -1679,6 +1719,7 @@ function getFilteredRegisteredIngredients() {
       item.name.toLowerCase().includes(query) ||
       (item.englishName || "").toLowerCase().includes(query) ||
       (item.category || "").toLowerCase().includes(query) ||
+      normalizeSector(item.sector).toLowerCase().includes(query) ||
       (item.origin || "").toLowerCase().includes(query) ||
       (item.manufacturer || "").toLowerCase().includes(query)
     );
@@ -1700,7 +1741,7 @@ function renderMyIngredients() {
         <article class="my-ingredient-item ${activeRegisteredIngredientId === item.id ? "active" : ""}" role="button" tabindex="0" data-my-ingredient-id="${item.id}">
           <strong>${escapeHtml(item.name)}</strong>
           <span>${escapeHtml(item.englishName || "영문명 없음")}</span>
-          <p>${escapeHtml(item.category || "분류 없음")} · ${escapeHtml(item.createdAtText || "")}</p>
+          <p>${normalizeSector(item.sector)} · ${escapeHtml(item.category || "분류 없음")} · ${escapeHtml(item.createdAtText || "")}</p>
         </article>
       `
     )
@@ -2287,7 +2328,7 @@ function renderAdminIngredients() {
               <article class="admin-list-row">
                 <strong>${escapeHtml(item.name || "원료명 없음")}</strong>
                 <span>${escapeHtml(item.ownerName)} · ${escapeHtml(item.ownerEmail)}</span>
-                <p>${escapeHtml(item.category || "분류 없음")} / ${escapeHtml(item.englishName || "영문명 없음")}</p>
+                <p>${normalizeSector(item.sector)} / ${escapeHtml(item.category || "분류 없음")} / ${escapeHtml(item.englishName || "영문명 없음")}</p>
                 <p>제조국: ${escapeHtml(item.origin || "확인 필요")} / 제조사: ${escapeHtml(item.manufacturer || "확인 필요")} / ${visibilityLabel}</p>
                 <div class="admin-row-actions">
                   <button class="admin-small-button danger-button" type="button" data-admin-delete-ingredient="${escapeHtml(item.id)}" data-admin-delete-ingredient-owner="${escapeHtml(item.ownerEmail)}">삭제</button>
@@ -2310,7 +2351,7 @@ function renderAdminCommunityPosts() {
           (post) => `
             <article class="admin-list-row">
               <strong>${escapeHtml(post.title || "제목 없음")}</strong>
-              <span>${escapeHtml(post.author || "-")} · ${formatNewsDate(post.createdAt)}</span>
+              <span>${normalizeSector(post.sector)} · ${escapeHtml(post.author || "-")} · ${formatNewsDate(post.createdAt)}</span>
               <p>${escapeHtml(post.desc || "")}</p>
               <div class="admin-row-actions">
                 <button class="admin-small-button danger-button" type="button" data-admin-delete-community="${escapeHtml(post.id)}">삭제</button>
@@ -2641,6 +2682,7 @@ function renderCommunityPosts(posts) {
     .map(
       (post) => `
         <article class="community-post" role="button" tabindex="0" data-post-id="${post.id}">
+          <span class="sector-label ${getSectorClass(post.sector)}">${normalizeSector(post.sector)}</span>
           <h3>${post.title}</h3>
           <button class="post-author message-user-button" type="button" data-message-user="${escapeHtml(post.author)}">${post.author}</button>
           <span class="post-date">${post.date}</span>
@@ -2658,6 +2700,7 @@ function renderCommunityPosts(posts) {
     "afterbegin",
     `
       <div class="community-board-head" aria-hidden="true">
+        <span>분야</span>
         <span>제목</span>
         <span>작성자</span>
         <span>등록일</span>
@@ -2701,6 +2744,7 @@ function getCommunityDetailMarkup(post) {
         <div class="detail-head">
           <h2>${post.title}</h2>
           <div class="detail-meta">
+            <span>${normalizeSector(post.sector)}</span>
             <button class="message-user-button detail-author" type="button" data-message-user="${escapeHtml(post.author)}">${post.author}</button>
             <span>${post.date}</span>
             <span>조회 ${post.views}</span>
@@ -2741,11 +2785,14 @@ function updateCommunityPosts() {
 
   const query = communitySearch.value.trim().toLowerCase();
   const posts = getVisibleCommunityPosts().filter((post) => {
+    const matchesSector = activeCommunitySector === "전체" || normalizeSector(post.sector) === activeCommunitySector;
     return (
-      !query ||
-      post.title.toLowerCase().includes(query) ||
-      post.desc.toLowerCase().includes(query) ||
-      post.category.toLowerCase().includes(query)
+      matchesSector &&
+      (!query ||
+        post.title.toLowerCase().includes(query) ||
+        post.desc.toLowerCase().includes(query) ||
+        normalizeSector(post.sector).toLowerCase().includes(query) ||
+        post.category.toLowerCase().includes(query))
     );
   });
 
@@ -3018,10 +3065,23 @@ if (grid && searchInput) {
       input.checked = false;
     });
     searchInput.value = "";
+    activeIngredientSector = "전체";
+    ingredientSectorButtons.forEach((button) => button.classList.toggle("active", button.dataset.ingredientSector === "전체"));
     ingredientCurrentPage = 1;
     updateGrid();
   });
 
+}
+
+if (ingredientSectorButtons.length) {
+  ingredientSectorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeIngredientSector = button.dataset.ingredientSector || "전체";
+      ingredientSectorButtons.forEach((item) => item.classList.toggle("active", item === button));
+      ingredientCurrentPage = 1;
+      updateGrid();
+    });
+  });
 }
 
 if (favoriteGrid) {
@@ -3135,6 +3195,17 @@ if (communityList && communitySearch) {
   });
 }
 
+if (communitySectorButtons.length) {
+  communitySectorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeCommunitySector = button.dataset.communitySector || "전체";
+      communitySectorButtons.forEach((item) => item.classList.toggle("active", item === button));
+      communityCurrentPage = 1;
+      updateCommunityPosts();
+    });
+  });
+}
+
 if (communityWriteButton && communityWriteForm) {
   communityWriteButton.addEventListener("click", () => {
     const member = getCurrentMember();
@@ -3145,6 +3216,9 @@ if (communityWriteButton && communityWriteForm) {
 
     communityWriteForm.hidden = !communityWriteForm.hidden;
     communityPostAuthor.value = getDisplayName(member);
+    if (communityPostSector) {
+      communityPostSector.value = activeCommunitySector === "전체" ? "식품" : activeCommunitySector;
+    }
     if (!communityWriteForm.hidden) {
       communityPostTitle.focus();
     }
@@ -3175,6 +3249,7 @@ if (communityWriteForm) {
     saveCommunityPost({
       id: `community-${Date.now()}`,
       category: "원료 문의",
+      sector: normalizeSector(communityPostSector?.value),
       title,
       desc,
       author: getDisplayName(member),
@@ -3479,6 +3554,7 @@ if (ingredientRegisterForm) {
     name: document.querySelector("#registerName"),
     englishName: document.querySelector("#registerEnglishName"),
     company: document.querySelector("#registerCompany"),
+    sector: document.querySelector("#registerSector"),
     origin: document.querySelector("#registerOrigin"),
     manufacturer: document.querySelector("#registerManufacturer"),
     manufacturerVisibility: document.querySelectorAll("[name='registerManufacturerVisibility']"),
@@ -3585,6 +3661,7 @@ if (ingredientRegisterForm) {
   function buildCsvIngredient(row, headers, member, index) {
     const origin = getCsvValue(row, headers, ["제조국", "원산지", "origin"]);
     const category = getCsvValue(row, headers, ["카테고리", "분류", "category"]);
+    const sector = normalizeSector(getCsvValue(row, headers, ["분야", "업종", "sector"]));
     const now = new Date();
     return {
       id: `registered-csv-${Date.now()}-${index}`,
@@ -3594,6 +3671,7 @@ if (ingredientRegisterForm) {
       originFlagCode: getCountryFlagCode(origin),
       manufacturer: getCsvValue(row, headers, ["제조사", "manufacturer"]),
       manufacturerVisibility: normalizeManufacturerVisibility(getCsvValue(row, headers, ["제조사공개여부", "제조사공개", "manufacturerVisibility"])),
+      sector,
       category,
       use: getCsvValue(row, headers, ["사용용도", "용도", "use"]),
       cert: getCsvValue(row, headers, ["인증", "cert"]),
@@ -3616,8 +3694,8 @@ if (ingredientRegisterForm) {
   }
 
   function downloadCsvTemplate() {
-    const headers = ["원료명", "영문명", "제조국", "제조사", "제조사공개여부", "카테고리", "사용용도", "인증", "MOQ", "리드타임", "샘플제공", "응답방식", "원료설명"];
-    const sample = ["알룰로스 시럽", "Allulose Syrup", "국내", "hubei", "공개", "기타", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 식품 원료"];
+    const headers = ["원료명", "영문명", "분야", "제조국", "제조사", "제조사공개여부", "카테고리", "사용용도", "인증", "MOQ", "리드타임", "샘플제공", "응답방식", "원료설명"];
+    const sample = ["알룰로스 시럽", "Allulose Syrup", "식품", "국내", "hubei", "공개", "기타", "음료, 저당 제품", "HACCP", "20kg", "즉시", "가능", "샘플·견적 모두 가능", "저당 제품 개발용 식품 원료"];
     const csv = `\uFEFF${headers.join(",")}\n${sample.map((value) => `"${String(value).replace(/"/g, "\"\"")}"`).join(",")}\n`;
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -3694,6 +3772,7 @@ if (ingredientRegisterForm) {
       originFlagCode: getCountryFlagCode(registerFields.origin.value.trim()),
       manufacturer: registerFields.manufacturer.value.trim(),
       manufacturerVisibility: getSelectedManufacturerVisibility(),
+      sector: normalizeSector(registerFields.sector.value),
       category: getSelectedRegisterCategory(),
       use: registerFields.use.value.trim(),
       cert: registerFields.cert.value.trim(),
@@ -3861,6 +3940,7 @@ if (mypageForm) {
     name: document.querySelector("#myIngredientName"),
     englishName: document.querySelector("#myIngredientEnglishName"),
     origin: document.querySelector("#myIngredientOrigin"),
+    sector: document.querySelector("#myIngredientSector"),
     manufacturer: document.querySelector("#myIngredientManufacturer"),
     manufacturerVisibility: document.querySelectorAll("[name='myIngredientManufacturerVisibility']"),
     category: document.querySelector("#myIngredientCategory"),
@@ -3952,6 +4032,7 @@ if (mypageForm) {
     myIngredientFields.name.value = item.name || "";
     myIngredientFields.englishName.value = item.englishName || "";
     myIngredientFields.origin.value = item.origin || "";
+    myIngredientFields.sector.value = normalizeSector(item.sector);
     myIngredientFields.manufacturer.value = item.manufacturer || "";
     setMyIngredientManufacturerVisibility(item.manufacturerVisibility || "public");
     myIngredientFields.category.value = item.category || "";
@@ -4070,6 +4151,7 @@ if (mypageForm) {
         englishName: myIngredientFields.englishName.value.trim(),
         origin: myIngredientFields.origin.value.trim(),
         originFlagCode: getCountryFlagCode(myIngredientFields.origin.value.trim()),
+        sector: normalizeSector(myIngredientFields.sector.value),
         manufacturer: myIngredientFields.manufacturer.value.trim(),
         manufacturerVisibility: getMyIngredientManufacturerVisibility(),
         category: myIngredientFields.category.value.trim(),

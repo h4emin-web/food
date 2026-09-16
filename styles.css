@@ -577,16 +577,70 @@ img {
   background: transparent;
 }
 
+.sector-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.sector-tabs button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid #d7dde5;
+  border-radius: 8px;
+  background: #fff;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.sector-tabs button:hover,
+.sector-tabs button.active {
+  border-color: #111827;
+  background: #111827;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(17, 24, 39, 0.08);
+}
+
+.sector-label {
+  display: inline-flex;
+  grid-area: sector;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 7px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.sector-label.sector-제약 {
+  background: #eef6ff;
+  color: #2563eb;
+}
+
+.sector-label.sector-화장품 {
+  background: #f7f2ff;
+  color: #7c3aed;
+}
+
 .ingredient-board-head {
   display: none;
 }
 
 .ingredient-card {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(190px, 0.9fr) minmax(88px, auto) max-content max-content 44px;
+  grid-template-columns: minmax(220px, 1fr) max-content minmax(180px, 0.85fr) minmax(88px, auto) max-content max-content 44px;
   grid-template-areas:
-    "name desc desc actions actions favorite"
-    "type lead lead manufacturer origin favorite";
+    "name sector desc desc actions actions favorite"
+    "type type lead manufacturer origin origin favorite";
   column-gap: 6px;
   row-gap: 8px;
   align-items: center;
@@ -1191,7 +1245,7 @@ img {
 .community-board-head,
 .community-post {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) 118px 96px 116px;
+  grid-template-columns: max-content minmax(280px, 1fr) 118px 96px 116px;
   gap: 14px;
   align-items: center;
   width: 100%;
@@ -3172,8 +3226,8 @@ img {
 
   .ingredient-board-head,
   .ingredient-card {
-    grid-template-columns: minmax(0, 1.35fr) minmax(88px, 0.85fr) minmax(70px, 0.55fr);
-    grid-template-areas: "name manufacturer origin";
+    grid-template-columns: minmax(0, 1.25fr) max-content minmax(82px, 0.8fr) minmax(70px, 0.55fr);
+    grid-template-areas: "name sector manufacturer origin";
     gap: 8px;
     padding-right: 12px;
     padding-left: 12px;
@@ -3206,11 +3260,11 @@ img {
     gap: 6px 10px;
   }
 
-  .ingredient-board-head span:nth-child(2),
   .ingredient-board-head span:nth-child(3),
-  .ingredient-board-head span:nth-child(6),
+  .ingredient-board-head span:nth-child(4),
   .ingredient-board-head span:nth-child(7),
   .ingredient-board-head span:nth-child(8),
+  .ingredient-board-head span:nth-child(9),
   .ingredient-card .ingredient-type,
   .ingredient-card .ingredient-desc,
   .ingredient-card .ingredient-lead-time,
@@ -3219,8 +3273,10 @@ img {
     display: none;
   }
 
-  .ingredient-board-head span:nth-child(4),
-  .ingredient-board-head span:nth-child(5) {
+  .ingredient-board-head span:nth-child(2),
+  .ingredient-board-head span:nth-child(5),
+  .ingredient-board-head span:nth-child(6),
+  .ingredient-card .sector-label {
     display: inline;
   }
 
