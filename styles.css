@@ -3791,3 +3791,471 @@ img {
     min-height: 116px;
   }
 }
+
+/* Visual refresh */
+:root {
+  --ink: #101828;
+  --muted: #667085;
+  --line: #e6eaf0;
+  --soft: #f7f9fc;
+  --paper: #fbfcfe;
+  --green: #475467;
+  --teal: #0f766e;
+  --blue: #1d4ed8;
+  --shadow: 0 22px 60px rgba(16, 24, 40, 0.09);
+  --shadow-soft: 0 10px 30px rgba(16, 24, 40, 0.06);
+  --focus-ring: 0 0 0 4px rgba(29, 78, 216, 0.1);
+}
+
+body {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fbfcfe 42%, #ffffff 100%);
+}
+
+.site-header {
+  height: 76px;
+  border-bottom-color: rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+.brand {
+  gap: 12px;
+  color: #0f172a;
+  letter-spacing: 0;
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 11px;
+  background: #111827;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(17, 24, 39, 0.14);
+}
+
+.main-nav {
+  padding: 7px;
+  border: 1px solid #eef2f7;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.04);
+}
+
+.main-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 13px;
+  border-radius: 999px;
+  color: #475467;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+  background: #f2f4f7;
+  color: #101828;
+}
+
+.header-actions {
+  gap: 8px;
+}
+
+.header-actions .text-button,
+.primary-button.compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid #e6eaf0;
+  border-radius: 999px;
+  background: #fff;
+  color: #344054;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+}
+
+.header-actions .text-button:hover,
+.primary-button.compact:hover {
+  border-color: #cfd6e3;
+  background: #f8fafc;
+  color: #101828;
+}
+
+.primary-button.compact.active-register,
+.admin-only-link:not([hidden]) {
+  border-color: #111827;
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(17, 24, 39, 0.14);
+}
+
+.icon-button {
+  border: 1px solid #e6eaf0;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-top: clamp(72px, 9vw, 118px);
+  padding-bottom: 64px;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(29, 78, 216, 0.16), transparent);
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  color: #475467;
+  letter-spacing: 0.03em;
+}
+
+.hero h1,
+.community-hero h1,
+.register-hero h1,
+.signup-hero h1 {
+  color: #0f172a;
+  font-weight: 900;
+}
+
+.hero-description,
+.community-hero p:not(.eyebrow),
+.register-hero p,
+.signup-hero p {
+  color: #667085;
+  font-weight: 600;
+}
+
+.search-panel {
+  width: min(100%, 960px);
+  padding: 12px;
+  border-color: #d9e1ec;
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+}
+
+.search-field {
+  min-height: 58px;
+  padding: 0 18px;
+}
+
+.search-field svg {
+  color: #98a2b3;
+}
+
+.search-field input::placeholder,
+.community-search input::placeholder {
+  color: #98a2b3;
+}
+
+.marketplace,
+.community-section,
+.news-section,
+.ingredient-content-section {
+  background: #fff;
+}
+
+.content-area,
+.community-layout {
+  width: min(100%, 1120px);
+}
+
+.sector-tabs {
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.sector-tabs button {
+  min-height: 42px;
+  border-color: #e1e7ef;
+  border-radius: 999px;
+  color: #475467;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.03);
+}
+
+.sector-tabs button:hover,
+.sector-tabs button.active {
+  border-color: #111827;
+  background: #111827;
+  color: #fff;
+  box-shadow: 0 12px 28px rgba(17, 24, 39, 0.12);
+}
+
+.ingredient-grid,
+.community-list,
+.partner-list {
+  gap: 12px;
+}
+
+.ingredient-card,
+.community-post,
+.partner-post {
+  border-color: #dfe7ef;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(16, 24, 40, 0.02);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.ingredient-card:hover,
+.community-post:hover,
+.partner-post:hover {
+  border-color: #b8c4d4;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(16, 24, 40, 0.09);
+  transform: translateY(-1px);
+}
+
+.ingredient-name h3,
+.community-post h3,
+.partner-post-title h3 {
+  color: #101828;
+}
+
+.ingredient-name h3 {
+  font-size: 19px;
+}
+
+.ingredient-name h3 span {
+  color: #667085;
+  font-weight: 700;
+}
+
+.ingredient-desc,
+.post-author,
+.post-date,
+.ingredient-origin,
+.ingredient-lead-time,
+.ingredient-manufacturer,
+.partner-meta {
+  color: #667085;
+}
+
+.sector-label,
+.post-category,
+.partner-badge.mode {
+  background: #f2f4f7;
+  color: #475467;
+}
+
+.sector-label.sector-식품 {
+  background: #eef8f2;
+  color: #15803d;
+}
+
+.sector-label.sector-제약 {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.sector-label.sector-화장품 {
+  background: #f5f3ff;
+  color: #6d28d9;
+}
+
+.card-actions button,
+.detail-actions button,
+.community-write-button,
+.primary-button,
+.outline-button {
+  border-radius: 999px;
+}
+
+.sample-button,
+.quote-button,
+.outline-button {
+  border-color: #dfe7ef !important;
+  background: #fff;
+  color: #344054;
+}
+
+.sample-button:hover,
+.quote-button:hover,
+.outline-button:hover {
+  background: #f8fafc;
+}
+
+.favorite-button {
+  border-color: #e1e7ef;
+  border-radius: 999px;
+}
+
+.ingredient-detail,
+.community-detail {
+  margin-top: -4px;
+  padding: 18px;
+  border: 1px solid #dfe7ef;
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  background: #f8fafc;
+}
+
+.detail-post,
+.comment-panel,
+.supplier-detail-grid div,
+.community-write-form,
+.ingredient-content-grid article,
+.seo-topic-grid a,
+.seo-article,
+.register-form,
+.auth-card,
+.mypage-card,
+.admin-panel,
+.message-panel,
+.legal-card {
+  border-color: #dfe7ef;
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+}
+
+.supplier-detail-grid div,
+.ingredient-content-grid article,
+.seo-topic-grid a {
+  background: #fff;
+}
+
+.community-hero,
+.register-hero,
+.signup-hero {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.community-toolbar {
+  align-items: stretch;
+}
+
+.community-search,
+.community-write-form input,
+.community-write-form select,
+.community-write-form textarea,
+.comment-form input,
+.comment-form textarea,
+.register-form input,
+.register-form select,
+.register-form textarea,
+.auth-card input,
+.mypage-card input,
+.mypage-card select,
+.mypage-card textarea,
+.message-composer input,
+.message-composer textarea,
+.admin-panel-head input {
+  border-color: #dfe7ef;
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.community-search:focus-within,
+.community-write-form input:focus,
+.community-write-form select:focus,
+.community-write-form textarea:focus,
+.comment-form input:focus,
+.comment-form textarea:focus,
+.register-form input:focus,
+.register-form select:focus,
+.register-form textarea:focus,
+.auth-card input:focus,
+.mypage-card input:focus,
+.mypage-card select:focus,
+.mypage-card textarea:focus,
+.message-composer input:focus,
+.message-composer textarea:focus,
+.admin-panel-head input:focus {
+  border-color: #1d4ed8;
+  box-shadow: var(--focus-ring);
+}
+
+.pagination-bar {
+  margin-top: 4px;
+  border: 1px solid #dfe7ef;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(16, 24, 40, 0.04);
+}
+
+.page-size-toggle button,
+.page-number-list button {
+  border-color: #e1e7ef;
+  border-radius: 999px;
+}
+
+.page-size-toggle button.active,
+.page-number-list button.active {
+  border-color: #111827;
+  background: #111827;
+  color: #fff;
+}
+
+.seo-topic-section {
+  background: #f8fafc;
+}
+
+.seo-topic-grid a:hover,
+.ingredient-content-grid article:hover {
+  border-color: #b8c4d4;
+  box-shadow: 0 16px 34px rgba(16, 24, 40, 0.08);
+}
+
+.site-footer {
+  border-top: 1px solid #e6eaf0;
+  background: #f8fafc;
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    height: auto;
+    gap: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .main-nav {
+    border-radius: 14px;
+    box-shadow: none;
+  }
+
+  .header-actions .text-button,
+  .primary-button.compact {
+    min-height: 34px;
+    padding: 0 10px;
+  }
+
+  .hero {
+    padding-top: 48px;
+    padding-bottom: 42px;
+  }
+
+  .search-panel {
+    border-radius: 16px;
+  }
+
+  .ingredient-detail,
+  .community-detail {
+    border-radius: 12px;
+  }
+}
