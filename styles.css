@@ -5034,3 +5034,30 @@ body {
   background: #fff0f7;
   color: #be185d;
 }
+
+@media (min-width: 901px) {
+  .ingredient-card {
+    grid-template-columns: minmax(0, 280px) 48px minmax(0, 1fr) max-content max-content 28px;
+    grid-template-areas:
+      "name sector desc actions actions favorite"
+      "name sector lead manufacturer origin .";
+    column-gap: 10px;
+  }
+
+  .card-actions {
+    grid-area: actions;
+    justify-self: end;
+  }
+
+  .ingredient-manufacturer {
+    justify-self: end;
+    width: auto;
+    max-width: 170px;
+  }
+
+  .ingredient-origin {
+    justify-self: start;
+    width: auto;
+    justify-content: flex-start;
+  }
+}
