@@ -1,4 +1,4 @@
-name: Daily food ingredient news
+name: Daily ingredient news
 
 on:
   schedule:
@@ -20,11 +20,11 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Fetch food ingredient news
+      - name: Fetch ingredient news
         run: node scripts/fetch-news.mjs
 
       - name: Commit updated news
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Update daily food ingredient news"
+          commit_message: "Update daily ingredient news"
           file_pattern: news-data.json

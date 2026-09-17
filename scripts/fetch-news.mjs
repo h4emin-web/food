@@ -7,7 +7,11 @@ const cutoff = new Date(now.getTime() - 7 * ONE_DAY);
 
 const feeds = [
   "https://news.google.com/rss/search?q=%EC%8B%9D%ED%92%88%20%EC%9B%90%EB%A3%8C%20OR%20%EA%B8%B0%EB%8A%A5%EC%84%B1%20%EC%9B%90%EB%A3%8C&hl=ko&gl=KR&ceid=KR:ko",
+  "https://news.google.com/rss/search?q=%EC%A0%9C%EC%95%BD%20%EC%9B%90%EB%A3%8C%20OR%20%EC%9B%90%EB%A3%8C%EC%9D%98%EC%95%BD%ED%92%88%20OR%20%EB%B6%80%ED%98%95%EC%A0%9C&hl=ko&gl=KR&ceid=KR:ko",
+  "https://news.google.com/rss/search?q=%ED%99%94%EC%9E%A5%ED%92%88%20%EC%9B%90%EB%A3%8C%20OR%20%ED%99%94%EC%9E%A5%ED%92%88%20%EC%86%8C%EC%9E%AC%20OR%20%EC%B2%9C%EC%97%B0%20%EC%B6%94%EC%B6%9C%EB%AC%BC&hl=ko&gl=KR&ceid=KR:ko",
   "https://news.google.com/rss/search?q=food%20ingredients%20OR%20functional%20food%20ingredients&hl=en-US&gl=US&ceid=US:en",
+  "https://news.google.com/rss/search?q=pharmaceutical%20ingredients%20OR%20API%20OR%20excipients&hl=en-US&gl=US&ceid=US:en",
+  "https://news.google.com/rss/search?q=cosmetic%20ingredients%20OR%20personal%20care%20ingredients%20OR%20beauty%20ingredients&hl=en-US&gl=US&ceid=US:en",
 ];
 
 const fallbackImages = [
@@ -92,7 +96,19 @@ function normalizeSource(title) {
 }
 
 function summarize(title) {
-  return `${title.replace(/\s+-\s+.+$/, "")} 관련 소식입니다. 식품 원료 소싱, 제품 개발, 인증과 표시 기준을 확인할 때 참고할 수 있습니다.`;
+  return `${title.replace(/\s+-\s+.+$/, "")} 관련 소식입니다. 식품·제약·화장품 원료 소싱, 제품 개발, 인증과 표시 기준을 확인할 때 참고할 수 있습니다.`;
+}
+
+function categorize(title = "") {
+  const lower = title.toLowerCase();
+  if (/(화장품|cosmetic|beauty|personal care|skincare|skin care|extract|fragrance)/i.test(lower)) {
+    return "화장품 원료";
+  }
+  if (/(제약|의약품|원료의약품|부형제|pharma|pharmaceutical|api|excipient|drug)/i.test(lower)) {
+    return "제약 원료";
+  }
+  if (/(protein|단백)/i.test(lower)) return "단백 원료";
+  return "식품 원료";
 }
 
 async function readExisting() {
@@ -128,8 +144,7 @@ function isFallbackImage(image = "") {
 
 const existing = (await readExisting()).filter((item) => {
   const date = new Date(item.publishedAt || item.collectedAt || now);
-  const title = `${item.title || ""} ${item.category || ""}`.toLowerCase();
-  return date >= cutoff && !/(화장품|cosmetic|pharma|제약|의약품)/i.test(title);
+  return date >= cutoff;
 });
 
 for (const item of existing) {
@@ -140,6 +155,7 @@ for (const item of existing) {
 
 const seen = new Set(existing.map((item) => item.url || item.link || item.title));
 const fresh = [];
+const categoryCounts = new Map();
 
 for (const feed of feeds) {
   const items = await fetchFeed(feed);
@@ -147,8 +163,9 @@ for (const feed of feeds) {
     if (!item.title || !item.link || seen.has(item.link)) continue;
     const title = item.title.replace(/\s+-\s+.+$/, "");
     const lower = title.toLowerCase();
-    if (!/(원료|식품|ingredient|additive|protein|functional|color|sweetener)/i.test(lower)) continue;
-    if (/(화장품|cosmetic|pharma|제약|의약품)/i.test(lower)) continue;
+    if (!/(원료|소재|식품|제약|의약품|화장품|ingredient|additive|protein|functional|color|sweetener|pharma|pharmaceutical|api|excipient|cosmetic|beauty|personal care)/i.test(lower)) continue;
+    const category = categorize(title);
+    if ((categoryCounts.get(category) || 0) >= 2) continue;
 
     const index = fresh.length % fallbackImages.length;
     const image = item.image || (await pickArticleImage(item.link)) || fallbackImages[index];
@@ -157,17 +174,17 @@ for (const feed of feeds) {
       title,
       source: normalizeSource(item.title),
       sourceLabel: lower.includes("regulation") || lower.includes("fda") ? "REGULATION" : "NEWS",
-      category: lower.includes("protein") || title.includes("단백") ? "단백 원료" : "식품 원료",
+      category,
       publishedAt: now.toISOString().slice(0, 10),
       collectedAt: now.toISOString(),
       summary: summarize(title),
       url: item.link,
       image,
     });
+    categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1);
     seen.add(item.link);
-    if (fresh.length >= 3) break;
+    if (fresh.length >= 6) break;
   }
-  if (fresh.length >= 3) break;
 }
 
 const merged = [...fresh, ...existing].slice(0, 21);
