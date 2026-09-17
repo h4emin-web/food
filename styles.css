@@ -929,6 +929,162 @@ img {
   justify-self: end;
 }
 
+/* Final alignment and brand tone */
+:root {
+  --ink: #0b1220;
+  --muted: #5b6778;
+  --line: #d9e3ee;
+  --soft: #f5f8fc;
+  --paper: #f8fbff;
+  --green: #334155;
+  --blue: #2563eb;
+  --shadow: 0 20px 56px rgba(15, 23, 42, 0.08);
+}
+
+body {
+  background: #f8fbff;
+}
+
+.site-header,
+.hero,
+.community-hero,
+.register-hero,
+.signup-hero {
+  background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+}
+
+.ingredient-card {
+  grid-template-columns: minmax(0, 280px) 48px minmax(0, 1fr) 170px 112px 28px;
+  grid-template-areas:
+    "name sector desc actions actions favorite"
+    "name sector lead manufacturer origin .";
+  column-gap: 16px;
+  row-gap: 10px;
+  min-height: 116px;
+  padding: 22px 26px;
+}
+
+.ingredient-name,
+.ingredient-desc,
+.ingredient-lead-time,
+.ingredient-manufacturer,
+.ingredient-origin,
+.card-actions {
+  min-width: 0;
+}
+
+.ingredient-name h3 {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ingredient-desc {
+  width: 100%;
+}
+
+.card-actions {
+  justify-content: flex-end;
+  align-self: center;
+}
+
+.favorite-button {
+  justify-self: end;
+  align-self: center;
+}
+
+.ingredient-manufacturer {
+  overflow: hidden;
+  justify-self: end;
+  width: 100%;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ingredient-origin {
+  justify-self: end;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.sector-label {
+  justify-self: start;
+  align-self: center;
+}
+
+.seo-topic-section {
+  padding-top: 64px;
+  padding-bottom: 74px;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.seo-topic-inner {
+  gap: 18px;
+}
+
+.seo-topic-inner > p:not(.eyebrow) {
+  max-width: 720px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.seo-topic-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.seo-topic-grid a {
+  min-height: 168px;
+  padding: 24px;
+  border: 1px solid #dbe5f0;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.05);
+}
+
+.seo-topic-grid a::before {
+  content: "";
+  width: 34px;
+  height: 3px;
+  border-radius: 0;
+  background: #2563eb;
+}
+
+.seo-topic-grid strong {
+  margin-top: 4px;
+  color: #0b1220;
+  font-size: 20px;
+}
+
+.seo-topic-grid span {
+  color: #5b6778;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .ingredient-card {
+    grid-template-columns: minmax(0, 1fr) 42px minmax(74px, auto) minmax(70px, auto);
+    grid-template-areas: "name sector manufacturer origin";
+    gap: 8px;
+    min-height: 76px;
+  }
+
+  .ingredient-manufacturer,
+  .ingredient-origin {
+    justify-self: end;
+    width: auto;
+  }
+
+  .seo-topic-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .sample-button {
   background: #fff;
   border-color: var(--line) !important;
