@@ -4539,18 +4539,30 @@ body {
 .partner-badge.mode,
 .partner-badge.trade,
 .partner-badge.trade.sale {
-  min-height: auto;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: #f2f4f7;
   color: #667085;
 }
 
-.sector-label.sector-식품,
-.sector-label.sector-제약,
+.sector-label.sector-식품 {
+  background: #eef8f2;
+  color: #15803d;
+}
+
+.sector-label.sector-제약 {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
 .sector-label.sector-화장품 {
-  background: transparent;
-  color: #667085;
+  background: #f5f3ff;
+  color: #6d28d9;
+}
+
+.ingredient-type {
+  display: none !important;
 }
 
 .card-actions button,

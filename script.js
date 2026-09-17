@@ -285,8 +285,7 @@ function renderCards(items) {
             <h3>${item.name} <span>(${item.englishName})</span></h3>
           </div>
           <span class="sector-label ${getSectorClass(item.sector)}">${normalizeSector(item.sector)}</span>
-          <span class="ingredient-type">${item.type || "원료"}</span>
-          <p class="ingredient-desc">${item.desc}</p>
+          <p class="ingredient-desc">${getIngredientDisplayDescription(item)}</p>
           <span class="ingredient-manufacturer">${getIngredientManufacturerText(item)}</span>
           <span class="ingredient-origin">
             ${item.origin || "확인 필요"}
