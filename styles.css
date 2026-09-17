@@ -4427,3 +4427,162 @@ body {
     min-height: 0;
   }
 }
+
+/* Square, borderless controls */
+.main-nav {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.main-nav a {
+  position: relative;
+  min-height: 42px;
+  padding: 0 6px;
+  border-radius: 0;
+  background: transparent;
+  color: #475467;
+}
+
+.main-nav a::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  left: 6px;
+  height: 2px;
+  background: transparent;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+  background: transparent;
+  color: #101828;
+}
+
+.main-nav a:hover::after,
+.main-nav a.active::after {
+  background: #101828;
+}
+
+.header-actions .text-button,
+.primary-button.compact,
+.admin-only-link:not([hidden]) {
+  min-height: 38px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.header-actions .text-button:hover,
+.primary-button.compact:hover,
+.admin-only-link:not([hidden]):hover {
+  border: 0;
+  background: transparent;
+  color: #101828;
+}
+
+.primary-button.compact.active-register {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #101828;
+  box-shadow: none;
+}
+
+.sector-tabs {
+  gap: 22px;
+  border-bottom: 1px solid #e6eaf0;
+}
+
+.sector-tabs button {
+  position: relative;
+  min-height: 44px;
+  padding: 0 0 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #667085;
+  box-shadow: none;
+}
+
+.sector-tabs button::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: transparent;
+}
+
+.sector-tabs button:hover,
+.sector-tabs button.active {
+  border: 0;
+  background: transparent;
+  color: #101828;
+  box-shadow: none;
+}
+
+.sector-tabs button:hover::after,
+.sector-tabs button.active::after {
+  background: #101828;
+}
+
+.sector-label,
+.post-category,
+.partner-badge,
+.partner-badge.mode,
+.partner-badge.trade,
+.partner-badge.trade.sale {
+  min-height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #667085;
+}
+
+.sector-label.sector-식품,
+.sector-label.sector-제약,
+.sector-label.sector-화장품 {
+  background: transparent;
+  color: #667085;
+}
+
+.card-actions button,
+.detail-actions button,
+.community-write-button,
+.sample-button,
+.quote-button,
+.outline-button,
+.favorite-button,
+.page-size-toggle button,
+.page-number-list button {
+  border-radius: 6px;
+}
+
+.page-size-toggle button.active,
+.page-number-list button.active {
+  border-color: #101828;
+  background: #101828;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .main-nav {
+    border-radius: 0;
+  }
+
+  .header-actions .text-button,
+  .primary-button.compact {
+    padding: 0 2px;
+  }
+
+  .sector-tabs {
+    gap: 18px;
+  }
+}
