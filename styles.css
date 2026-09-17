@@ -4988,3 +4988,22 @@ body {
     min-height: 0;
   }
 }
+
+/* Connected ingredient logo mark */
+.brand-mark {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  background: url("favicon.svg") center / cover no-repeat;
+  color: transparent;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22);
+}
+
+.brand-mark::before {
+  content: none;
+}
+
+.brand-mark::after {
+  content: none;
+}

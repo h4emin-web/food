@@ -1,5 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="16" fill="#111827"/>
-  <circle cx="52" cy="52" r="18" fill="#2563eb" opacity=".78"/>
-  <text x="31" y="40" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="900" text-anchor="middle">in</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="인그리디언">
+  <defs>
+    <linearGradient id="g" x1="10" y1="8" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="17" fill="url(#g)"/>
+  <path d="M20 40.5 32 23.5l12 17" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="20" cy="40.5" r="5.8" fill="#dbeafe"/>
+  <circle cx="32" cy="23.5" r="5.8" fill="#fff"/>
+  <circle cx="44" cy="40.5" r="5.8" fill="#93c5fd"/>
+  <path d="M23.8 40.5h16.4" stroke="#fff" stroke-width="4.2" stroke-linecap="round" opacity=".9"/>
 </svg>
