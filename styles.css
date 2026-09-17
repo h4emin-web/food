@@ -913,6 +913,22 @@ img {
   background: transparent !important;
 }
 
+.ingredient-card {
+  grid-template-columns: minmax(240px, 1fr) max-content minmax(220px, 1fr) minmax(80px, 1fr) max-content max-content 32px;
+  grid-template-areas:
+    "name sector desc desc actions actions favorite"
+    "name sector lead lead manufacturer origin .";
+}
+
+.ingredient-manufacturer {
+  justify-self: end;
+  text-align: right;
+}
+
+.ingredient-origin {
+  justify-self: end;
+}
+
 .sample-button {
   background: #fff;
   border-color: var(--line) !important;
