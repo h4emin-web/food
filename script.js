@@ -339,7 +339,7 @@ function getIngredientCardMarkup(item) {
         <h3>${item.name} <span>(${item.englishName})</span></h3>
       </div>
       <span class="sector-label ${getSectorClass(item.sector)}">${normalizeSector(item.sector)}</span>
-      <p class="ingredient-desc">${item.desc}</p>
+      <p class="ingredient-desc">${getIngredientDisplayDescription(item)}</p>
       <span class="ingredient-manufacturer">${getIngredientManufacturerText(item)}</span>
       <span class="ingredient-origin">
         ${item.origin || "확인 필요"}
@@ -364,6 +364,23 @@ function getIngredientCardMarkup(item) {
     </article>
     ${activeIngredientId === item.id ? getIngredientDetailMarkup(item) : ""}
   `;
+}
+
+function getIngredientDisplayDescription(item) {
+  const fallback = "상세 정보는 등록 회원에게 문의하세요";
+  const description = String(item?.desc || "").trim();
+  const name = String(item?.name || "").trim();
+  const englishName = String(item?.englishName || "").trim();
+  const isDiquafosol = /diquafosol\s*sodium/i.test(`${name} ${englishName}`);
+  const defaultRegisteredPattern = new RegExp(`^${escapeRegExp(name)}\\s*등록 원료입니다\\.\\s*`, "i");
+
+  if (isDiquafosol) return fallback;
+  if (!description) return fallback;
+  return description.replace(defaultRegisteredPattern, "").trim() || fallback;
+}
+
+function escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function renderIngredientBoard(target, items, emptyMessage) {
@@ -434,7 +451,7 @@ function getIngredientDetailMarkup(item) {
             <span>${supplier.spec || "규격 확인 필요"}</span>
           </div>
         </div>
-        <p>${item.desc}</p>
+        <p>${getIngredientDisplayDescription(item)}</p>
         <div class="supplier-detail-grid">
           <div>
             <span>공급사</span>
@@ -497,16 +514,38 @@ function getFilteredItems() {
 
   return visibleIngredients.filter((item) => {
     const matchesSector = activeIngredientSector === "전체" || normalizeSector(item.sector) === activeIngredientSector;
-    const matchesQuery =
-      !query ||
-      item.name.toLowerCase().includes(query) ||
-      item.englishName.toLowerCase().includes(query) ||
-      item.desc.toLowerCase().includes(query) ||
-      item.tags.some((tag) => tag.toLowerCase().includes(query));
+    const searchText = getIngredientSearchText(item);
+    const matchesQuery = !query || searchText.includes(query);
 
     const matchesFilters = checked.every((tag) => item.tags.includes(tag));
     return matchesSector && matchesQuery && matchesFilters;
   });
+}
+
+function getIngredientSearchText(item) {
+  const aliases = getIngredientSearchAliases(item);
+  return [
+    item.name,
+    item.englishName,
+    item.desc,
+    item.origin,
+    item.manufacturer,
+    item.supplier?.name,
+    normalizeSector(item.sector),
+    ...(item.tags || []),
+    ...aliases,
+  ]
+    .map((value) => String(value || "").toLowerCase())
+    .join(" ");
+}
+
+function getIngredientSearchAliases(item) {
+  const identity = `${item?.name || ""} ${item?.englishName || ""}`.toLowerCase();
+  const aliases = [];
+  if (identity.includes("mifepristone") || identity.includes("미페프리스톤")) {
+    aliases.push("미페프리스톤", "mifepristone", "미페프리스톤 원료", "mifepristone ingredient");
+  }
+  return aliases;
 }
 
 function updateGrid() {
@@ -632,7 +671,7 @@ function normalizeRegisteredIngredient(item) {
     id: item.id,
     name: item.name,
     englishName: item.englishName || "English Name",
-    desc: item.desc || `${item.name} 등록 원료입니다. 상세 정보는 등록 회원에게 문의하세요.`,
+    desc: item.desc || "상세 정보는 등록 회원에게 문의하세요",
     sector,
     type: sector,
     origin,
@@ -3842,6 +3881,7 @@ if (ingredientRegisterForm) {
     updateAuthLinks();
     ingredientRegisterForm.reset();
     setRegisterMessage("원료가 등록되었습니다. 원료찾기와 마이페이지에서 확인할 수 있습니다.", "success");
+    alert("원료 등록이 완료되었습니다.");
     window.setTimeout(syncRegisterCompany, 0);
   });
 
