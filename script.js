@@ -282,7 +282,7 @@ function renderCards(items) {
       (item) => `
         <article class="ingredient-card" role="button" tabindex="0" data-ingredient-id="${item.id}">
           <div class="ingredient-name">
-            <h3>${item.name} <span>(${item.englishName})</span></h3>
+            <h3><a class="ingredient-seo-link" href="/ingredients/${encodeURIComponent(item.id)}">${item.name} <span>(${item.englishName})</span></a></h3>
           </div>
           <span class="sector-label ${getSectorClass(item.sector)}">${normalizeSector(item.sector)}</span>
           <p class="ingredient-desc">${getIngredientDisplayDescription(item)}</p>
@@ -335,7 +335,7 @@ function getIngredientCardMarkup(item) {
   return `
     <article class="ingredient-card" role="button" tabindex="0" data-ingredient-id="${item.id}">
       <div class="ingredient-name">
-        <h3>${item.name} <span>(${item.englishName})</span></h3>
+        <h3><a class="ingredient-seo-link" href="/ingredients/${encodeURIComponent(item.id)}">${item.name} <span>(${item.englishName})</span></a></h3>
       </div>
       <span class="sector-label ${getSectorClass(item.sector)}">${normalizeSector(item.sector)}</span>
       <p class="ingredient-desc">${getIngredientDisplayDescription(item)}</p>

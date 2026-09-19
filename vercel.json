@@ -30,6 +30,16 @@
       ]
     }
   ],
+  "rewrites": [
+    {
+      "source": "/ingredients/:id",
+      "destination": "/api/ingredient?id=:id"
+    },
+    {
+      "source": "/ingredient-sitemap.xml",
+      "destination": "/api/ingredient-sitemap"
+    }
+  ],
   "redirects": [
     {
       "source": "/(.*)",

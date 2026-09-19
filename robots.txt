@@ -17,4 +17,5 @@ User-agent: Google-Extended
 Allow: /
 
 Sitemap: https://www.foodingredients.help/sitemap.xml
+Sitemap: https://www.foodingredients.help/ingredient-sitemap.xml
 Sitemap: https://www.foodingredients.help/rss.xml
