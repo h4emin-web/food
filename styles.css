@@ -5101,25 +5101,23 @@ body {
   }
 }
 
-/* Full visual refresh */
+/* Shared brand colors */
 :root {
-  --ink: #111827;
-  --muted: #64748b;
-  --line: #d9e2ee;
-  --soft: #f3f6fb;
+  --ink: #25282c;
+  --muted: #686e75;
+  --line: #e0e2e5;
+  --soft: #f6f7f8;
   --paper: #ffffff;
-  --blue: #2563eb;
-  --shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+  --blue: #2459a6;
+  --shadow: none;
 }
 
 html {
-  background: #f5f7fb;
+  background: #fff;
 }
 
 body {
-  background:
-    linear-gradient(180deg, rgba(239, 246, 255, 0.82) 0%, rgba(255, 255, 255, 0.95) 280px),
-    #f5f7fb;
+  background: #fff;
   color: var(--ink);
 }
 
@@ -5135,7 +5133,7 @@ body {
 }
 
 .brand {
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 .brand-mark {
@@ -5314,4 +5312,186 @@ body {
   .sector-tabs {
     gap: 18px;
   }
+}
+
+/* Corporate directory: neutral surfaces, compact type and continuous rows. */
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.brand { font-size: 23px; font-weight: 700; }
+.brand-mark { border-radius: 6px; box-shadow: none; }
+.main-nav a, .header-actions .text-button, .primary-button.compact {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.hero, .community-hero, .signup-hero, .register-hero {
+  background: #fff;
+  padding-top: 58px;
+  padding-bottom: 34px;
+}
+.hero::before { content: none; }
+.eyebrow { font-size: 13px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+.hero h1, .community-hero h1, .signup-hero h1, .register-hero h1,
+.intro-page .signup-hero h1 {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+.hero-description, .community-hero p:not(.eyebrow), .signup-hero p, .register-hero p {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.search-panel {
+  width: min(100%, 760px);
+  margin-top: 26px;
+  padding: 0;
+  border: 1px solid #8b939e;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: none;
+}
+.search-panel:focus-within { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+.search-field { min-height: 58px; padding: 0 20px; }
+.search-field input { font-size: 16px; }
+.marketplace { padding-top: 22px; }
+.sector-tabs { gap: 28px; margin-bottom: 0; border-bottom: 1px solid #7d838a; }
+.sector-tabs button, .sector-tabs button:hover, .sector-tabs button.active {
+  position: relative;
+  min-height: 48px;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 500;
+  transform: none;
+}
+.sector-tabs button.active { color: var(--blue); font-weight: 700; }
+.sector-tabs button.active::after { background: var(--blue); height: 2px; }
+.ingredient-grid, .community-list { gap: 0; }
+.ingredient-card, .community-post {
+  min-height: 112px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+.ingredient-card:hover, .community-post:hover {
+  border-color: var(--line);
+  background: #f8f9fa;
+  box-shadow: none;
+  transform: none;
+}
+.ingredient-card:hover > :not(.card-actions):not(.favorite-button),
+.community-post:hover > * { transform: none; }
+.ingredient-name h3, .community-post h3 { font-size: 17px; font-weight: 700; color: var(--ink); }
+.ingredient-name h3, .ingredient-name h3::before, .ingredient-name h3::after { background: none; }
+.ingredient-name h3 span { font-size: 14px; font-weight: 400; }
+.ingredient-desc, .ingredient-lead-time, .ingredient-manufacturer, .ingredient-origin {
+  color: #686e75;
+  font-size: 13px;
+  font-weight: 400;
+}
+.sector-label { min-height: 22px; padding: 0 7px; border-radius: 3px; font-size: 11px; font-weight: 500; }
+.sample-button, .quote-button, .outline-button, .primary-button,
+.community-write-button, .icon-button, .news-arrow {
+  border-radius: 3px;
+  box-shadow: none;
+  font-weight: 500;
+}
+.sample-button, .quote-button { font-size: 12px; }
+.favorite-button { border: 0; box-shadow: none; background: transparent; }
+.register-card, .signup-card, .mypage-panel, .news-card {
+  border-color: var(--line);
+  border-radius: 4px;
+  box-shadow: none;
+  background: #fff;
+}
+.news-card:hover { border-color: #aeb3ba; box-shadow: none; transform: none; }
+.seo-topic-section {
+  margin-top: 44px;
+  padding: 40px 24px;
+  background: #f6f7f8;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+}
+.seo-topic-inner { display: block; max-width: 1120px; margin: 0 auto; }
+.seo-topic-inner h2 { margin: 0 0 8px; color: var(--ink); font-size: 21px; font-weight: 700; line-height: 1.5; }
+.seo-topic-inner > p:not(.eyebrow) { color: var(--muted); font-size: 14px; margin: 0; }
+.seo-topic-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 26px; }
+.seo-topic-grid a, .seo-topic-grid a:hover {
+  min-height: 0;
+  padding: 0 28px;
+  border: 0;
+  border-left: 1px solid #d7dade;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: none;
+}
+.seo-topic-grid a:first-child { padding-left: 0; border-left: 0; }
+.seo-topic-grid a::before { content: none; }
+.seo-topic-grid strong { color: var(--ink); font-size: 15px; font-weight: 600; }
+.seo-topic-grid span { margin-top: 9px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.seo-topic-grid a:hover strong { color: var(--blue); text-decoration: underline; }
+.intro-page .signup-hero { padding: 58px 24px 24px; }
+.intro-copy p { padding: 0; border: 0; border-radius: 0; box-shadow: none; color: var(--muted); line-height: 1.9; }
+.intro-page .ingredient-content-section { background: #fff; border-top: 1px solid var(--line); }
+.content-heading h2 { font-size: 23px; font-weight: 700; }
+.intro-page .ingredient-content-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; }
+.intro-page .ingredient-content-grid article {
+  min-height: 0;
+  padding: 24px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.intro-page .ingredient-content-grid article::before { content: none; }
+.ingredient-content-grid h3 { font-size: 17px; font-weight: 600; }
+.ingredient-content-grid p { font-size: 14px; font-weight: 400; line-height: 1.9; color: var(--muted); }
+.site-footer { background: #fff; border-top: 1px solid var(--line); box-shadow: none; }
+.footer-brand-block > strong { font-size: 18px; font-weight: 700; color: #454a50; }
+.footer-brand-block > p, .company-info p, .footer-links a { font-size: 12px; font-weight: 400; color: #777d85; }
+.pagination-bar { margin-top: 16px; border: 0; border-radius: 0; background: #fff; box-shadow: none; }
+.page-size-toggle button, .page-number-list button { border-radius: 3px; box-shadow: none; font-weight: 500; }
+.page-number-list button.active { background: #2459a6; border-color: #2459a6; }
+@media (max-width: 900px) {
+  .hero, .community-hero, .signup-hero, .register-hero { padding-top: 38px; padding-bottom: 26px; }
+  .hero h1, .community-hero h1, .signup-hero h1, .register-hero h1,
+  .intro-page .signup-hero h1 { font-size: 28px; }
+  .intro-page .signup-hero h1 { white-space: normal; word-break: keep-all; }
+  .brand { font-size: 20px; }
+  .search-field { min-height: 54px; padding: 0 14px; }
+  .search-field input { font-size: 14px; }
+  .sector-tabs { gap: 24px; }
+  .sector-tabs button { font-size: 14px; }
+  .ingredient-card, .community-post { min-height: 100px; }
+  .ingredient-name h3, .community-post h3 { font-size: 16px; }
+  .intro-page .ingredient-content-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .hero h1, .community-hero h1, .signup-hero h1, .register-hero h1,
+  .intro-page .signup-hero h1 { font-size: 25px; }
+  .seo-topic-section { padding: 30px 20px; }
+  .seo-topic-grid, .intro-page .ingredient-content-grid { grid-template-columns: 1fr; }
+  .seo-topic-grid a, .seo-topic-grid a:hover, .seo-topic-grid a:first-child {
+    padding: 18px 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .seo-topic-grid a:last-child { border-bottom: 0; }
 }
