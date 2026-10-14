@@ -5159,8 +5159,8 @@ body {
 }
 
 .main-nav .ingredient-register-nav {
-  color: #2459a6;
-  font-weight: 700;
+  color: inherit;
+  font-weight: inherit;
 }
 
 .main-nav a:hover::after,
