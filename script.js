@@ -138,7 +138,7 @@ let activeCommunityPostId = "";
 let activePartnerPostId = "";
 let activeRegisteredIngredientId = "";
 let activeMessagePartner = "";
-let activeMessageFilter = "all";
+let activeMessageFilter = new URLSearchParams(window.location.search).get("view") === "quote" ? "quote" : "all";
 let ingredientCurrentPage = 1;
 let ingredientPageSize = 10;
 let communityCurrentPage = 1;
@@ -3681,6 +3681,7 @@ messageAlarmButtons.forEach((button) => {
 });
 
 messageFilterButtons.forEach((button) => {
+  button.classList.toggle("active", button.dataset.messageFilter === activeMessageFilter);
   button.addEventListener("click", () => {
     activeMessageFilter = button.dataset.messageFilter || "all";
     messageFilterButtons.forEach((item) => item.classList.toggle("active", item === button));
