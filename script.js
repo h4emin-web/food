@@ -559,6 +559,17 @@ function updateGrid() {
   invalidateIngredientCache();
   renderCards(getFilteredItems());
   updateIngredientStructuredData();
+  openRequestedQuoteInquiry();
+}
+
+function openRequestedQuoteInquiry() {
+  const params = new URLSearchParams(window.location.search);
+  const ingredientId = params.get("ingredientId");
+  if (params.get("inquiry") !== "quote" || !ingredientId || window.__quoteInquiryOpened) return;
+  if (!getVisibleIngredientById(ingredientId)) return;
+  window.__quoteInquiryOpened = true;
+  window.history.replaceState({}, "", `${window.location.pathname}?search=${encodeURIComponent(getVisibleIngredientById(ingredientId).name)}#ingredients`);
+  window.setTimeout(() => sendIngredientInquiry(ingredientId, "견적 문의"), 0);
 }
 
 function updateIngredientStructuredData() {
