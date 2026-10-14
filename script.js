@@ -640,6 +640,8 @@ function getCountryFlagCode(origin) {
     "미국": "us",
     "usa": "us",
     "united states": "us",
+    "멕시코": "mx",
+    "mexico": "mx",
     "프랑스": "fr",
     "france": "fr",
     "네덜란드": "nl",
