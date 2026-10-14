@@ -249,10 +249,14 @@ function getPaginationState(items, currentPage, pageSize) {
 }
 
 function getPaginationControls(scope, page, totalPages, pageSize) {
-  const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+  const groupSize = 10;
+  const groupStart = Math.floor((page - 1) / groupSize) * groupSize + 1;
+  const groupEnd = Math.min(groupStart + groupSize - 1, totalPages);
+  const pages = Array.from({ length: groupEnd - groupStart + 1 }, (_, index) => groupStart + index);
   return `
     <div class="pagination-bar" data-pagination-scope="${scope}">
       <div class="page-number-list" aria-label="페이지">
+        ${groupStart > 1 ? `<button type="button" data-page-number="${groupStart - 1}" aria-label="이전 페이지 묶음">이전</button>` : ""}
         ${pages
           .map(
             (pageNumber) => `
@@ -262,6 +266,7 @@ function getPaginationControls(scope, page, totalPages, pageSize) {
             `
           )
           .join("")}
+        ${groupEnd < totalPages ? `<button type="button" data-page-number="${groupEnd + 1}" aria-label="다음 페이지 묶음">다음</button>` : ""}
       </div>
     </div>
   `;
