@@ -1,11 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="원료나라">
-  <defs>
-    <linearGradient id="g" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0b6bcb"/>
-      <stop offset="1" stop-color="#16a6a1"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="16" fill="url(#g)"/>
-  <path d="M16 18h32M16 32h32M16 46h20" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".9"/>
-  <text x="44" y="48" fill="#ffffff" font-family="Arial, sans-serif" font-size="23" font-weight="900" text-anchor="middle">원</text>
+  <rect width="64" height="64" rx="16" fill="#f7faff"/>
+  <path d="M32 8v12M22 13l5 9M42 13l-5 9" stroke="#1d65d8" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+  <g stroke-linecap="round">
+    <path d="M18 24v10M26 27v18M35 25v27M44 27v17M52 24v10" stroke="#1d65d8" stroke-width="3"/>
+    <path d="M14 29v7M22 39v12M31 30v25M40 37v15M49 31v18" stroke="#ff7a59" stroke-width="3"/>
+    <path d="M20 25v7M29 23v12M38 29v10M47 23v8" stroke="#18a68f" stroke-width="2.5"/>
+    <path d="M16 45v5M25 49v7M36 48v8M46 47v8M54 42v7" stroke="#f2b544" stroke-width="2.5"/>
+  </g>
+  <circle cx="32" cy="22" r="3" fill="#8b5cf6"/>
+  <circle cx="11" cy="42" r="2" fill="#18a68f"/>
+  <circle cx="55" cy="38" r="2" fill="#ff7a59"/>
 </svg>

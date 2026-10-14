@@ -5525,3 +5525,7 @@ body {
   }
   .seo-topic-grid a:last-child { border-bottom: 0; }
 }
+
+/* Wonyo Nara CI: falling ingredient particles */
+.brand-mark { background: #f7faff url('favicon.svg') center / cover no-repeat !important; color: transparent !important; }
+.brand-mark::before, .brand-mark::after { display: none !important; }
