@@ -285,41 +285,7 @@ function renderCards(items) {
   const pagination = getPaginationState(items, ingredientCurrentPage, ingredientPageSize);
   ingredientCurrentPage = pagination.page;
 
-  grid.innerHTML = pagination.items
-    .map(
-      (item) => `
-        <article class="ingredient-card" role="button" tabindex="0" data-ingredient-id="${item.id}">
-          <div class="ingredient-name">
-            <h3><a class="ingredient-seo-link" href="/ingredients/${encodeURIComponent(item.id)}">${item.name} <span>(${item.englishName})</span></a></h3>
-          </div>
-          <span class="sector-label ${getSectorClass(item.sector)}">${normalizeSector(item.sector)}</span>
-          <p class="ingredient-desc">${getIngredientDisplayDescription(item)}</p>
-          <span class="ingredient-manufacturer">${getIngredientManufacturerText(item)}</span>
-          <span class="ingredient-origin">
-            ${item.origin || "확인 필요"}
-            ${
-              item.originFlagCode
-                ? `<img class="origin-flag" src="https://flagcdn.com/w40/${item.originFlagCode}.png" alt="${item.origin} 국기" loading="lazy" />`
-                : ""
-            }
-          </span>
-          <span class="ingredient-lead-time">리드타임 : ${item.leadTime || "확인 필요"}</span>
-          <div class="card-actions">
-            ${getSampleRequestButton(item)}
-            <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
-          </div>
-          <button
-            class="favorite-button ${isFavoriteIngredient(item.id) ? "active" : ""}"
-            type="button"
-            data-favorite-id="${item.id}"
-            aria-label="${item.name} 즐겨찾기"
-            aria-pressed="${isFavoriteIngredient(item.id)}"
-          >★</button>
-        </article>
-        ${activeIngredientId === item.id ? getIngredientDetailMarkup(item) : ""}
-      `
-    )
-    .join("");
+  grid.innerHTML = pagination.items.map((item) => getIngredientCardMarkup(item)).join("");
 
   grid.insertAdjacentHTML(
     "afterbegin",
@@ -340,23 +306,27 @@ function renderCards(items) {
 }
 
 function getIngredientCardMarkup(item) {
+  const id = escapeHtml(item.id);
+  const name = escapeHtml(item.name);
+  const origin = escapeHtml(item.origin);
+  const flagCode = String(item.originFlagCode || "").toLowerCase();
   return `
-    <article class="ingredient-card" role="button" tabindex="0" data-ingredient-id="${item.id}">
+    <article class="ingredient-card" role="button" tabindex="0" data-ingredient-id="${id}">
       <div class="ingredient-name">
-        <h3><a class="ingredient-seo-link" href="/ingredients/${encodeURIComponent(item.id)}">${item.name} <span>(${item.englishName})</span></a></h3>
+        <h3><a class="ingredient-seo-link" href="/ingredients/${encodeURIComponent(item.id)}">${name} <span>(${escapeHtml(item.englishName)})</span></a></h3>
       </div>
       <span class="sector-label ${getSectorClass(item.sector)}">${normalizeSector(item.sector)}</span>
-      <p class="ingredient-desc">${getIngredientDisplayDescription(item)}</p>
-      <span class="ingredient-manufacturer">${getIngredientManufacturerText(item)}</span>
+      <p class="ingredient-desc">${escapeHtml(getIngredientDisplayDescription(item))}</p>
+      <span class="ingredient-manufacturer">${escapeHtml(getIngredientManufacturerText(item))}</span>
       <span class="ingredient-origin">
-        ${item.origin || "확인 필요"}
+        ${origin || "확인 필요"}
         ${
-          item.originFlagCode
-            ? `<img class="origin-flag" src="https://flagcdn.com/w40/${item.originFlagCode}.png" alt="${item.origin} 국기" loading="lazy" />`
+          /^[a-z]{2}(-[a-z]{2,3})?$/.test(flagCode)
+            ? `<img class="origin-flag" src="https://flagcdn.com/w40/${flagCode}.png" alt="${origin} 국기" loading="lazy" />`
             : ""
         }
       </span>
-      <span class="ingredient-lead-time">리드타임 : ${item.leadTime || "확인 필요"}</span>
+      <span class="ingredient-lead-time">리드타임 : ${escapeHtml(item.leadTime || "확인 필요")}</span>
       <div class="card-actions">
         ${getSampleRequestButton(item)}
         <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
@@ -364,8 +334,8 @@ function getIngredientCardMarkup(item) {
       <button
         class="favorite-button ${isFavoriteIngredient(item.id) ? "active" : ""}"
         type="button"
-        data-favorite-id="${item.id}"
-        aria-label="${item.name} 즐겨찾기"
+        data-favorite-id="${id}"
+        aria-label="${name} 즐겨찾기"
         aria-pressed="${isFavoriteIngredient(item.id)}"
       >★</button>
     </article>
@@ -433,13 +403,13 @@ function renderFavorites() {
 
 function getIngredientDetailMarkup(item) {
   const supplier = item.supplier || {};
-  const website = supplier.website || "";
-  const email = supplier.email || "확인 필요";
+  const website = escapeHtml(supplier.website);
+  const email = escapeHtml(supplier.email || "확인 필요");
   const manufacturerVisibility = item.manufacturerVisibility || "public";
   const canViewManufacturer = manufacturerVisibility !== "private" || isAdminMember();
   const isPrivateForAdmin = manufacturerVisibility === "private" && isAdminMember();
   const isManufacturerPublic = canViewManufacturer;
-  const manufacturerText = isManufacturerPublic ? item.manufacturer || "확인 필요" : "비공개";
+  const manufacturerText = escapeHtml(isManufacturerPublic ? item.manufacturer || "확인 필요" : "비공개");
   const manufacturerNote = isPrivateForAdmin
     ? '<small class="private-manufacturer-note">관리자에게만 표시됩니다.</small>'
     : isManufacturerPublic
@@ -447,22 +417,22 @@ function getIngredientDetailMarkup(item) {
       : '<small class="private-manufacturer-note">비공개 시 제조국만 노출됩니다.</small>';
 
   return `
-    <section class="ingredient-detail" data-detail-ingredient-id="${item.id}" aria-label="${item.name} 상세">
+    <section class="ingredient-detail" data-detail-ingredient-id="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.name)} 상세">
       <article class="detail-post ingredient-detail-card">
         <div class="detail-head">
-          <h2>${item.name} <span>(${item.englishName})</span></h2>
+          <h2>${escapeHtml(item.name)} <span>(${escapeHtml(item.englishName)})</span></h2>
           <div class="detail-meta">
-            <span>${item.type || "원료"}</span>
+            <span>${escapeHtml(item.type || "원료")}</span>
             <span>${normalizeSector(item.sector)}</span>
-            <span>${item.origin || "제조국 확인 필요"}</span>
-            <span>${supplier.spec || "규격 확인 필요"}</span>
+            <span>${escapeHtml(item.origin || "제조국 확인 필요")}</span>
+            <span>${escapeHtml(supplier.spec || "규격 확인 필요")}</span>
           </div>
         </div>
-        <p>${getIngredientDisplayDescription(item)}</p>
+        <p>${escapeHtml(getIngredientDisplayDescription(item))}</p>
         <div class="supplier-detail-grid">
           <div>
             <span>공급사</span>
-            <strong>${supplier.name || "확인 필요"}</strong>
+            <strong>${escapeHtml(supplier.name || "확인 필요")}</strong>
           </div>
           <div>
             <span>공급사 홈페이지</span>
@@ -479,7 +449,7 @@ function getIngredientDetailMarkup(item) {
           </div>
           <div>
             <span>제조국</span>
-            <strong>${item.origin || "확인 필요"}</strong>
+            <strong>${escapeHtml(item.origin || "확인 필요")}</strong>
           </div>
         </div>
         <div class="detail-actions">
@@ -834,7 +804,7 @@ function getVisibleIngredientById(id) {
 }
 
 function escapeHtml(value) {
-  return value.replace(/[&<>"']/g, (char) => {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => {
     const entities = {
       "&": "&amp;",
       "<": "&lt;",
@@ -2031,7 +2001,7 @@ function renderMyIngredients() {
   myIngredientList.innerHTML = items
     .map(
       (item) => `
-        <article class="my-ingredient-item ${activeRegisteredIngredientId === item.id ? "active" : ""}" role="button" tabindex="0" data-my-ingredient-id="${item.id}">
+        <article class="my-ingredient-item ${activeRegisteredIngredientId === item.id ? "active" : ""}" role="button" tabindex="0" data-my-ingredient-id="${escapeHtml(item.id)}">
           <strong>${escapeHtml(item.name)}</strong>
           <span>${escapeHtml(item.englishName || "영문명 없음")}</span>
           <p>${normalizeSector(item.sector)} · ${escapeHtml(item.createdAtText || "")}</p>
@@ -2622,7 +2592,7 @@ function renderAdminMembers() {
               <td><strong>${escapeHtml(getDisplayName(member))}</strong><span>${escapeHtml(member.name)} · ${escapeHtml(member.email)}</span></td>
               <td>${escapeHtml(member.phone || "-")}</td>
               <td>${escapeHtml(member.company || "-")}<span>${escapeHtml([member.companyWebsite, member.role].filter(Boolean).join(" · "))}</span></td>
-              <td>${member.joinedAt ? formatNewsDate(member.joinedAt) : "-"}</td>
+              <td>${member.joinedAt ? escapeHtml(formatNewsDate(member.joinedAt)) : "-"}</td>
               <td>
                 <button class="admin-small-button" type="button" data-admin-login="${escapeHtml(member.email)}">보기</button>
                 <button class="admin-small-button danger-button" type="button" data-admin-delete="${escapeHtml(member.email)}">삭제</button>
@@ -2650,8 +2620,8 @@ function renderAdminVisits() {
             .join(" · ");
           return `
             <article class="admin-list-row">
-              <strong>${day}</strong>
-              <span>${visits[day].ips?.length || visits[day].count || 0}명</span>
+              <strong>${escapeHtml(day)}</strong>
+              <span>${Number(visits[day].ips?.length || visits[day].count || 0)}명</span>
               <p>${escapeHtml(pages || "페이지 기록 없음")}</p>
             </article>
           `;
@@ -2703,7 +2673,7 @@ function renderAdminCommunityPosts() {
           (post) => `
             <article class="admin-list-row">
               <strong>${escapeHtml(post.title || "제목 없음")}</strong>
-              <span>${normalizeSector(post.sector)} · ${escapeHtml(post.author || "-")} · ${formatNewsDate(post.createdAt)}</span>
+              <span>${normalizeSector(post.sector)} · ${escapeHtml(post.author || "-")} · ${escapeHtml(formatNewsDate(post.createdAt))}</span>
               <p>${escapeHtml(post.desc || "")}</p>
               <div class="admin-row-actions">
                 <button class="admin-small-button danger-button" type="button" data-admin-delete-community="${escapeHtml(post.id)}">삭제</button>
@@ -2903,7 +2873,7 @@ function renderNewsCards(items) {
               <span>${escapeHtml(item.sourceLabel || item.category || "NEWS")}</span>
               <span>${escapeHtml(item.source || "Ingredient")}</span>
             </div>
-            <time datetime="${escapeHtml(item.publishedAt || "")}">${formatNewsDate(item.publishedAt)}</time>
+            <time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatNewsDate(item.publishedAt))}</time>
             <h3>${escapeHtml(item.title)}</h3>
             <p>${escapeHtml(item.summary || "")}</p>
           </div>
@@ -3033,14 +3003,14 @@ function renderCommunityPosts(posts) {
   communityList.innerHTML = pagination.items
     .map(
       (post) => `
-        <article class="community-post" role="button" tabindex="0" data-post-id="${post.id}">
+        <article class="community-post" role="button" tabindex="0" data-post-id="${escapeHtml(post.id)}">
           <span class="sector-label ${getSectorClass(post.sector)}">${normalizeSector(post.sector)}</span>
-          <h3>${post.title}</h3>
-          <button class="post-author message-user-button" type="button" data-message-user="${escapeHtml(post.author)}">${post.author}</button>
-          <span class="post-date">${post.date}</span>
+          <h3>${escapeHtml(post.title)}</h3>
+          <button class="post-author message-user-button" type="button" data-message-user="${escapeHtml(post.author)}">${escapeHtml(post.author)}</button>
+          <span class="post-date">${escapeHtml(post.date)}</span>
           <div class="post-stats" aria-label="게시글 반응">
             <span><i data-lucide="message-circle"></i>${getPostComments(post.id, "community").length}</span>
-            <span><i data-lucide="eye"></i>${post.views}</span>
+            <span><i data-lucide="eye"></i>${Number(post.views || 0)}</span>
           </div>
         </article>
         ${activeCommunityPostId === post.id ? getCommunityDetailMarkup(post) : ""}
@@ -3091,20 +3061,20 @@ function getCommunityDetailMarkup(post) {
     : '<p class="comment-empty">아직 댓글이 없습니다.</p>';
 
   return `
-    <section class="community-detail" data-detail-post-id="${post.id}" aria-label="${post.title} 상세">
+    <section class="community-detail" data-detail-post-id="${escapeHtml(post.id)}" aria-label="${escapeHtml(post.title)} 상세">
       <article class="detail-post">
         <div class="detail-head">
-          <h2>${post.title}</h2>
+          <h2>${escapeHtml(post.title)}</h2>
           <div class="detail-meta">
             <span>${normalizeSector(post.sector)}</span>
-            <button class="message-user-button detail-author" type="button" data-message-user="${escapeHtml(post.author)}">${post.author}</button>
-            <span>${post.date}</span>
-            <span>조회 ${post.views}</span>
+            <button class="message-user-button detail-author" type="button" data-message-user="${escapeHtml(post.author)}">${escapeHtml(post.author)}</button>
+            <span>${escapeHtml(post.date)}</span>
+            <span>조회 ${Number(post.views || 0)}</span>
             <span>댓글 ${comments.length}</span>
           </div>
           ${deleteAction ? `<div class="detail-actions">${deleteAction}</div>` : ""}
         </div>
-        <p>${post.desc}</p>
+        <p>${escapeHtml(post.desc)}</p>
       </article>
       <section class="comment-panel" aria-label="댓글">
         <div class="comment-title">
@@ -3112,7 +3082,7 @@ function getCommunityDetailMarkup(post) {
           <span>${comments.length}개</span>
         </div>
         <div class="comment-list">${commentsMarkup}</div>
-        <form class="comment-form" data-comment-form data-post-id="${post.id}">
+        <form class="comment-form" data-comment-form data-post-id="${escapeHtml(post.id)}">
           <input name="author" type="text" placeholder="닉네임" value="${escapeHtml(defaultName)}" ${member ? "readonly" : ""} required />
           <textarea name="body" placeholder="댓글을 입력하세요" required></textarea>
           <button class="primary-button" type="submit">댓글 등록</button>
@@ -3199,7 +3169,7 @@ function renderPartnerPosts(posts) {
   partnerList.innerHTML = pagination.items
     .map(
       (post) => `
-        <article class="partner-post" role="button" tabindex="0" data-partner-post-id="${post.id}">
+        <article class="partner-post" role="button" tabindex="0" data-partner-post-id="${escapeHtml(post.id)}">
           <div class="partner-post-main">
             <div class="partner-post-title">
               <span class="partner-badge mode">${escapeHtml(post.mode || "OEM")}</span>
@@ -3241,7 +3211,7 @@ function getPartnerDetailMarkup(post) {
     : '<p class="comment-empty">아직 댓글이 없습니다.</p>';
 
   return `
-    <section class="community-detail partner-detail" data-detail-partner-id="${post.id}" aria-label="${escapeHtml(post.title)} 상세">
+    <section class="community-detail partner-detail" data-detail-partner-id="${escapeHtml(post.id)}" aria-label="${escapeHtml(post.title)} 상세">
       <article class="detail-post">
         <div class="detail-head">
           <h2>${escapeHtml(post.title)}</h2>
@@ -3269,7 +3239,7 @@ function getPartnerDetailMarkup(post) {
           <span>${comments.length}개</span>
         </div>
         <div class="comment-list">${commentsMarkup}</div>
-        <form class="comment-form" data-partner-comment-form data-post-id="${post.id}">
+        <form class="comment-form" data-partner-comment-form data-post-id="${escapeHtml(post.id)}">
           <input name="author" type="text" placeholder="닉네임" value="${escapeHtml(defaultName)}" ${member ? "readonly" : ""} required />
           <textarea name="body" placeholder="댓글을 입력하세요" required></textarea>
           <button class="primary-button" type="submit">댓글 등록</button>
