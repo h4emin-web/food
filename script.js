@@ -652,6 +652,8 @@ function getCountryFlagCode(origin) {
     "japan": "jp",
     "독일": "de",
     "germany": "de",
+    "오스트리아": "at",
+    "austria": "at",
     "이탈리아": "it",
     "italy": "it",
     "스페인": "es",
@@ -666,6 +668,8 @@ function getCountryFlagCode(origin) {
     "vietnam": "vn",
     "인도": "in",
     "india": "in",
+    "말레이시아": "my",
+    "malaysia": "my",
     "브라질": "br",
     "brazil": "br",
   };
