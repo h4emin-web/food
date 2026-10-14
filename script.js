@@ -1958,7 +1958,38 @@ function createMessageThread(partnerName, text) {
   updateAuthLinks();
 }
 
-function sendIngredientInquiry(ingredientId, inquiryType) {
+function showQuoteInquiryForm(ingredientId) {
+  document.querySelector(".quote-inquiry-modal-backdrop")?.remove();
+  const modal = document.createElement("div");
+  modal.className = "message-modal-backdrop quote-inquiry-modal-backdrop";
+  modal.innerHTML = `
+    <section class="message-modal quote-inquiry-modal" role="dialog" aria-modal="true" aria-label="견적 문의">
+      <div class="message-modal-head">
+        <div><p class="eyebrow">견적 문의</p><h2>필요 수량을 알려주세요</h2></div>
+        <button class="icon-button" type="button" data-close-quote-modal aria-label="닫기">×</button>
+      </div>
+      <form data-quote-inquiry-form>
+        <label class="full-field"><span>필요 수량</span><input name="quantity" type="text" placeholder="예: MOQ 20kg, 500g, 월 100kg" required /></label>
+        <label class="full-field"><span>비고</span><textarea name="note" rows="4" placeholder="추가로 전달할 내용을 입력하세요"></textarea></label>
+        <div class="message-modal-actions"><button class="outline-button" type="button" data-close-quote-modal>취소</button><button class="primary-button" type="submit">견적 문의 보내기</button></div>
+      </form>
+    </section>`;
+  document.body.appendChild(modal);
+  modal.querySelector("[name='quantity']")?.focus();
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal || event.target.closest("[data-close-quote-modal]")) modal.remove();
+  });
+  modal.querySelector("[data-quote-inquiry-form]").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const quantity = form.elements.quantity.value.trim();
+    const note = form.elements.note.value.trim();
+    modal.remove();
+    sendIngredientInquiry(ingredientId, "견적 문의", { quantity, note });
+  });
+}
+
+function sendIngredientInquiry(ingredientId, inquiryType, inquiryDetails) {
   const member = getCurrentMember();
   if (!member) {
     window.location.href = "login.html";
@@ -1967,6 +1998,10 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
 
   const ingredient = getVisibleIngredientById(ingredientId);
   if (!ingredient) return;
+  if (inquiryType === "견적 문의" && !inquiryDetails) {
+    showQuoteInquiryForm(ingredientId);
+    return;
+  }
 
   const supplier = ingredient.supplier || {};
   const recipient =
@@ -2006,6 +2041,9 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
     `공급사: ${supplierName}`,
     `리드타임: ${leadTime}`,
     `응답방식: ${response}`,
+    ...(inquiryType === "견적 문의"
+      ? [`필요 수량: ${inquiryDetails?.quantity || "확인 필요"}`, `비고: ${inquiryDetails?.note || "없음"}`]
+      : []),
     "",
     "원하면 이 대화창에서 바로 답장할 수 있습니다.",
   ].join("\n");

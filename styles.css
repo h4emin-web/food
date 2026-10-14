@@ -2962,6 +2962,13 @@ body {
   font: inherit;
   resize: vertical;
 }
+.quote-inquiry-modal input,
+.quote-inquiry-modal textarea { width: 100%; box-sizing: border-box; }
+.quote-inquiry-modal .full-field { display: grid; gap: 7px; }
+.quote-inquiry-modal .full-field > span { color: var(--ink); font-size: 13px; font-weight: 700; }
+.quote-inquiry-modal input { min-height: 46px; border: 1px solid var(--line); border-radius: 8px; padding: 0 13px; color: var(--ink); font: inherit; }
+.quote-inquiry-modal textarea { min-height: 110px; }
+.message-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 
 .admin-layout {
   display: grid;
