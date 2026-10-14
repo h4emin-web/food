@@ -1987,6 +1987,11 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
     ingredient.manufacturerVisibility === "private"
       ? `${ingredient.origin || "제조국 확인 필요"} 제조사 비공개`
       : ingredient.manufacturer || supplier.name || "제조사 확인 필요";
+  const supplierName = supplier.name || ingredient.company || "공급사 확인 필요";
+  const country = ingredient.origin || "제조국 확인 필요";
+  const sector = normalizeSector(ingredient.sector || "식품");
+  const leadTime = ingredient.leadTime || "확인 필요";
+  const response = ingredient.response || "샘플·견적 모두 가능";
   const body = [
     `${senderCompany}의 ${senderLabel}님이 ${inquiryType}을 보냈습니다.`,
     `회사명: ${senderCompany}`,
@@ -1995,7 +2000,13 @@ function sendIngredientInquiry(ingredientId, inquiryType) {
     `연락처: ${senderPhone || "확인 필요"}`,
     "",
     `원료: ${ingredient.name} (${ingredient.englishName})`,
-    `제조사/공급사: ${maker}`,
+    `분류: ${sector}`,
+    `제조국: ${country}`,
+    `제조사: ${maker}`,
+    `공급사: ${supplierName}`,
+    `리드타임: ${leadTime}`,
+    `응답방식: ${response}`,
+    "",
     "원하면 이 대화창에서 바로 답장할 수 있습니다.",
   ].join("\n");
 
