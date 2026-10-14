@@ -5469,6 +5469,20 @@ body {
 .ingredient-content-grid h3 { font-size: 17px; font-weight: 600; }
 .ingredient-content-grid p { font-size: 14px; font-weight: 400; line-height: 1.9; color: var(--muted); }
 .site-footer { background: #fff; border-top: 1px solid var(--line); box-shadow: none; }
+.supplier-onboarding-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+  gap: 56px;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 70px 24px;
+  border-top: 1px solid var(--line);
+}
+.supplier-onboarding-section h2 { max-width: 680px; margin: 0 0 14px; font-size: 28px; line-height: 1.45; color: var(--ink); }
+.supplier-onboarding-section p:not(.eyebrow) { max-width: 700px; margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.9; }
+.supplier-onboarding-points { align-self: center; border-top: 1px solid var(--line); }
+.supplier-onboarding-points div { display: flex; gap: 18px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.supplier-onboarding-points strong { color: var(--blue); font-size: 13px; }
 .footer-brand-block > strong { font-size: 18px; font-weight: 700; color: #454a50; }
 .footer-brand-block > p, .company-info p, .footer-links a { font-size: 12px; font-weight: 400; color: #777d85; }
 .pagination-bar { margin-top: 16px; border: 0; border-radius: 0; background: #fff; box-shadow: none; }
@@ -5493,6 +5507,8 @@ body {
   .intro-page .signup-hero h1 { font-size: 25px; }
   .seo-topic-section { padding: 30px 20px; }
   .seo-topic-grid, .intro-page .ingredient-content-grid { grid-template-columns: 1fr; }
+  .supplier-onboarding-section { grid-template-columns: 1fr; gap: 24px; padding: 44px 20px; }
+  .supplier-onboarding-section h2 { font-size: 23px; }
   .seo-topic-grid a, .seo-topic-grid a:hover, .seo-topic-grid a:first-child {
     padding: 18px 0;
     border-left: 0;
