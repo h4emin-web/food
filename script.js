@@ -1096,7 +1096,7 @@ async function loadSupabaseBoardData() {
     const [ingredientsResult, communityResult, commentsResult] = await Promise.all([
       supabaseClient.from("ingredients").select("*").order("created_at", { ascending: false }).limit(500),
       supabaseClient.from("community_posts").select("*").order("created_at", { ascending: false }).limit(500),
-      supabaseClient.from("comments").select("*").order("created_at", { ascending: true }).limit(2000),
+      supabaseClient.from("comments").select("*").order("created_at", { ascending: true }).limit(500),
     ]);
     if (!ingredientsResult.error) remoteRegisteredIngredients = (ingredientsResult.data || []).map(mapIngredientRow);
     if (!communityResult.error) remoteCommunityPosts = (communityResult.data || []).map(mapCommunityRow);
@@ -1351,6 +1351,8 @@ async function syncLocalBoardsToSupabase() {
   const nextMigratedIds = new Set(migratedIds);
 
   const localIngredients = getRegisteredIngredients().filter((item) => item.id && !migratedIds.has(`ingredient:${item.id}`));
+  // 대량 CSV 등록은 업로드 단계에서 서버에 저장한다. 페이지 진입 때 개별 재전송하면 로딩이 길어지고 중복 요청이 발생한다.
+  if (localIngredients.length > 500) return;
   for (const item of localIngredients) {
     if (!isIngredientAlreadyRemote(item)) {
       await saveIngredientToSupabase(item);
@@ -1374,7 +1376,6 @@ async function initializeSupabaseBoards() {
   await getSupabaseUserId();
   await loadSupabaseBoardData();
   await syncLocalBoardsToSupabase();
-  await loadSupabaseBoardData();
 }
 
 function getLocalVisitorId() {
