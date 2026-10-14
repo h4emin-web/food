@@ -89,7 +89,7 @@ const defaultAdminMember = {
   companyWebsite: "",
   role: "관리자",
   interest: "모든 원료",
-  memo: "인그리디언 기본 관리자 계정",
+  memo: "원료나라 기본 관리자 계정",
   isAdmin: true,
   joinedAt: "2026-07-16T00:00:00.000Z",
 };
@@ -566,7 +566,7 @@ function updateIngredientStructuredData() {
       description: item.desc || `${item.name} 원료 정보`,
       brand: {
         "@type": "Brand",
-        name: item.supplier?.name || "인그리디언 등록 공급사",
+        name: item.supplier?.name || "원료나라 등록 공급사",
       },
       additionalProperty: [
         {
@@ -3519,7 +3519,7 @@ if (suggestionForm) {
     ]
       .filter((line) => line !== "")
       .join("\n");
-    const mailto = `mailto:foden_@naver.com?subject=${encodeURIComponent("[인그리디언 건의사항]")}&body=${encodeURIComponent(mailBody)}`;
+    const mailto = `mailto:foden_@naver.com?subject=${encodeURIComponent("[원료나라 건의사항]")}&body=${encodeURIComponent(mailBody)}`;
 
     if (suggestionMessage) {
       suggestionMessage.textContent = "메일 앱을 열고 있습니다. 메일 앱에서 전송 버튼을 눌러주세요.";
