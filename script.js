@@ -642,6 +642,7 @@ function getCountryFlagCode(origin) {
     .replace(/산 원료$/, "")
     .trim();
   const countryMap = {
+    ...(window.countryFlagMap || {}),
     "국내": "kr",
     "한국": "kr",
     "대한민국": "kr",
