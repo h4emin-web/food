@@ -58,7 +58,7 @@ module.exports = async function handler(req, res) {
     return res.end("<!doctype html><html lang=\"ko\"><title>원료를 찾을 수 없습니다</title><meta name=\"robots\" content=\"noindex\"><h1>원료를 찾을 수 없습니다.</h1></html>");
   }
   try {
-    const response = await fetchSupabase(`ingredients?select=${INGREDIENT_COLUMNS}&id=eq.${encodeURIComponent(id)}&limit=1`);
+    const response = await fetchSupabase(`ingredients_public?select=${INGREDIENT_COLUMNS}&id=eq.${encodeURIComponent(id)}&limit=1`);
     if (!response.ok) throw new Error(`Supabase ${response.status}`);
     const [item] = await response.json();
     if (!item) {

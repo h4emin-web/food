@@ -1111,6 +1111,16 @@ const INGREDIENT_COLUMNS = [
   "created_at",
 ].join(",");
 
+// Reads go through this view, which blanks private manufacturers for everyone
+// except the owner and admins (see supabase-private-manufacturer.sql).
+const INGREDIENT_READ_SOURCE = "ingredients_public";
+
+async function loadIngredientRowsByIds(ids) {
+  if (!ids.length) return [];
+  const { data, error } = await supabaseClient.from(INGREDIENT_READ_SOURCE).select(INGREDIENT_COLUMNS).in("id", ids);
+  return error ? [] : data || [];
+}
+
 function mapIngredientRow(row) {
   const createdAt = row.created_at || new Date().toISOString();
   return {
@@ -1191,7 +1201,7 @@ async function loadSupabaseBoardData() {
   if (!supabaseClient) return;
   try {
     const [ingredientsResult, communityResult, commentsResult] = await Promise.all([
-      supabaseClient.from("ingredients").select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).limit(500),
+      supabaseClient.from(INGREDIENT_READ_SOURCE).select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).limit(500),
       supabaseClient.from("community_posts").select("*").order("created_at", { ascending: false }).limit(500),
       supabaseClient.from("comments").select("*").order("created_at", { ascending: true }).limit(500),
     ]);
@@ -1217,12 +1227,12 @@ async function loadSupabaseBoardData() {
 async function loadRemainingRemoteIngredients(offset) {
   if (!supabaseClient) return;
   try {
-    const { count, error: countError } = await supabaseClient.from("ingredients").select("id", { count: "exact", head: true });
+    const { count, error: countError } = await supabaseClient.from(INGREDIENT_READ_SOURCE).select("id", { count: "exact", head: true });
     if (countError || !count || count <= offset) return;
     const pages = [];
     for (let start = offset; start < Math.min(count, 20000); start += 500) {
       pages.push(
-        supabaseClient.from("ingredients").select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).range(start, start + 499)
+        supabaseClient.from(INGREDIENT_READ_SOURCE).select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).range(start, start + 499)
       );
     }
     const results = await Promise.all(pages);
@@ -1275,16 +1285,17 @@ async function saveIngredientToSupabase(item) {
   let { data, error } = await supabaseClient
     .from("ingredients")
     .insert(payload)
-    .select(INGREDIENT_COLUMNS)
+    .select("id")
     .single();
   if (error && /sector/i.test(error.message || "")) {
     const { sector, ...legacyPayload } = payload;
-    const retry = await supabaseClient.from("ingredients").insert(legacyPayload).select(INGREDIENT_COLUMNS).single();
+    const retry = await supabaseClient.from("ingredients").insert(legacyPayload).select("id").single();
     data = retry.data;
     error = retry.error;
   }
-  if (!error && data) {
-    remoteRegisteredIngredients = [mapIngredientRow(data), ...remoteRegisteredIngredients.filter((next) => next.id !== data.id)];
+  const [row] = !error && data ? await loadIngredientRowsByIds([data.id]) : [];
+  if (row) {
+    remoteRegisteredIngredients = [mapIngredientRow(row), ...remoteRegisteredIngredients.filter((next) => next.id !== row.id)];
   }
 }
 
@@ -1321,15 +1332,16 @@ async function saveIngredientsToSupabase(items, onProgress) {
   let saved = 0;
   for (let start = 0; start < items.length; start += batchSize) {
     const batch = items.slice(start, start + batchSize);
-    let result = await supabaseClient.from("ingredients").insert(batch.map((item) => getIngredientSupabasePayload(item, ownerId))).select(INGREDIENT_COLUMNS);
+    let result = await supabaseClient.from("ingredients").insert(batch.map((item) => getIngredientSupabasePayload(item, ownerId))).select("id");
     if (result.error && /sector/i.test(result.error.message || "")) {
       result = await supabaseClient.from("ingredients").insert(batch.map((item) => {
         const { sector, ...legacyPayload } = getIngredientSupabasePayload(item, ownerId);
         return legacyPayload;
-      })).select(INGREDIENT_COLUMNS);
+      })).select("id");
     }
     if (result.error) return { saved, error: result.error };
-    const mapped = (result.data || []).map(mapIngredientRow);
+    const rows = await loadIngredientRowsByIds((result.data || []).map((row) => row.id));
+    const mapped = rows.map(mapIngredientRow);
     remoteRegisteredIngredients = [...mapped, ...remoteRegisteredIngredients];
     saved += batch.length;
     onProgress?.(saved, items.length);
