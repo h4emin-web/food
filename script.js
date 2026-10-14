@@ -1086,6 +1086,31 @@ async function getSupabaseUserId() {
   }
 }
 
+// Columns the client reads from ingredients. Listed explicitly (not "*") so
+// column-level grants can later hide fields such as private manufacturers.
+const INGREDIENT_COLUMNS = [
+  "id",
+  "name",
+  "english_name",
+  "origin",
+  "origin_flag_code",
+  "manufacturer",
+  "manufacturer_visibility",
+  "sector",
+  "category",
+  "cert",
+  "moq",
+  "lead_time",
+  "sample",
+  "response",
+  "description",
+  "company",
+  "company_website",
+  "owner_name",
+  "owner_email",
+  "created_at",
+].join(",");
+
 function mapIngredientRow(row) {
   const createdAt = row.created_at || new Date().toISOString();
   return {
@@ -1166,7 +1191,7 @@ async function loadSupabaseBoardData() {
   if (!supabaseClient) return;
   try {
     const [ingredientsResult, communityResult, commentsResult] = await Promise.all([
-      supabaseClient.from("ingredients").select("*").order("created_at", { ascending: false }).limit(500),
+      supabaseClient.from("ingredients").select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).limit(500),
       supabaseClient.from("community_posts").select("*").order("created_at", { ascending: false }).limit(500),
       supabaseClient.from("comments").select("*").order("created_at", { ascending: true }).limit(500),
     ]);
@@ -1197,7 +1222,7 @@ async function loadRemainingRemoteIngredients(offset) {
     const pages = [];
     for (let start = offset; start < Math.min(count, 20000); start += 500) {
       pages.push(
-        supabaseClient.from("ingredients").select("*").order("created_at", { ascending: false }).range(start, start + 499)
+        supabaseClient.from("ingredients").select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).range(start, start + 499)
       );
     }
     const results = await Promise.all(pages);
@@ -1250,11 +1275,11 @@ async function saveIngredientToSupabase(item) {
   let { data, error } = await supabaseClient
     .from("ingredients")
     .insert(payload)
-    .select()
+    .select(INGREDIENT_COLUMNS)
     .single();
   if (error && /sector/i.test(error.message || "")) {
     const { sector, ...legacyPayload } = payload;
-    const retry = await supabaseClient.from("ingredients").insert(legacyPayload).select().single();
+    const retry = await supabaseClient.from("ingredients").insert(legacyPayload).select(INGREDIENT_COLUMNS).single();
     data = retry.data;
     error = retry.error;
   }
@@ -1296,12 +1321,12 @@ async function saveIngredientsToSupabase(items, onProgress) {
   let saved = 0;
   for (let start = 0; start < items.length; start += batchSize) {
     const batch = items.slice(start, start + batchSize);
-    let result = await supabaseClient.from("ingredients").insert(batch.map((item) => getIngredientSupabasePayload(item, ownerId))).select();
+    let result = await supabaseClient.from("ingredients").insert(batch.map((item) => getIngredientSupabasePayload(item, ownerId))).select(INGREDIENT_COLUMNS);
     if (result.error && /sector/i.test(result.error.message || "")) {
       result = await supabaseClient.from("ingredients").insert(batch.map((item) => {
         const { sector, ...legacyPayload } = getIngredientSupabasePayload(item, ownerId);
         return legacyPayload;
-      })).select();
+      })).select(INGREDIENT_COLUMNS);
     }
     if (result.error) return { saved, error: result.error };
     const mapped = (result.data || []).map(mapIngredientRow);

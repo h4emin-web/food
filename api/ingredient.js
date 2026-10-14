@@ -1,6 +1,7 @@
 const { fetchSupabase } = require("./_supabase");
 
 const SITE_URL = "https://www.foodingredients.help";
+const INGREDIENT_COLUMNS = "id,name,english_name,origin,manufacturer,manufacturer_visibility,sector,category,cert,moq,lead_time,description,company,use";
 
 function escapeHtml(value = "") {
   return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -57,7 +58,7 @@ module.exports = async function handler(req, res) {
     return res.end("<!doctype html><html lang=\"ko\"><title>원료를 찾을 수 없습니다</title><meta name=\"robots\" content=\"noindex\"><h1>원료를 찾을 수 없습니다.</h1></html>");
   }
   try {
-    const response = await fetchSupabase(`ingredients?select=*&id=eq.${encodeURIComponent(id)}&limit=1`);
+    const response = await fetchSupabase(`ingredients?select=${INGREDIENT_COLUMNS}&id=eq.${encodeURIComponent(id)}&limit=1`);
     if (!response.ok) throw new Error(`Supabase ${response.status}`);
     const [item] = await response.json();
     if (!item) {
