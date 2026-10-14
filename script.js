@@ -1095,6 +1095,8 @@ async function loadSupabaseBoardData() {
     }
     updateGrid();
     updateCommunityPosts();
+    // 관리자 화면은 원격 데이터가 도착한 뒤 다시 그려야 전체 현황을 표시합니다.
+    if (adminLayout && isAdminMember()) renderAdminPage();
   } catch {
     // Local data remains available if Supabase tables are not ready yet.
   }
