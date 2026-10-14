@@ -97,6 +97,7 @@ const messageThreadList = document.querySelector("#messageThreadList");
 const messageConversation = document.querySelector("#messageConversation");
 const messageComposer = document.querySelector("#messageComposer");
 const messageAlarmButtons = [...document.querySelectorAll("[data-message-link]")];
+const messageFilterButtons = [...document.querySelectorAll("[data-message-filter]")];
 const ingredientRegisterForm = document.querySelector("#ingredientRegisterForm");
 const csvIngredientUpload = document.querySelector("#csvIngredientUpload");
 const csvTemplateDownload = document.querySelector("#csvTemplateDownload");
@@ -137,6 +138,7 @@ let activeCommunityPostId = "";
 let activePartnerPostId = "";
 let activeRegisteredIngredientId = "";
 let activeMessagePartner = "";
+let activeMessageFilter = "all";
 let ingredientCurrentPage = 1;
 let ingredientPageSize = 10;
 let communityCurrentPage = 1;
@@ -2122,6 +2124,9 @@ function sendIngredientInquiry(ingredientId, inquiryType, inquiryDetails) {
     direction: "sent",
     read: true,
     createdAt,
+    inquiryType,
+    ingredientId,
+    inquiryDetails: inquiryType === "견적 문의" ? inquiryDetails : null,
   });
   saveMessageToMember(recipient, {
     id: `received-inquiry-${Date.now()}`,
@@ -2209,6 +2214,8 @@ function renderMessagesPage() {
   }
 
   let messages = getMessages();
+  const quoteMessages = messages.filter((message) => message.inquiryType === "견적 문의");
+  const visibleMessages = activeMessageFilter === "quote" ? quoteMessages : messages;
   if (activeMessagePartner) {
     const nextMessages = messages.map((message) =>
       (message.partner || message.sender) === activeMessagePartner ? { ...message, read: true } : message
@@ -2219,7 +2226,7 @@ function renderMessagesPage() {
       updateAuthLinks();
     }
   }
-  const groups = groupMessagesByPartner(messages);
+  const groups = groupMessagesByPartner(visibleMessages);
   const partners = Object.keys(groups);
   if (activeMessagePartner && !groups[activeMessagePartner]) {
     activeMessagePartner = "";
@@ -2256,7 +2263,9 @@ function renderActiveConversation() {
     .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
   if (!activeMessagePartner || !thread.length) {
-    messageConversation.innerHTML = '<p class="empty-mini">대화를 선택하세요.</p>';
+    messageConversation.innerHTML = activeMessageFilter === "quote"
+      ? '<p class="empty-mini">보낸 견적 문의가 없습니다.</p>'
+      : '<p class="empty-mini">대화를 선택하세요.</p>';
     if (messageComposer) messageComposer.hidden = true;
     return;
   }
@@ -3636,6 +3645,15 @@ if (newsNextButton) {
 messageAlarmButtons.forEach((button) => {
   button.addEventListener("click", () => {
     markMessageBellSeen();
+  });
+});
+
+messageFilterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeMessageFilter = button.dataset.messageFilter || "all";
+    messageFilterButtons.forEach((item) => item.classList.toggle("active", item === button));
+    activeMessagePartner = "";
+    renderMessagesPage();
   });
 });
 

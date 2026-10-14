@@ -2969,6 +2969,10 @@ body {
 .quote-inquiry-modal input { min-height: 46px; border: 1px solid var(--line); border-radius: 8px; padding: 0 13px; color: var(--ink); font: inherit; }
 .quote-inquiry-modal textarea { min-height: 110px; }
 .message-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+.message-view-tabs { display: flex; gap: 24px; max-width: 1120px; margin: 0 auto 18px; padding: 0 24px; border-bottom: 1px solid var(--line); }
+.message-view-tabs button { border: 0; border-bottom: 2px solid transparent; padding: 0 0 12px; background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
+.message-view-tabs button.active { border-color: var(--blue); color: var(--ink); font-weight: 700; }
+@media (max-width: 600px) { .message-view-tabs { padding: 0 20px; } }
 
 .admin-layout {
   display: grid;
