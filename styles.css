@@ -2972,6 +2972,8 @@ body {
 .message-view-tabs { display: flex; gap: 24px; max-width: 1120px; margin: 0 auto 18px; padding: 0 24px; border-bottom: 1px solid var(--line); }
 .message-view-tabs button { border: 0; border-bottom: 2px solid transparent; padding: 0 0 12px; background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
 .message-view-tabs button.active { border-color: var(--blue); color: var(--ink); font-weight: 700; }
+.message-quote-link { display: inline-block; margin: 8px 0 4px; border: 0; padding: 0; background: transparent; color: var(--blue); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.message-quote-link:hover { text-decoration: underline; }
 @media (max-width: 600px) { .message-view-tabs { padding: 0 20px; } }
 
 .admin-layout {

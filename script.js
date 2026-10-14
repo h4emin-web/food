@@ -2288,6 +2288,9 @@ function renderActiveConversation() {
           (message) => `
             <article class="message-bubble ${message.direction === "sent" ? "sent" : "received"}">
               <p>${escapeHtml(message.body)}</p>
+              ${message.inquiryType === "견적 문의" && message.ingredientId
+                ? `<button class="message-quote-link" type="button" data-quote-again="${escapeHtml(message.ingredientId)}">견적 문의 다시 보내기</button>`
+                : ""}
               <span>${formatMessageDate(message.createdAt)}</span>
             </article>
           `
@@ -3663,6 +3666,14 @@ if (messageThreadList) {
     if (!thread) return;
     activeMessagePartner = thread.dataset.messageThread;
     renderMessagesPage();
+  });
+}
+
+if (messageConversation) {
+  messageConversation.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-quote-again]");
+    if (!button) return;
+    sendIngredientInquiry(button.dataset.quoteAgain, "견적 문의");
   });
 }
 
