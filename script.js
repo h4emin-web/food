@@ -1111,8 +1111,32 @@ async function loadSupabaseBoardData() {
     updateCommunityPosts();
     // 관리자 화면은 원격 데이터가 도착한 뒤 다시 그려야 전체 현황을 표시합니다.
     if (adminLayout && isAdminMember()) renderAdminPage();
+    loadRemainingRemoteIngredients(500);
   } catch {
     // Local data remains available if Supabase tables are not ready yet.
+  }
+}
+
+async function loadRemainingRemoteIngredients(offset) {
+  if (!supabaseClient || offset > 20000) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from("ingredients")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .range(offset, offset + 499);
+    if (error || !data?.length) return;
+    remoteRegisteredIngredients = [
+      ...remoteRegisteredIngredients,
+      ...data.map(mapIngredientRow).filter((item) => !remoteRegisteredIngredients.some((current) => current.id === item.id)),
+    ];
+    updateGrid();
+    if (data.length === 500) {
+      await new Promise((resolve) => window.setTimeout(resolve, 40));
+      loadRemainingRemoteIngredients(offset + 500);
+    }
+  } catch {
+    // The first page remains usable when older records cannot be loaded.
   }
 }
 
