@@ -5158,6 +5158,11 @@ body {
   color: #0f172a;
 }
 
+.main-nav .ingredient-register-nav {
+  color: #2459a6;
+  font-weight: 700;
+}
+
 .main-nav a:hover::after,
 .main-nav a.active::after,
 .sector-tabs button:hover::after,

@@ -131,6 +131,7 @@ const authOnlyLinks = [...document.querySelectorAll(".auth-only")];
 const guestOnlyLinks = [...document.querySelectorAll(".guest-only")];
 const adminOnlyLinks = [...document.querySelectorAll(".admin-only-link")];
 const myIngredientsLinks = [...document.querySelectorAll(".my-ingredients-link")];
+const ingredientRegisterNavLinks = [...document.querySelectorAll(".ingredient-register-nav")];
 let activeIngredientId = "";
 let activeCommunityPostId = "";
 let activePartnerPostId = "";
@@ -1709,6 +1710,10 @@ function updateAuthLinks() {
   });
   guestOnlyLinks.forEach((link) => {
     link.hidden = Boolean(member);
+  });
+  ingredientRegisterNavLinks.forEach((link) => {
+    link.href = member ? "ingredient-register.html" : "login.html";
+    link.setAttribute("aria-label", member ? "원료 등록" : "로그인 후 원료 등록");
   });
   adminOnlyLinks.forEach((link) => {
     link.hidden = !isAdminMember(member);
