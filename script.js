@@ -664,6 +664,8 @@ function getCountryFlagCode(origin) {
     "vietnam": "vn",
     "인도": "in",
     "india": "in",
+    "브라질": "br",
+    "brazil": "br",
   };
   return countryMap[normalized] || countryMap[compact] || "";
 }
