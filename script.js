@@ -1145,6 +1145,55 @@ async function saveIngredientToSupabase(item) {
   }
 }
 
+function getIngredientSupabasePayload(item, ownerId) {
+  return {
+    owner_id: ownerId,
+    owner_email: item.ownerEmail || "",
+    owner_name: item.ownerName || "",
+    company: item.company || "",
+    company_website: normalizeWebsite(item.companyWebsite || ""),
+    name: item.name,
+    english_name: item.englishName || "",
+    origin: item.origin || "",
+    origin_flag_code: item.originFlagCode || getCountryFlagCode(item.origin || ""),
+    manufacturer: item.manufacturer || "",
+    manufacturer_visibility: item.manufacturerVisibility || "public",
+    sector: normalizeSector(item.sector),
+    category: item.category || "",
+    use: "",
+    cert: item.cert || "",
+    moq: item.moq || "",
+    lead_time: item.leadTime || "",
+    sample: item.sample || "가능",
+    response: item.response || "샘플·견적 모두 가능",
+    description: item.desc || "",
+  };
+}
+
+async function saveIngredientsToSupabase(items, onProgress) {
+  if (!supabaseClient || !items.length) return { saved: 0, error: null };
+  const ownerId = await getSupabaseUserId();
+  if (!ownerId) return { saved: 0, error: new Error("로그인 정보가 없습니다.") };
+  const batchSize = 100;
+  let saved = 0;
+  for (let start = 0; start < items.length; start += batchSize) {
+    const batch = items.slice(start, start + batchSize);
+    let result = await supabaseClient.from("ingredients").insert(batch.map((item) => getIngredientSupabasePayload(item, ownerId))).select();
+    if (result.error && /sector/i.test(result.error.message || "")) {
+      result = await supabaseClient.from("ingredients").insert(batch.map((item) => {
+        const { sector, ...legacyPayload } = getIngredientSupabasePayload(item, ownerId);
+        return legacyPayload;
+      })).select();
+    }
+    if (result.error) return { saved, error: result.error };
+    const mapped = (result.data || []).map(mapIngredientRow);
+    remoteRegisteredIngredients = [...mapped, ...remoteRegisteredIngredients];
+    saved += batch.length;
+    onProgress?.(saved, items.length);
+  }
+  return { saved, error: null };
+}
+
 async function saveCommunityPostToSupabase(post) {
   if (!supabaseClient) return;
   const ownerId = await getSupabaseUserId();
@@ -1796,11 +1845,13 @@ function saveRegisteredIngredient(item) {
   saveIngredientToSupabase(item).then(() => updateGrid()).catch(() => {});
 }
 
-function saveRegisteredIngredients(items) {
+async function saveRegisteredIngredients(items, onProgress) {
   const key = getRegisteredIngredientKey();
-  if (!key || !items.length) return;
+  if (!key || !items.length) return { saved: 0, error: new Error("회원 정보가 없습니다.") };
   localStorage.setItem(key, JSON.stringify([...items, ...getRegisteredIngredients()]));
-  Promise.all(items.map((item) => saveIngredientToSupabase(item))).then(() => updateGrid()).catch(() => {});
+  const result = await saveIngredientsToSupabase(items, onProgress);
+  updateGrid();
+  return result;
 }
 
 function getFilteredRegisteredIngredients() {
@@ -3883,9 +3934,16 @@ if (ingredientRegisterForm) {
           return;
         }
 
-        saveRegisteredIngredients(items);
+        setCsvUploadMessage(`원료 ${items.length.toLocaleString()}건을 서버에 등록하고 있습니다...`, "success");
+        const uploadResult = await saveRegisteredIngredients(items, (saved, total) => {
+          setCsvUploadMessage(`서버 등록 중입니다... ${saved.toLocaleString()} / ${total.toLocaleString()}건`, "success");
+        });
         updateAuthLinks();
-        setCsvUploadMessage(`${items.length}개 원료가 등록되었습니다. 원료찾기와 마이페이지에서 확인할 수 있습니다.`, "success");
+        if (uploadResult.error) {
+          setCsvUploadMessage(`서버에 ${uploadResult.saved.toLocaleString()}건 등록되었습니다. 나머지는 잠시 후 다시 시도해주세요.`, "error");
+        } else {
+          setCsvUploadMessage(`${items.length.toLocaleString()}개 원료가 등록되었습니다. 원료찾기와 마이페이지에서 확인할 수 있습니다.`, "success");
+        }
       } catch {
         setCsvUploadMessage("CSV 파일을 읽지 못했습니다. 파일 형식을 확인해주세요.", "error");
       } finally {
