@@ -7,11 +7,12 @@ const cutoff = new Date(now.getTime() - 7 * ONE_DAY);
 
 const feeds = [
   "https://news.google.com/rss/search?q=%EC%8B%9D%ED%92%88%20%EC%9B%90%EB%A3%8C%20OR%20%EA%B8%B0%EB%8A%A5%EC%84%B1%20%EC%9B%90%EB%A3%8C&hl=ko&gl=KR&ceid=KR:ko",
+  "https://news.google.com/rss/search?q=%EC%8B%9D%ED%92%88%EC%B2%A8%EA%B0%80%EB%AC%BC%20OR%20%EC%8B%9D%ED%92%88%20%EC%86%8C%EC%9E%AC&hl=ko&gl=KR&ceid=KR:ko",
+  "https://news.google.com/rss/search?q=%EC%95%8C%EB%A3%B0%EB%A1%9C%EC%8A%A4%20OR%20%EB%8B%A8%EB%B0%B1%EC%A7%88%20%EC%9B%90%EB%A3%8C%20OR%20%ED%94%84%EB%A1%9C%EB%B0%94%EC%9D%B4%EC%98%A4%ED%8B%B1%EC%8A%A4&hl=ko&gl=KR&ceid=KR:ko",
+  "https://news.google.com/rss/search?q=food%20ingredients%20OR%20functional%20food%20ingredients%20OR%20food%20additives&hl=en-US&gl=US&ceid=US:en",
   "https://news.google.com/rss/search?q=%EC%A0%9C%EC%95%BD%20%EC%9B%90%EB%A3%8C%20OR%20%EC%9B%90%EB%A3%8C%EC%9D%98%EC%95%BD%ED%92%88%20OR%20%EB%B6%80%ED%98%95%EC%A0%9C&hl=ko&gl=KR&ceid=KR:ko",
-  "https://news.google.com/rss/search?q=%ED%99%94%EC%9E%A5%ED%92%88%20%EC%9B%90%EB%A3%8C%20OR%20%ED%99%94%EC%9E%A5%ED%92%88%20%EC%86%8C%EC%9E%AC%20OR%20%EC%B2%9C%EC%97%B0%20%EC%B6%94%EC%B6%9C%EB%AC%BC&hl=ko&gl=KR&ceid=KR:ko",
-  "https://news.google.com/rss/search?q=food%20ingredients%20OR%20functional%20food%20ingredients&hl=en-US&gl=US&ceid=US:en",
   "https://news.google.com/rss/search?q=pharmaceutical%20ingredients%20OR%20API%20OR%20excipients&hl=en-US&gl=US&ceid=US:en",
-  "https://news.google.com/rss/search?q=cosmetic%20ingredients%20OR%20personal%20care%20ingredients%20OR%20beauty%20ingredients&hl=en-US&gl=US&ceid=US:en",
+  "https://news.google.com/rss/search?q=%ED%99%94%EC%9E%A5%ED%92%88%20%EC%9B%90%EB%A3%8C%20OR%20%ED%99%94%EC%9E%A5%ED%92%88%20%EC%86%8C%EC%9E%AC%20OR%20%EC%B2%9C%EC%97%B0%20%EC%B6%94%EC%B6%9C%EB%AC%BC&hl=ko&gl=KR&ceid=KR:ko",
 ];
 
 const fallbackImages = [
@@ -165,7 +166,8 @@ for (const feed of feeds) {
     const lower = title.toLowerCase();
     if (!/(원료|소재|식품|제약|의약품|화장품|ingredient|additive|protein|functional|color|sweetener|pharma|pharmaceutical|api|excipient|cosmetic|beauty|personal care)/i.test(lower)) continue;
     const category = categorize(title);
-    if ((categoryCounts.get(category) || 0) >= 2) continue;
+    const categoryLimit = category === "식품 원료" ? 4 : category === "단백 원료" ? 2 : 1;
+    if ((categoryCounts.get(category) || 0) >= categoryLimit) continue;
 
     const index = fresh.length % fallbackImages.length;
     const image = item.image || (await pickArticleImage(item.link)) || fallbackImages[index];
