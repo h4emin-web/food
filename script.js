@@ -556,6 +556,7 @@ function getIngredientSearchAliases(item) {
 }
 
 function updateGrid() {
+  invalidateIngredientCache();
   renderCards(getFilteredItems());
   updateIngredientStructuredData();
 }
@@ -719,14 +720,27 @@ function getIngredientIdentity(item) {
     .join("|");
 }
 
+let visibleIngredientsCache = null;
+
+function invalidateIngredientCache() {
+  visibleIngredientsCache = null;
+}
+
 function getVisibleIngredients() {
-  const registered = [...remoteRegisteredIngredients, ...getAllRegisteredIngredientsByMember()]
-    .filter((item, index, items) => {
-      const identity = getIngredientIdentity(item);
-      return items.findIndex((next) => next.id === item.id || getIngredientIdentity(next) === identity) === index;
-    })
-    .map(normalizeRegisteredIngredient);
-  return [...registered, ...ingredients];
+  if (visibleIngredientsCache) return visibleIngredientsCache;
+
+  const seenIds = new Set();
+  const seenIdentities = new Set();
+  const registered = [];
+  for (const item of [...remoteRegisteredIngredients, ...getAllRegisteredIngredientsByMember()]) {
+    const identity = getIngredientIdentity(item);
+    if (seenIds.has(item.id) || seenIdentities.has(identity)) continue;
+    seenIds.add(item.id);
+    seenIdentities.add(identity);
+    registered.push(normalizeRegisteredIngredient(item));
+  }
+  visibleIngredientsCache = [...registered, ...ingredients];
+  return visibleIngredientsCache;
 }
 
 function getVisibleIngredientById(id) {
@@ -1120,22 +1134,31 @@ async function loadSupabaseBoardData() {
 }
 
 async function loadRemainingRemoteIngredients(offset) {
-  if (!supabaseClient || offset > 20000) return;
+  if (!supabaseClient) return;
   try {
-    const { data, error } = await supabaseClient
-      .from("ingredients")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .range(offset, offset + 499);
-    if (error || !data?.length) return;
-    remoteRegisteredIngredients = [
-      ...remoteRegisteredIngredients,
-      ...data.map(mapIngredientRow).filter((item) => !remoteRegisteredIngredients.some((current) => current.id === item.id)),
-    ];
-    updateGrid();
-    if (data.length === 500) {
-      await new Promise((resolve) => window.setTimeout(resolve, 40));
-      loadRemainingRemoteIngredients(offset + 500);
+    const { count, error: countError } = await supabaseClient.from("ingredients").select("id", { count: "exact", head: true });
+    if (countError || !count || count <= offset) return;
+    const pages = [];
+    for (let start = offset; start < Math.min(count, 20000); start += 500) {
+      pages.push(
+        supabaseClient.from("ingredients").select("*").order("created_at", { ascending: false }).range(start, start + 499)
+      );
+    }
+    const results = await Promise.all(pages);
+    const knownIds = new Set(remoteRegisteredIngredients.map((item) => item.id));
+    const added = [];
+    for (const { data, error } of results) {
+      if (error || !data) continue;
+      for (const row of data) {
+        const item = mapIngredientRow(row);
+        if (knownIds.has(item.id)) continue;
+        knownIds.add(item.id);
+        added.push(item);
+      }
+    }
+    if (added.length) {
+      remoteRegisteredIngredients = [...remoteRegisteredIngredients, ...added];
+      updateGrid();
     }
   } catch {
     // The first page remains usable when older records cannot be loaded.
@@ -3292,9 +3315,13 @@ if (grid && searchInput) {
     openIngredientDetail(ingredient.dataset.ingredientId);
   });
 
+  let searchTimer;
   searchInput.addEventListener("input", () => {
-    ingredientCurrentPage = 1;
-    updateGrid();
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => {
+      ingredientCurrentPage = 1;
+      updateGrid();
+    }, 200);
   });
   filterInputs.forEach((input) =>
     input.addEventListener("change", () => {
