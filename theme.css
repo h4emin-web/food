@@ -1002,3 +1002,38 @@ html body .news-card:hover .news-more {
     flex: 0 0 auto;
   }
 }
+
+/* ---------- Small phones ---------- */
+@media (max-width: 389px) {
+  /* Four menu items are tight below 390px: slightly smaller type, and the
+     row scrolls sideways if it still does not fit (320px). */
+  html body .site-header .main-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 12px;
+  }
+
+  html body .site-header .main-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  html body .main-nav a,
+  html body .main-nav a.active,
+  html body .main-nav a.ingredient-register-nav {
+    flex: 0 0 auto;
+    font-size: 15px;
+  }
+
+}
+
+@media (max-width: 359px) {
+  html body .pagination-bar .page-number-list {
+    gap: 4px;
+  }
+
+  html body .pagination-bar .page-number-list button {
+    min-width: 32px;
+    height: 34px;
+    padding: 0 6px;
+  }
+}
