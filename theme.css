@@ -785,6 +785,14 @@ html body .news-heading-copy {
   text-align: left;
 }
 
+/* Up to 980px the base styles stack the heading as a column; keep it on
+   the left edge there (flex-end would push it right). */
+@media (max-width: 980px) {
+  html body .news-heading {
+    align-items: flex-start;
+  }
+}
+
 html body .news-heading-copy .eyebrow {
   margin: 0;
   color: var(--brand);
