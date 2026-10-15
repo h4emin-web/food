@@ -363,9 +363,9 @@ function getIngredientCardMarkup(item) {
 }
 
 // The search API caps a page at 50 rows, so walk pages until a short one.
-async function fetchAllIngredientSearchPages(query, sector, pageSize = 50, maxPages = 20) {
+async function fetchAllIngredientSearchPages(query, sector, isCurrent = () => true, pageSize = 50, maxPages = 20) {
   const rows = [];
-  for (let page = 1; page <= maxPages; page += 1) {
+  for (let page = 1; page <= maxPages && isCurrent(); page += 1) {
     const response = await fetch(
       `/api/ingredients?q=${encodeURIComponent(query)}&sector=${encodeURIComponent(sector)}&limit=${pageSize}&page=${page}`,
       { headers: { Accept: "application/json" } }
@@ -1237,8 +1237,6 @@ async function loadSupabaseBoardData() {
   try {
     const boardNeedsIngredients = Boolean(grid || favoriteGrid || adminIngredientList || messageConversation);
     const boardNeedsCommunity = Boolean(communityList || partnerList || adminCommunityList);
-    remoteIngredientsLoaded = boardNeedsIngredients;
-    remoteCommunityLoaded = boardNeedsCommunity;
     const [ingredientsResult, communityResult, commentsResult] = await Promise.all([
       boardNeedsIngredients
         ? supabaseClient.from(INGREDIENT_READ_SOURCE).select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).limit(500)
@@ -1252,6 +1250,10 @@ async function loadSupabaseBoardData() {
     ]);
     if (!ingredientsResult.error) remoteRegisteredIngredients = (ingredientsResult.data || []).map(mapIngredientRow);
     if (!communityResult.error) remoteCommunityPosts = (communityResult.data || []).map(mapCommunityRow);
+    // Sync compares local items against these lists, so trust them only when
+    // this page requested them and the request succeeded.
+    remoteIngredientsLoaded = boardNeedsIngredients && !ingredientsResult.error;
+    remoteCommunityLoaded = boardNeedsCommunity && !communityResult.error;
     if (!commentsResult.error) {
       remoteComments = (commentsResult.data || []).map(mapCommentRow).reduce((groups, comment) => {
         const key = `${comment.postScope}:${comment.postId}`;
@@ -1302,10 +1304,11 @@ async function loadRemainingRemoteIngredients(offset) {
   }
 }
 
+// Returns true only when the ingredient was stored on the server.
 async function saveIngredientToSupabase(item) {
-  if (!supabaseClient) return;
+  if (!supabaseClient) return false;
   const ownerId = await getSupabaseUserId();
-  if (!ownerId) return;
+  if (!ownerId) return false;
   const payload = {
       owner_id: ownerId,
       owner_email: item.ownerEmail || "",
@@ -1346,6 +1349,7 @@ async function saveIngredientToSupabase(item) {
   if (savedRow) {
     remoteRegisteredIngredients = [mapIngredientRow(savedRow), ...remoteRegisteredIngredients.filter((next) => next.id !== savedRow.id)];
   }
+  return Boolean(savedRow);
 }
 
 function getIngredientSupabasePayload(item, ownerId) {
@@ -1556,10 +1560,9 @@ async function syncLocalBoardsToSupabase() {
   // 대량 CSV 등록은 업로드 단계에서 서버에 저장한다. 페이지 진입 때 개별 재전송하면 로딩이 길어지고 중복 요청이 발생한다.
   if (localIngredients.length > 500) return;
   for (const item of localIngredients) {
-    if (!isIngredientAlreadyRemote(item)) {
-      await saveIngredientToSupabase(item);
+    if (isIngredientAlreadyRemote(item) || (await saveIngredientToSupabase(item))) {
+      nextMigratedIds.add(`ingredient:${item.id}`);
     }
-    nextMigratedIds.add(`ingredient:${item.id}`);
   }
 
   const localCommunityPosts = remoteCommunityLoaded
@@ -2063,13 +2066,17 @@ function setRegisteredIngredients(items) {
   localStorage.setItem(key, JSON.stringify(items));
 }
 
-function saveRegisteredIngredient(item) {
+async function saveRegisteredIngredient(item) {
   const key = getRegisteredIngredientKey();
   if (!key) return;
   const items = getRegisteredIngredients();
   setRegisteredIngredients([item, ...items]);
-  markBoardItemsMigrated([`ingredient:${item.id}`]);
-  saveIngredientToSupabase(item).then(() => updateGrid()).catch(() => {});
+  // Mark as migrated only once the server has it; otherwise the next page
+  // load's sync retries the upload.
+  const savedRemotely = await saveIngredientToSupabase(item).catch(() => false);
+  if (savedRemotely) markBoardItemsMigrated([`ingredient:${item.id}`]);
+  updateGrid();
+  return savedRemotely;
 }
 
 async function saveRegisteredIngredients(items, onProgress) {
@@ -3498,7 +3505,11 @@ if (grid && searchInput) {
       }
       const requestId = ++remoteSearchRequestId;
       grid.innerHTML = '<div class="empty-state">원료를 검색하고 있습니다...</div>';
-      fetchAllIngredientSearchPages(query, activeIngredientSector === "전체" ? "" : activeIngredientSector)
+      fetchAllIngredientSearchPages(
+        query,
+        activeIngredientSector === "전체" ? "" : activeIngredientSector,
+        () => requestId === remoteSearchRequestId
+      )
         .then((rows) => {
           if (requestId !== remoteSearchRequestId) return;
           remoteSearchResults = Array.isArray(rows) ? rows.map(mapIngredientRow) : [];
@@ -4236,7 +4247,7 @@ if (ingredientRegisterForm) {
     });
   }
 
-  ingredientRegisterForm.addEventListener("submit", (event) => {
+  ingredientRegisterForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const member = getCurrentMember();
     const companyName = registerFields.company.value.trim() || member?.company || "";
@@ -4274,8 +4285,12 @@ if (ingredientRegisterForm) {
       return;
     }
 
-    saveRegisteredIngredient(item);
+    const savedRemotely = await saveRegisteredIngredient(item);
     updateAuthLinks();
+    if (!savedRemotely) {
+      setRegisterMessage("서버에 저장되지 않았습니다. 로그인이 만료되었을 수 있으니 다시 로그인한 뒤 페이지를 새로 고쳐 주세요.", "error");
+      return;
+    }
     ingredientRegisterForm.reset();
     setRegisterMessage("원료가 등록되었습니다. 원료찾기와 마이페이지에서 확인할 수 있습니다.", "success");
     alert("원료 등록이 완료되었습니다.");
