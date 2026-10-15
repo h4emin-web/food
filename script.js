@@ -380,7 +380,7 @@ async function fetchAllIngredientSearchPages(query, sector, isCurrent = () => tr
 }
 
 function getIngredientDisplayDescription(item) {
-  const fallback = "상세 정보는 등록 회원에게 문의하세요";
+  const fallback = "상세 정보는 공급사에 문의하세요";
   const description = String(item?.desc || "").trim();
   const name = String(item?.name || "").trim();
   const englishName = String(item?.englishName || "").trim();
@@ -779,7 +779,7 @@ function normalizeRegisteredIngredient(item) {
     id: item.id,
     name: item.name,
     englishName: item.englishName || "English Name",
-    desc: item.desc || "상세 정보는 등록 회원에게 문의하세요",
+    desc: item.desc || "상세 정보는 공급사에 문의하세요",
     sector,
     type: sector,
     origin,
@@ -2986,21 +2986,33 @@ function renderNewsCards(items) {
 
   newsGrid.innerHTML = items
     .slice(0, 21)
-    .map(
-      (item) => `
-        <article class="news-card">
-          <div class="news-card-body">
-            <div class="news-tags">
-              <span>${escapeHtml(item.sourceLabel || item.category || "NEWS")}</span>
-              <span>${escapeHtml(item.source || "Ingredient")}</span>
+    .map((item) => {
+      const title = String(item.title || "").trim();
+      const summary = String(item.summary || "").trim();
+      // Collected summaries are often just the title plus a stock sentence;
+      // show a summary only when it adds something.
+      const showSummary = summary && !summary.startsWith(title.slice(0, 20));
+      const url = /^https?:\/\//i.test(String(item.url || "")) ? String(item.url) : "";
+      const body = `
+            <div class="news-card-meta">
+              <span class="news-source">${escapeHtml(item.source || "원료 뉴스")}</span>
+              <time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatNewsDate(item.publishedAt))}</time>
             </div>
-            <time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatNewsDate(item.publishedAt))}</time>
-            <h3>${escapeHtml(item.title)}</h3>
-            <p>${escapeHtml(item.summary || "")}</p>
-          </div>
-        </article>
-      `
-    )
+            <h3>${escapeHtml(title)}</h3>
+            ${showSummary ? `<p>${escapeHtml(summary)}</p>` : ""}
+            <div class="news-card-foot">
+              <span class="news-category">${escapeHtml(item.category || "원료 소식")}</span>
+              ${url ? '<span class="news-more" aria-hidden="true">원문 보기 ↗</span>' : ""}
+            </div>`;
+      return `
+        <article class="news-card">
+          ${
+            url
+              ? `<a class="news-card-body" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${body}</a>`
+              : `<div class="news-card-body">${body}</div>`
+          }
+        </article>`;
+    })
     .join("");
 
   if (window.lucide) {
@@ -3037,7 +3049,8 @@ async function loadNewsCards() {
 function scrollNewsCarousel(direction) {
   if (!newsGrid) return;
   const card = newsGrid.querySelector(".news-card");
-  const distance = card ? card.getBoundingClientRect().width + 22 : newsGrid.clientWidth * 0.8;
+  const gap = parseFloat(getComputedStyle(newsGrid).columnGap) || 16;
+  const distance = card ? card.getBoundingClientRect().width + gap : newsGrid.clientWidth * 0.8;
   newsGrid.scrollBy({
     left: direction * distance,
     behavior: "smooth",

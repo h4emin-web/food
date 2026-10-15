@@ -5564,9 +5564,10 @@ body {
 
 /* Keep the fallback description visually centered inside every ingredient row. */
 .ingredient-card .ingredient-desc {
-  align-self: center;
+  align-self: stretch;
   display: flex;
   align-items: center;
-  min-height: 36px;
+  height: 100%;
+  min-height: 42px;
   line-height: 1.35;
 }
