@@ -159,7 +159,8 @@ const supabaseClient = window.foodSourcingSupabase || null;
 
 function getFavoriteKey() {
   const member = getCurrentMember();
-  return member ? `foodsourceFavorites:${member.email}` : "";
+  const email = normalizeEmail(member?.email);
+  return email ? `foodsourceFavorites:${email}` : "";
 }
 
 function getFavoriteIngredients() {
@@ -167,7 +168,16 @@ function getFavoriteIngredients() {
   if (!key) return [];
 
   try {
-    return JSON.parse(localStorage.getItem(key)) || [];
+    const current = JSON.parse(localStorage.getItem(key) || "null");
+    if (Array.isArray(current)) return current;
+    const member = getCurrentMember();
+    const legacyKey = member?.email ? `foodsourceFavorites:${member.email}` : "";
+    const legacy = legacyKey && legacyKey !== key ? JSON.parse(localStorage.getItem(legacyKey) || "null") : null;
+    if (Array.isArray(legacy)) {
+      localStorage.setItem(key, JSON.stringify(legacy));
+      return legacy;
+    }
+    return [];
   } catch {
     return [];
   }
@@ -1251,6 +1261,7 @@ async function loadRemainingRemoteIngredients(offset) {
     if (added.length) {
       remoteRegisteredIngredients = [...remoteRegisteredIngredients, ...added];
       updateGrid();
+      renderFavorites();
     }
   } catch {
     // The first page remains usable when older records cannot be loaded.
