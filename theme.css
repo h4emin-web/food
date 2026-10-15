@@ -767,3 +767,190 @@ html body {
     padding: 28px 16px;
   }
 }
+
+/* ---------- News (소개 페이지) ---------- */
+html body .news-section {
+  gap: 20px;
+  padding: 56px var(--page-gutter) 72px;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+
+html body .news-heading {
+  align-items: flex-end;
+}
+
+html body .news-heading-copy .eyebrow {
+  margin: 0;
+  color: var(--brand);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+html body .news-heading h2 {
+  margin: 6px 0 0;
+  color: var(--ink);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+html body .news-heading-copy > p:not(.eyebrow) {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+html body .news-arrow {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+html body .news-arrow:hover {
+  border-color: var(--ink);
+}
+
+html body .news-carousel {
+  container-type: inline-size;
+  min-width: 0;
+  /* Stay inside the content column like every other section */
+  margin-right: 0;
+  padding-right: 0;
+}
+
+html body .news-grid {
+  /* Four cards fill the content column exactly on desktop */
+  grid-auto-columns: max(240px, calc((100cqw - 48px) / 4));
+  gap: 16px;
+  padding-bottom: 4px;
+  scroll-padding-left: 0;
+}
+
+html body .news-card {
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--paper);
+  box-shadow: none;
+  transition: border-color 120ms ease, transform 120ms ease;
+}
+
+html body .news-card:hover {
+  border-color: var(--ink);
+}
+
+html body .news-card-body {
+  display: flex;
+  height: 100%;
+  min-height: 220px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  color: inherit;
+  text-decoration: none;
+}
+
+html body a.news-card-body:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+  border-radius: var(--radius-m);
+}
+
+html body .news-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+html body .news-source {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+html body .news-card-meta time::before {
+  content: "·";
+  margin-right: 8px;
+  color: var(--subtle);
+}
+
+html body .news-card h3 {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+html body .news-card p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+html body .news-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+html body .news-category {
+  padding: 3px 8px;
+  border-radius: var(--radius-s);
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+html body .news-more {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+html body .news-card:hover .news-more {
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  html body .news-section {
+    padding-top: 40px;
+    padding-bottom: 48px;
+  }
+
+  html body .news-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  html body .news-heading h2 {
+    font-size: 24px;
+  }
+
+  html body .news-grid {
+    grid-auto-columns: 82cqw;
+  }
+}
