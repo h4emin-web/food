@@ -148,6 +148,8 @@ let activeCommunitySector = "전체";
 let partnerCurrentPage = 1;
 let partnerPageSize = 10;
 let remoteRegisteredIngredients = [];
+let remoteSearchResults = null;
+let remoteSearchRequestId = 0;
 let remoteCommunityPosts = [];
 let remotePartnerPosts = [];
 let remoteMembers = [];
@@ -483,7 +485,7 @@ function openIngredientDetail(ingredientId) {
 }
 
 function getFilteredItems() {
-  const visibleIngredients = getVisibleIngredients();
+  const visibleIngredients = remoteSearchResults || getVisibleIngredients();
   if (!searchInput) return visibleIngredients;
 
   const query = searchInput.value.trim().toLowerCase();
@@ -3418,7 +3420,26 @@ if (grid && searchInput) {
     window.clearTimeout(searchTimer);
     searchTimer = window.setTimeout(() => {
       ingredientCurrentPage = 1;
-      updateGrid();
+      const query = searchInput.value.trim();
+      if (query.length < 2) {
+        remoteSearchResults = null;
+        updateGrid();
+        return;
+      }
+      const requestId = ++remoteSearchRequestId;
+      grid.innerHTML = '<div class="empty-state">원료를 검색하고 있습니다...</div>';
+      fetch(`/api/ingredients?q=${encodeURIComponent(query)}&sector=${encodeURIComponent(activeIngredientSector === "전체" ? "" : activeIngredientSector)}&limit=50`, { headers: { Accept: "application/json" } })
+        .then((response) => response.ok ? response.json() : Promise.reject(new Error("search")))
+        .then((rows) => {
+          if (requestId !== remoteSearchRequestId) return;
+          remoteSearchResults = Array.isArray(rows) ? rows.map(mapIngredientRow) : [];
+          renderCards(getFilteredItems());
+        })
+        .catch(() => {
+          if (requestId !== remoteSearchRequestId) return;
+          remoteSearchResults = null;
+          updateGrid();
+        });
     }, 200);
   });
   filterInputs.forEach((input) =>
@@ -3433,6 +3454,7 @@ if (grid && searchInput) {
       input.checked = false;
     });
     searchInput.value = "";
+    remoteSearchResults = null;
     activeIngredientSector = "전체";
     ingredientSectorButtons.forEach((button) => button.classList.toggle("active", button.dataset.ingredientSector === "전체"));
     ingredientCurrentPage = 1;
