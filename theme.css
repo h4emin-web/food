@@ -1027,6 +1027,12 @@ html body .news-card:hover .news-more {
 }
 
 @media (max-width: 359px) {
+  /* The menu scrolls here; fade the right edge so it reads as "more" */
+  html body .site-header .main-nav {
+    -webkit-mask-image: linear-gradient(to right, #000 85%, transparent);
+    mask-image: linear-gradient(to right, #000 85%, transparent);
+  }
+
   html body .pagination-bar .page-number-list {
     gap: 4px;
   }
