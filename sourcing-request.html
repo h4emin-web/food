@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>원료 소싱요청 | 원료나라</title>
+  <meta name="description" content="식품·제약·화장품 원료 소싱요청을 등록하고 나만의 진행 현황을 확인하세요." />
+  <link rel="canonical" href="https://www.foodingredients.help/sourcing-request.html" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="원료나라 홈"><span class="brand-mark" aria-hidden="true"></span><span>원료나라</span></a>
+    <nav class="main-nav" aria-label="주요 메뉴">
+      <a href="index.html#ingredients">원료 찾기</a>
+      <a class="active" href="sourcing-request.html">원료 소싱요청</a>
+      <a href="community.html">원료문의</a>
+    </nav>
+    <div class="header-actions"><a class="auth-link" href="login.html">로그인</a><a class="guest-only" href="signup.html">회원가입</a></div>
+  </header>
+  <main class="page-shell sourcing-request-page">
+    <section class="page-intro"><p class="eyebrow">PRIVATE SOURCING REQUEST</p><h1>원료 소싱요청</h1><p>찾고 있는 원료 조건을 남기면 나만 확인할 수 있습니다.</p></section>
+    <section class="form-panel" aria-labelledby="sourcingRequestTitle">
+      <h2 id="sourcingRequestTitle">소싱 요청 등록</h2>
+      <p class="form-help">요청 내용과 진행 현황은 로그인한 본인에게만 표시됩니다.</p>
+      <form id="sourcingRequestForm" class="stack-form">
+        <label><span>분류</span><select id="sourcingSector" required><option value="식품">식품</option><option value="제약">제약</option><option value="화장품">화장품</option></select></label>
+        <label><span>원료명</span><input id="sourcingName" required placeholder="찾는 원료명을 입력하세요" /></label>
+        <div class="form-grid-2"><label><span>필요 수량</span><input id="sourcingQuantity" placeholder="예: 월 500kg" /></label><label><span>필요 샘플 수량</span><input id="sourcingSampleQuantity" placeholder="예: 500g" /></label></div>
+        <label><span>필요 서류</span><input id="sourcingDocuments" placeholder="예: COA, MSDS, 원산지증명서" /></label>
+        <label><span>추가 요청사항</span><textarea id="sourcingNote" rows="5" placeholder="규격, 제조국, 인증, 납기 등 필요한 내용을 적어주세요."></textarea></label>
+        <button class="primary-button" type="submit">소싱요청 등록</button>
+        <p id="sourcingRequestMessage" class="form-message" aria-live="polite"></p>
+      </form>
+    </section>
+    <section class="form-panel" aria-labelledby="sourcingFeedTitle"><h2 id="sourcingFeedTitle">내 소싱 현황</h2><div id="sourcingRequestList" class="sourcing-request-list"></div></section>
+  </main>
+  <script src="supabase-config.js"></script><script src="country-flags.js"></script><script src="script.js"></script><script src="sourcing-request.js"></script>
+</body>
+</html>
