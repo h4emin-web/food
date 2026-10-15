@@ -551,7 +551,7 @@ html body input:focus-visible {
   }
 
   html body .ingredient-grid .ingredient-card {
-    grid-template-columns: minmax(0, 1fr) 52px 56px 96px max-content 28px;
+    grid-template-columns: minmax(0, 1fr) 52px 56px minmax(96px, max-content) max-content 28px;
     grid-template-areas: "name sector manufacturer origin actions favorite";
     align-items: center;
     gap: 12px;
