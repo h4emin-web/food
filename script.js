@@ -4285,10 +4285,21 @@ if (ingredientRegisterForm) {
       return;
     }
 
-    const savedRemotely = await saveRegisteredIngredient(item);
+    // Block double submits while the server save is in flight.
+    const submitButton = ingredientRegisterForm.querySelector("[type='submit']");
+    if (submitButton?.disabled) return;
+    if (submitButton) submitButton.disabled = true;
+    let savedRemotely = false;
+    try {
+      savedRemotely = await saveRegisteredIngredient(item);
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
     updateAuthLinks();
     if (!savedRemotely) {
-      setRegisterMessage("서버에 저장되지 않았습니다. 로그인이 만료되었을 수 있으니 다시 로그인한 뒤 페이지를 새로 고쳐 주세요.", "error");
+      // Drop the local copy so a retry does not leave duplicates; the form keeps its values.
+      deleteRegisteredIngredient(item.id);
+      setRegisterMessage("서버에 저장되지 않았습니다. 로그인이 만료되었을 수 있으니 다시 로그인한 뒤 다시 등록해 주세요. 입력한 내용은 그대로 남아 있습니다.", "error");
       return;
     }
     ingredientRegisterForm.reset();
