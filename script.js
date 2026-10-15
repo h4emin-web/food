@@ -4550,6 +4550,7 @@ if (mypageForm) {
       activeRegisteredIngredientId = item.dataset.myIngredientId;
       renderMyIngredients();
       renderMyIngredientDetail();
+      myIngredientDetailForm?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     myIngredientList.addEventListener("keydown", (event) => {
@@ -4560,6 +4561,7 @@ if (mypageForm) {
       activeRegisteredIngredientId = item.dataset.myIngredientId;
       renderMyIngredients();
       renderMyIngredientDetail();
+      myIngredientDetailForm?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
 
