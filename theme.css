@@ -198,6 +198,31 @@ html body .seo-topic-inner {
   margin-right: 0;
 }
 
+/* Boards (원료문의, 원료 소싱요청) share the page gutter; the toolbar
+   starts at the left edge with the search taking the remaining width. */
+html body .community-section {
+  padding-left: var(--page-gutter);
+  padding-right: var(--page-gutter);
+}
+
+html body .community-layout {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  /* Phone styles add 16px here on top of the section gutter */
+  padding-left: 0;
+  padding-right: 0;
+}
+
+html body .community-toolbar {
+  justify-content: flex-start;
+}
+
+html body .community-toolbar .community-search {
+  flex: 1 1 auto;
+}
+
 /* ---------- Sector tabs ---------- */
 html body .sector-tabs {
   border-bottom: 1px solid var(--line);
