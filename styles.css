@@ -5543,3 +5543,21 @@ body {
 /* Wonyo Nara CI: falling ingredient particles */
 .brand-mark { background: #f7faff url('favicon.svg') center / cover no-repeat !important; color: transparent !important; }
 .brand-mark::before, .brand-mark::after { display: none !important; }
+
+.sourcing-request-page .form-panel { max-width: 920px; margin: 0 auto 24px; padding: clamp(24px, 4vw, 42px); border: 1px solid var(--line); border-radius: 16px; background: #fff; box-shadow: 0 14px 40px rgba(24, 43, 76, .06); }
+.sourcing-request-page .page-intro { max-width: 920px; margin: 0 auto 24px; }
+.sourcing-request-page .stack-form { display: grid; gap: 18px; }
+.sourcing-request-page .stack-form label, .sourcing-request-page .sourcing-request-item label { display: grid; gap: 8px; }
+.sourcing-request-page .stack-form label > span, .sourcing-request-page .sourcing-request-item label > span { color: var(--muted); font-size: 13px; font-weight: 800; }
+.sourcing-request-page input, .sourcing-request-page select, .sourcing-request-page textarea { width: 100%; min-height: 48px; box-sizing: border-box; border: 1px solid #d7dfeb; border-radius: 9px; background: #fff; padding: 12px 14px; color: var(--ink); font: inherit; }
+.sourcing-request-page textarea { min-height: 132px; resize: vertical; }
+.sourcing-request-page input:focus, .sourcing-request-page select:focus, .sourcing-request-page textarea:focus { outline: 3px solid rgba(31, 111, 235, .14); border-color: #6b9ee9; }
+.sourcing-request-page .form-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.sourcing-request-page .primary-button { min-height: 50px; border-radius: 9px; font-size: 15px; }
+.sourcing-request-list { display: grid; gap: 14px; }
+.sourcing-request-item { padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe; }
+.sourcing-request-item > div { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.sourcing-request-item > div strong { font-size: 18px; }
+.sourcing-request-item p { margin: 8px 0; color: var(--muted); line-height: 1.6; }
+.sourcing-request-item .outline-button { margin-top: 10px; }
+@media (max-width: 640px) { .sourcing-request-page .form-grid-2 { grid-template-columns: 1fr; } .sourcing-request-page .form-panel { padding: 22px 16px; border-radius: 12px; } }
