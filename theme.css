@@ -21,6 +21,9 @@
   --action: #111827;
   --action-hover: #374151;
 
+  /* One page gutter for every section: 16px on phones, then a 1120px column */
+  --page-gutter: max(16px, calc((100% - 1120px) / 2));
+
   --radius-s: 6px;
   --radius-m: 12px;
   --radius-pill: 999px;
@@ -43,8 +46,8 @@ html body {
 /* ---------- Header ---------- */
 html body .site-header {
   /* Same left edge as the 1120px content column below */
-  padding-left: max(16px, calc((100% - 1120px) / 2));
-  padding-right: max(16px, calc((100% - 1120px) / 2));
+  padding-left: var(--page-gutter);
+  padding-right: var(--page-gutter);
   border-bottom: 1px solid var(--line);
   background: var(--paper);
   box-shadow: none;
@@ -99,9 +102,15 @@ html body .hero {
   border-bottom: 0;
 }
 
+html body .hero {
+  padding-left: var(--page-gutter);
+  padding-right: var(--page-gutter);
+}
+
 html body .hero-copy {
-  width: min(1120px, calc(100% - 32px));
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   text-align: left;
   align-items: flex-start;
 }
@@ -159,6 +168,22 @@ html body .hero .search-field input {
 
 html body .hero .search-field input::placeholder {
   color: var(--subtle);
+}
+
+/* List section and the sections below share the same gutter */
+html body .marketplace,
+html body .seo-topic-section,
+html body .site-footer {
+  padding-left: var(--page-gutter);
+  padding-right: var(--page-gutter);
+}
+
+html body .marketplace .content-area,
+html body .seo-topic-inner {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* ---------- Sector tabs ---------- */
@@ -428,16 +453,6 @@ html body input:focus-visible {
   html body .seo-topic-grid a:first-child {
     padding: 18px;
     border: 1px solid var(--line);
-  }
-
-  /* Same 16px side gutter as the tabs and list */
-  html body .hero {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  html body .hero-copy {
-    width: calc(100% - 32px);
   }
 
   html body .hero h1 {
