@@ -22,7 +22,7 @@
   --action-hover: #374151;
 
   /* One page gutter for every section: 16px on phones, then a 1120px column */
-  --page-gutter: max(16px, calc((100% - 1120px) / 2));
+  --page-gutter: max(clamp(16px, 4vw, 40px), calc((100% - 1120px) / 2));
 
   --radius-s: 6px;
   --radius-m: 12px;
@@ -467,5 +467,71 @@ html body input:focus-visible {
   html body .hero .search-field {
     min-height: 50px;
     padding: 0 18px;
+  }
+}
+
+/* Community rows between phone and desktop: the desktop track widths
+   (280px + fixed columns) overflow, so use the two-line phone layout. */
+@media (min-width: 721px) and (max-width: 1100px) {
+  html body .community-post {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-areas:
+      "title title title sector"
+      "author date stats .";
+    gap: 10px 14px;
+  }
+
+  html body .community-post h3 {
+    grid-area: title;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  html body .community-post > .sector-label {
+    grid-area: sector;
+    justify-self: end;
+  }
+
+  html body .community-post .post-author {
+    grid-area: author;
+    justify-self: start;
+  }
+
+  html body .community-post .post-date {
+    grid-area: date;
+  }
+
+  html body .community-post .post-stats {
+    grid-area: stats;
+  }
+}
+
+/* 721-1023px: the base styles hide the main nav entirely, leaving no
+   navigation. Show it on a second row, as on phones. */
+@media (min-width: 721px) and (max-width: 1023px) {
+  html body .site-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "brand actions"
+      "nav nav";
+    row-gap: 6px;
+    height: auto;
+    padding-top: 12px;
+    padding-bottom: 8px;
+  }
+
+  html body .site-header .brand {
+    grid-area: brand;
+  }
+
+  html body .site-header .header-actions {
+    grid-area: actions;
+  }
+
+  html body .site-header .main-nav {
+    display: flex;
+    grid-area: nav;
+    gap: 24px;
   }
 }
