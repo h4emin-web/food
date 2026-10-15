@@ -270,7 +270,8 @@ function getPaginationState(items, currentPage, pageSize) {
 }
 
 function getPaginationControls(scope, page, totalPages, pageSize) {
-  const groupSize = 10;
+  // Phones show five page numbers so the bar fits on one line.
+  const groupSize = window.matchMedia?.("(max-width: 720px)").matches ? 5 : 10;
   const groupStart = Math.floor((page - 1) / groupSize) * groupSize + 1;
   const groupEnd = Math.min(groupStart + groupSize - 1, totalPages);
   const pages = Array.from({ length: groupEnd - groupStart + 1 }, (_, index) => groupStart + index);

@@ -778,6 +778,11 @@ html body .news-section {
 
 html body .news-heading {
   align-items: flex-end;
+  text-align: left;
+}
+
+html body .news-heading-copy {
+  text-align: left;
 }
 
 html body .news-heading-copy .eyebrow {
@@ -916,11 +921,13 @@ html body .news-card-foot {
   border-top: 1px solid var(--line);
 }
 
+/* Neutral chip: the sector colours (식품 green / 제약 blue / 화장품 rose) stay
+   reserved for the ingredient list. */
 html body .news-category {
   padding: 3px 8px;
   border-radius: var(--radius-s);
-  background: var(--brand-soft);
-  color: var(--brand);
+  background: var(--surface);
+  color: var(--muted);
   font-size: 12px;
   font-weight: 700;
 }
@@ -952,5 +959,38 @@ html body .news-card:hover .news-more {
 
   html body .news-grid {
     grid-auto-columns: 82cqw;
+  }
+}
+
+/* ---------- Phone: ingredient rows and pagination ---------- */
+@media (max-width: 720px) {
+  /* The stock "상세 정보는 … 문의하세요" line is hidden on phones; when it
+     showed it took the name column and squeezed names to one letter wide. */
+  html body .ingredient-card .ingredient-desc {
+    display: none;
+  }
+
+  html body .ingredient-grid .ingredient-card .ingredient-name {
+    grid-area: name;
+    min-width: 0;
+  }
+
+  html body .ingredient-grid .ingredient-card h3 {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  /* Page numbers 1-5 and 다음 on one line */
+  html body .pagination-bar .page-number-list {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  html body .pagination-bar .page-number-list button {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    flex: 0 0 auto;
   }
 }
