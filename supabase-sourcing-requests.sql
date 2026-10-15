@@ -1,5 +1,20 @@
 -- Sourcing requests: members submit, admins read them in the 쪽지함 and reply.
 -- Run once in the Supabase SQL editor. Safe to re-run.
+--
+-- ORDER: run supabase-admin-check.sql FIRST. These policies trust
+-- public.is_admin(); the old version also treated profiles.email =
+-- 'foden_@naver.com' as admin, which any member could claim. The guard below
+-- stops this script if that old rule is still live.
+
+do $$
+begin
+  if exists (
+    select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'is_admin' and p.prosrc ilike '%foden_@naver.com%'
+  ) then
+    raise exception 'run supabase-admin-check.sql first (is_admin() still trusts profiles.email)';
+  end if;
+end $$;
 
 create table if not exists public.sourcing_requests (
   id uuid primary key default gen_random_uuid(),
@@ -22,6 +37,57 @@ create table if not exists public.sourcing_requests (
 alter table public.sourcing_requests add column if not exists owner_email text not null default '';
 alter table public.sourcing_requests add column if not exists owner_name text not null default '';
 alter table public.sourcing_requests alter column owner_id set default auth.uid();
+
+-- Requester identity, status and reply are set by the server, never taken
+-- from the client: a member cannot file a request under someone else's
+-- email or pre-fill an admin reply.
+create or replace function public.sourcing_requests_before_insert()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+begin
+  new.owner_id := auth.uid();
+  new.owner_email := coalesce(auth.jwt() ->> 'email', '');
+  new.owner_name := coalesce(
+    (select coalesce(nullif(p.nickname, ''), p.name) from public.profiles p where p.id = auth.uid()),
+    ''
+  );
+  new.status := '접수';
+  new.feedback := '';
+  new.created_at := now();
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists sourcing_requests_before_insert on public.sourcing_requests;
+create trigger sourcing_requests_before_insert
+before insert on public.sourcing_requests
+for each row execute function public.sourcing_requests_before_insert();
+
+-- Admin replies only change status/feedback; ownership and the request
+-- itself stay as submitted, and updated_at comes from the server clock.
+create or replace function public.sourcing_requests_before_update()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.id := old.id;
+  new.owner_id := old.owner_id;
+  new.owner_email := old.owner_email;
+  new.owner_name := old.owner_name;
+  new.created_at := old.created_at;
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists sourcing_requests_before_update on public.sourcing_requests;
+create trigger sourcing_requests_before_update
+before update on public.sourcing_requests
+for each row execute function public.sourcing_requests_before_update();
 
 create index if not exists sourcing_requests_owner_created_idx
   on public.sourcing_requests (owner_id, created_at desc);
@@ -57,3 +123,5 @@ grant select, insert, update, delete on public.sourcing_requests to authenticate
 --   select count(*) from public.sourcing_requests;  -- as admin: all rows
 -- Rollback:
 --   drop table if exists public.sourcing_requests;
+--   drop function if exists public.sourcing_requests_before_insert();
+--   drop function if exists public.sourcing_requests_before_update();

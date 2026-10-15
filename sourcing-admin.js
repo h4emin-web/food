@@ -124,7 +124,7 @@
     const feedback = formEl.elements.feedback.value.trim();
     const { error } = await client
       .from("sourcing_requests")
-      .update({ status, feedback, updated_at: new Date().toISOString() })
+      .update({ status, feedback })
       .eq("id", id);
     submit.disabled = false;
     if (error) {

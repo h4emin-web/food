@@ -42,11 +42,25 @@
     return typeof getSupabaseUserId === "function" ? getSupabaseUserId() : "";
   }
 
-  // Requests saved before this change lived only in this browser; upload them once.
-  async function uploadLegacyRequests(userId) {
+  const toRow = (item) => ({
+    sector: ["식품", "제약", "화장품"].includes(item.sector) ? item.sector : "식품",
+    ingredient_name: String(item.name || "").trim().slice(0, 200),
+    quantity: String(item.quantity || "").slice(0, 200),
+    sample_quantity: String(item.sampleQuantity || "").slice(0, 200),
+    required_documents: String(item.documents || "").slice(0, 500),
+    note: String(item.note || "").slice(0, 4000),
+  });
+
+  // Requests saved before this change lived only in this browser; upload them
+  // one by one. Items that fail stay in the browser for the next visit, and a
+  // short-lived lock keeps two open tabs from uploading the same items.
+  async function uploadLegacyRequests() {
     const member = getMember();
     const legacyKey = member?.email ? `${LEGACY_PREFIX}${String(member.email).toLowerCase()}` : "";
     if (!legacyKey) return;
+    const lockKey = `${legacyKey}:uploading`;
+    const lockedAt = Number(localStorage.getItem(lockKey) || 0);
+    if (Date.now() - lockedAt < 60000) return;
     let legacy = [];
     try {
       legacy = JSON.parse(localStorage.getItem(legacyKey) || "[]");
@@ -54,24 +68,20 @@
       legacy = [];
     }
     if (!Array.isArray(legacy) || !legacy.length) return;
-    const rows = legacy
-      .filter((item) => item && item.name)
-      .map((item) => ({
-        owner_id: userId,
-        owner_email: member.email || "",
-        owner_name: (typeof getDisplayName === "function" && getDisplayName(member)) || member.nickname || member.name || "",
-        sector: ["식품", "제약", "화장품"].includes(item.sector) ? item.sector : "식품",
-        ingredient_name: String(item.name).slice(0, 200),
-        quantity: String(item.quantity || "").slice(0, 200),
-        sample_quantity: String(item.sampleQuantity || "").slice(0, 200),
-        required_documents: String(item.documents || "").slice(0, 500),
-        note: String(item.note || "").slice(0, 4000),
-      }));
-    if (rows.length) {
-      const { error } = await client.from("sourcing_requests").insert(rows);
-      if (error) return;
+    localStorage.setItem(lockKey, String(Date.now()));
+    try {
+      const remaining = [];
+      for (const item of legacy) {
+        const row = item ? toRow(item) : null;
+        if (!row || !row.ingredient_name) continue;
+        const { error } = await client.from("sourcing_requests").insert(row);
+        if (error) remaining.push(item);
+      }
+      if (remaining.length) localStorage.setItem(legacyKey, JSON.stringify(remaining));
+      else localStorage.removeItem(legacyKey);
+    } finally {
+      localStorage.removeItem(lockKey);
     }
-    localStorage.removeItem(legacyKey);
   }
 
   async function load() {
@@ -84,7 +94,7 @@
       loadState = "signed-out";
       return render();
     }
-    await uploadLegacyRequests(userId).catch(() => {});
+    await uploadLegacyRequests().catch(() => {});
     const { data, error } = await client
       .from("sourcing_requests")
       .select(COLUMNS)
@@ -216,10 +226,8 @@
       return;
     }
     const value = (id) => document.querySelector(id)?.value.trim() || "";
+    // Requester identity, status and reply are filled in by the database.
     const payload = {
-      owner_id: userId,
-      owner_email: member.email || "",
-      owner_name: (typeof getDisplayName === "function" && getDisplayName(member)) || member.nickname || member.name || "",
       sector: sectorSelect?.value || "식품",
       ingredient_name: value("#sourcingName"),
       quantity: value("#sourcingQuantity"),
