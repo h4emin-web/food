@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="t">
+  <title id="t">캡슐과 원료의약품 시약병</title>
+  <rect width="320" height="200" fill="#eef3fa"/>
+  <circle cx="58" cy="48" r="32" fill="#dce6f4"/>
+  <ellipse cx="160" cy="166" rx="120" ry="12" fill="#d6e1f0"/>
+  <g transform="translate(132 40)">
+    <rect x="14" y="0" width="28" height="16" rx="4" fill="#2a4f86"/>
+    <path d="M10 16 h36 v20 l20 70 a12 12 0 0 1 -12 16 H2 a12 12 0 0 1 -12 -16 l20 -70 Z" fill="#fff" stroke="#c8d6e8" stroke-width="2"/>
+    <path d="M-2 92 h60 l4 14 a12 12 0 0 1 -12 16 H2 a12 12 0 0 1 -12 -16 Z" fill="#c9d9f0"/>
+  </g>
+  <g transform="translate(58 128) rotate(-20)">
+    <rect width="56" height="22" rx="11" fill="#fff" stroke="#c8d6e8" stroke-width="2"/>
+    <path d="M28 0 H45 a11 11 0 0 1 0 22 H28 Z" fill="#5b84c4"/>
+  </g>
+  <g transform="translate(214 124) rotate(16)">
+    <rect width="50" height="20" rx="10" fill="#fff" stroke="#c8d6e8" stroke-width="2"/>
+    <path d="M25 0 H40 a10 10 0 0 1 0 20 H25 Z" fill="#2a4f86"/>
+  </g>
+  <g fill="#fff" stroke="#c8d6e8" stroke-width="2"><circle cx="238" cy="70" r="11"/><circle cx="262" cy="84" r="9"/></g>
+</svg>

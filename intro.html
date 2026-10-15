@@ -100,70 +100,106 @@
     </header>
 
     <main class="intro-page">
-      <section class="signup-hero" aria-labelledby="intro-title">
+      <section class="intro-hero" aria-labelledby="intro-title">
         <div class="intro-hero-copy">
           <p class="eyebrow">원료나라 소개</p>
-          <h1 id="intro-title">원료와 공급사를 빠르게 연결합니다</h1>
-          <p>식품, 제약, 화장품 원료를 찾는 구매 담당자와 공급사를 연결하는 B2B 원료 소싱 플랫폼입니다.</p>
+          <h1 id="intro-title">필요한 원료와 공급사를<br />한곳에서 찾고 연결합니다</h1>
+          <p>식품·제약·화장품 원료를 찾는 구매·개발 담당자와 원료 공급사를 잇는 B2B 원료 소싱 플랫폼입니다.</p>
+          <div class="intro-hero-actions">
+            <a class="primary-button" href="index.html#ingredients">원료 찾아보기</a>
+            <a class="outline-button" href="#supplier-onboarding">공급사 등록 안내</a>
+          </div>
         </div>
         <figure class="intro-hero-media">
-          <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=85" alt="원료 샘플과 규격서를 확인하는 연구실 테이블" loading="eager" />
-          <figcaption>샘플 · 규격 · 공급 조건을 한곳에서 확인하세요.</figcaption>
+          <img src="images/intro/hero.svg" alt="원료 샘플 병과 규격서, 캡슐과 화장품 원료 병이 놓인 소싱 테이블 일러스트" width="560" height="440" />
         </figure>
       </section>
 
-      <section class="intro-copy" aria-label="서비스 소개">
-        <p>
-          등록된 원료를 검색하고, 샘플 요청과 견적 문의를 보낼 수 있습니다. 필요한 원료가 보이지 않으면 원료문의 게시판에서 수배 요청도 남길 수 있습니다.
-        </p>
+      <section class="intro-steps" aria-labelledby="intro-steps-title">
+        <div class="intro-section-head">
+          <p class="eyebrow">이용 방법</p>
+          <h2 id="intro-steps-title">원료 소싱, 세 단계면 충분합니다</h2>
+        </div>
+        <ol class="intro-step-list">
+          <li>
+            <span class="intro-step-num">01</span>
+            <i data-lucide="search"></i>
+            <h3>원료 검색</h3>
+            <p>원료명·영문명·분야로 찾고 제조국과 공급 조건을 확인합니다.</p>
+          </li>
+          <li>
+            <span class="intro-step-num">02</span>
+            <i data-lucide="flask-conical"></i>
+            <h3>샘플·견적 요청</h3>
+            <p>원하는 원료에서 바로 샘플 요청이나 견적 문의를 보냅니다.</p>
+          </li>
+          <li>
+            <span class="intro-step-num">03</span>
+            <i data-lucide="message-square-text"></i>
+            <h3>공급사와 대화</h3>
+            <p>쪽지로 규격·수량·납기를 조율하고 거래를 이어갑니다.</p>
+          </li>
+        </ol>
       </section>
 
-      <section class="ingredient-content-section" aria-labelledby="ingredient-content-title">
-        <div class="content-heading">
-          <h2 id="ingredient-content-title">주요 서비스</h2>
+      <section class="intro-sectors" aria-labelledby="intro-sectors-title">
+        <div class="intro-section-head">
+          <p class="eyebrow">분야별 원료</p>
+          <h2 id="intro-sectors-title">식품부터 제약, 화장품까지</h2>
         </div>
-        <div class="ingredient-content-grid">
+        <div class="intro-sector-grid">
+          <a class="intro-sector-card" href="index.html#ingredients">
+            <img src="images/intro/food.svg" alt="" width="320" height="200" />
+            <div>
+              <span class="sector-label sector-식품">식품</span>
+              <h3>식품원료 소싱</h3>
+              <p>감미료, 식물성 단백질, 천연 추출물 등 식품 개발에 필요한 원료의 공급 조건을 확인합니다.</p>
+            </div>
+          </a>
+          <a class="intro-sector-card" href="index.html#ingredients">
+            <img src="images/intro/pharma.svg" alt="" width="320" height="200" />
+            <div>
+              <span class="sector-label sector-제약">제약</span>
+              <h3>제약원료 소싱</h3>
+              <p>원료의약품, 부형제, 연구개발용 원료를 공급 조건 기준으로 비교합니다.</p>
+            </div>
+          </a>
+          <a class="intro-sector-card" href="index.html#ingredients">
+            <img src="images/intro/cosmetic.svg" alt="" width="320" height="200" />
+            <div>
+              <span class="sector-label sector-화장품">화장품</span>
+              <h3>화장품원료 소싱</h3>
+              <p>기능성 원료, 천연 추출물, 보습·미백·진정 원료의 공급사를 찾습니다.</p>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="intro-features" aria-labelledby="intro-features-title">
+        <div class="intro-section-head">
+          <p class="eyebrow">구매·개발 담당자를 위한 기능</p>
+          <h2 id="intro-features-title">찾는 원료가 없어도 방법이 있습니다</h2>
+        </div>
+        <div class="intro-feature-grid">
           <article>
+            <i data-lucide="list-filter"></i>
             <h3>원료 찾기</h3>
-            <p>
-              원료명, 영문명, 분야, 제조국, 제조사, 리드타임을 기준으로 필요한 원료를 확인합니다.
-            </p>
+            <p>원료명, 영문명, 분야, 제조국, 제조사를 기준으로 필요한 원료를 확인합니다.</p>
           </article>
           <article>
-            <h3>샘플·견적 문의</h3>
-            <p>
-              관심 원료에서 샘플 요청 또는 견적 문의를 보내고, 쪽지로 공급사와 바로 대화할 수 있습니다.
-            </p>
+            <i data-lucide="file-search"></i>
+            <h3>원료 소싱요청</h3>
+            <p>목록에 없는 원료는 조건을 남기면 진행 현황을 안내받을 수 있습니다.</p>
           </article>
           <article>
-            <h3>원료문의</h3>
-            <p>
-              찾기 어려운 원료는 문의글로 남기고, 댓글과 쪽지로 공급 가능 여부를 확인합니다.
-            </p>
+            <i data-lucide="messages-square"></i>
+            <h3>원료문의 게시판</h3>
+            <p>찾기 어려운 원료는 문의글로 남기고 댓글과 쪽지로 공급 가능 여부를 확인합니다.</p>
           </article>
           <article>
-            <h3>제약원료 소싱</h3>
-            <p>
-              원료의약품, 부형제, 연구개발용 원료를 공급 조건 기준으로 비교할 수 있습니다.
-            </p>
-          </article>
-          <article>
-            <h3>화장품원료 소싱</h3>
-            <p>
-              기능성 원료, 천연 추출물, 보습·미백·진정 원료의 공급사를 찾을 수 있습니다.
-            </p>
-          </article>
-          <article>
-            <h3>식품원료 소싱</h3>
-            <p>
-              알룰로스, 식물성 단백질, 천연 추출물 등 식품 개발에 필요한 원료의 공급 조건을 확인합니다.
-            </p>
-          </article>
-          <article>
-            <h3>원료 중개</h3>
-            <p>
-              원료명과 영문명으로 공급사를 찾고 제조국, 제조사, 리드타임을 확인한 뒤 문의를 보낼 수 있습니다.
-            </p>
+            <i data-lucide="mail"></i>
+            <h3>쪽지와 견적함</h3>
+            <p>보낸 견적 문의와 공급사와의 대화를 쪽지함에서 한 번에 관리합니다.</p>
           </article>
         </div>
       </section>

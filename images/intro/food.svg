@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="t">
+  <title id="t">곡물과 감미료 분말이 담긴 그릇</title>
+  <rect width="320" height="200" fill="#eef6f1"/>
+  <circle cx="262" cy="46" r="34" fill="#dbeee2"/>
+  <ellipse cx="160" cy="160" rx="118" ry="14" fill="#d3e6da"/>
+  <path d="M74 104 h172 a86 50 0 0 1 -172 0 Z" fill="#fff" stroke="#c9dccf" stroke-width="2"/>
+  <path d="M84 104 Q160 66 236 104 Z" fill="#f3e6c4"/>
+  <g fill="#e2cf9c"><circle cx="128" cy="96" r="4"/><circle cx="150" cy="88" r="4"/><circle cx="174" cy="92" r="4"/><circle cx="196" cy="98" r="4"/><circle cx="160" cy="98" r="3"/></g>
+  <g transform="translate(40 58)">
+    <path d="M0 46 C8 14 34 2 58 4 C52 30 32 48 0 46 Z" fill="#7fb69d"/>
+    <path d="M6 42 C22 30 38 18 52 8" fill="none" stroke="#5a977c" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(232 112)">
+    <rect width="40" height="50" rx="8" fill="#fff" stroke="#c9dccf" stroke-width="2"/>
+    <rect x="8" y="-8" width="24" height="10" rx="3" fill="#1e6b45"/>
+    <rect x="8" y="18" width="24" height="5" rx="2.5" fill="#1e6b45"/>
+  </g>
+</svg>
