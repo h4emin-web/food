@@ -535,3 +535,46 @@ html body input:focus-visible {
     gap: 24px;
   }
 }
+
+/* 721-1023px: the base styles put two cards per row and leave the name,
+   description and buttons without grid areas, so names disappear and the
+   buttons overlap the star. One card per row, single-line layout, same
+   fields as phones plus the row buttons. */
+@media (min-width: 721px) and (max-width: 1023px) {
+  html body .ingredient-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  html body .ingredient-board-head {
+    display: none;
+  }
+
+  html body .ingredient-grid .ingredient-card {
+    grid-template-columns: minmax(0, 1fr) max-content minmax(56px, auto) minmax(72px, auto) max-content 28px;
+    grid-template-areas: "name sector manufacturer origin actions favorite";
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+    padding: 12px 8px;
+  }
+
+  html body .ingredient-card .ingredient-name { grid-area: name; min-width: 0; }
+  html body .ingredient-card .sector-label { grid-area: sector; }
+  html body .ingredient-card .ingredient-manufacturer { grid-area: manufacturer; }
+  html body .ingredient-card .ingredient-origin { grid-area: origin; white-space: nowrap; }
+  html body .ingredient-card > .card-actions { grid-area: actions; display: flex; gap: 6px; }
+  html body .ingredient-card > .favorite-button { grid-area: favorite; display: inline-grid; }
+
+  html body .ingredient-card .ingredient-desc,
+  html body .ingredient-card .ingredient-lead-time {
+    display: none;
+  }
+
+  html body .ingredient-card h3 {
+    overflow: hidden;
+    font-size: 15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
