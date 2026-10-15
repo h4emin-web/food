@@ -147,6 +147,8 @@ let activeIngredientSector = "전체";
 let activeCommunitySector = "전체";
 let partnerCurrentPage = 1;
 let partnerPageSize = 10;
+let myIngredientCurrentPage = 1;
+const myIngredientPageSize = 50;
 let remoteRegisteredIngredients = [];
 let remoteSearchResults = null;
 let remoteSearchRequestId = 0;
@@ -2053,7 +2055,12 @@ function renderMyIngredients() {
     return;
   }
 
-  myIngredientList.innerHTML = items
+  const totalPages = Math.max(1, Math.ceil(items.length / myIngredientPageSize));
+  myIngredientCurrentPage = Math.min(myIngredientCurrentPage, totalPages);
+  const start = (myIngredientCurrentPage - 1) * myIngredientPageSize;
+  const pageItems = items.slice(start, start + myIngredientPageSize);
+
+  myIngredientList.innerHTML = pageItems
     .map(
       (item) => `
         <article class="my-ingredient-item ${activeRegisteredIngredientId === item.id ? "active" : ""}" role="button" tabindex="0" data-my-ingredient-id="${escapeHtml(item.id)}">
@@ -2063,7 +2070,7 @@ function renderMyIngredients() {
         </article>
       `
     )
-    .join("");
+    .join("") + (totalPages > 1 ? `<nav class="pagination my-ingredient-pagination" aria-label="나의 원료 페이지"><button type="button" data-my-page="prev" ${myIngredientCurrentPage === 1 ? "disabled" : ""}>이전</button><span>${myIngredientCurrentPage} / ${totalPages}</span><button type="button" data-my-page="next" ${myIngredientCurrentPage === totalPages ? "disabled" : ""}>다음</button></nav>` : "");
 }
 
 function getRegisteredIngredientById(id) {
@@ -4506,12 +4513,20 @@ if (mypageForm) {
 
   if (myIngredientSearch) {
     myIngredientSearch.addEventListener("input", () => {
+      myIngredientCurrentPage = 1;
       renderMyIngredients();
     });
   }
 
   if (myIngredientList) {
     myIngredientList.addEventListener("click", (event) => {
+      const pageButton = event.target.closest("[data-my-page]");
+      if (pageButton) {
+        event.stopPropagation();
+        myIngredientCurrentPage += pageButton.dataset.myPage === "next" ? 1 : -1;
+        renderMyIngredients();
+        return;
+      }
       const item = event.target.closest("[data-my-ingredient-id]");
       if (!item) return;
       activeRegisteredIngredientId = item.dataset.myIngredientId;
