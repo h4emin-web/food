@@ -12,7 +12,7 @@
 
   --ink: #111827;
   --muted: #4b5563;
-  --subtle: #9ca3af;
+  --subtle: #6b7280;
   --line: #e5e7eb;
   --surface: #f7f8fa;
   --paper: #ffffff;
@@ -42,6 +42,9 @@ html body {
 
 /* ---------- Header ---------- */
 html body .site-header {
+  /* Same left edge as the 1120px content column below */
+  padding-left: max(16px, calc((100% - 1120px) / 2));
+  padding-right: max(16px, calc((100% - 1120px) / 2));
   border-bottom: 1px solid var(--line);
   background: var(--paper);
   box-shadow: none;
@@ -276,7 +279,7 @@ html body .card-actions button:hover {
 
 html body .favorite-button.active,
 html body .favorite-button:hover {
-  color: #e0a800;
+  color: #a87b00;
 }
 
 /* ---------- Pagination ---------- */
@@ -425,6 +428,16 @@ html body input:focus-visible {
   html body .seo-topic-grid a:first-child {
     padding: 18px;
     border: 1px solid var(--line);
+  }
+
+  /* Same 16px side gutter as the tabs and list */
+  html body .hero {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  html body .hero-copy {
+    width: calc(100% - 32px);
   }
 
   html body .hero h1 {
