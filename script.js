@@ -1215,10 +1215,18 @@ function mapPartnerRow(row) {
 async function loadSupabaseBoardData() {
   if (!supabaseClient) return;
   try {
+    const boardNeedsIngredients = Boolean(grid || favoriteGrid);
+    const boardNeedsCommunity = Boolean(communityList || partnerList);
     const [ingredientsResult, communityResult, commentsResult] = await Promise.all([
-      supabaseClient.from(INGREDIENT_READ_SOURCE).select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).limit(500),
-      supabaseClient.from("community_posts").select("*").order("created_at", { ascending: false }).limit(500),
-      supabaseClient.from("comments").select("*").order("created_at", { ascending: true }).limit(500),
+      boardNeedsIngredients
+        ? supabaseClient.from(INGREDIENT_READ_SOURCE).select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).limit(500)
+        : Promise.resolve({ data: [], error: null }),
+      boardNeedsCommunity
+        ? supabaseClient.from("community_posts").select("*").order("created_at", { ascending: false }).limit(500)
+        : Promise.resolve({ data: [], error: null }),
+      boardNeedsCommunity
+        ? supabaseClient.from("comments").select("*").order("created_at", { ascending: true }).limit(500)
+        : Promise.resolve({ data: [], error: null }),
     ]);
     if (!ingredientsResult.error) remoteRegisteredIngredients = (ingredientsResult.data || []).map(mapIngredientRow);
     if (!communityResult.error) remoteCommunityPosts = (communityResult.data || []).map(mapCommunityRow);
@@ -1233,7 +1241,7 @@ async function loadSupabaseBoardData() {
     updateCommunityPosts();
     // 관리자 화면은 원격 데이터가 도착한 뒤 다시 그려야 전체 현황을 표시합니다.
     if (adminLayout && isAdminMember()) renderAdminPage();
-    loadRemainingRemoteIngredients(500);
+    if (boardNeedsIngredients && grid) loadRemainingRemoteIngredients(500);
   } catch {
     // Local data remains available if Supabase tables are not ready yet.
   }
