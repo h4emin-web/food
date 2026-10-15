@@ -222,7 +222,10 @@
     const member = getMember();
     const userId = member && client ? await getUserId() : "";
     if (!userId) {
-      setMessage("로그인이 필요합니다. 다시 로그인한 뒤 등록해주세요.", "error");
+      setMessage("로그인이 만료되었습니다. 로그인 페이지로 이동합니다.", "error");
+      window.setTimeout(() => {
+        window.location.href = "login.html";
+      }, 1200);
       return;
     }
     const value = (id) => document.querySelector(id)?.value.trim() || "";

@@ -1094,7 +1094,21 @@ async function restoreSupabaseSession() {
   if (!supabaseClient) return;
   try {
     const { data, error } = await supabaseClient.auth.getSession();
-    if (error || !data?.session?.user) return;
+    if (error) return;
+    if (!data?.session?.user) {
+      // The browser still remembers a member but the server session is gone
+      // (expired, or signed in through the old local-only login). Show the
+      // signed-out state so saves do not fail behind a "logged in" header.
+      if (getCurrentMember()) {
+        localStorage.removeItem("foodsourceCurrentMember");
+        updateAuthLinks();
+        updateRegisterAccess();
+        updateMypageAccess();
+        updateAdminAccess();
+        renderFavorites();
+      }
+      return;
+    }
     const member = await getSupabaseProfileMember(data.session.user);
     if (!member?.email) return;
     updateStoredMember(member);
