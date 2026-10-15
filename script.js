@@ -1304,6 +1304,8 @@ async function saveIngredientToSupabase(item) {
 
 function getIngredientSupabasePayload(item, ownerId) {
   return {
+    // Client-generated so inserted rows can be matched back by id.
+    id: crypto.randomUUID(),
     owner_id: ownerId,
     owner_email: item.ownerEmail || "",
     owner_name: item.ownerName || "",
@@ -1335,21 +1337,17 @@ async function saveIngredientsToSupabase(items, onProgress) {
   let saved = 0;
   for (let start = 0; start < items.length; start += batchSize) {
     const batch = items.slice(start, start + batchSize);
-    let result = await supabaseClient.from("ingredients").insert(batch.map((item) => getIngredientSupabasePayload(item, ownerId))).select("id");
+    const payloads = batch.map((item) => getIngredientSupabasePayload(item, ownerId));
+    let result = await supabaseClient.from("ingredients").insert(payloads).select("id");
     if (result.error && /sector/i.test(result.error.message || "")) {
-      result = await supabaseClient.from("ingredients").insert(batch.map((item) => {
-        const { sector, ...legacyPayload } = getIngredientSupabasePayload(item, ownerId);
-        return legacyPayload;
-      })).select("id");
+      result = await supabaseClient.from("ingredients").insert(payloads.map(({ sector, ...legacyPayload }) => legacyPayload)).select("id");
     }
     if (result.error) return { saved, error: result.error };
     const insertedIds = (result.data || []).map((row) => row.id);
     const rowsById = new Map((await loadIngredientRowsByIds(insertedIds)).map((row) => [row.id, row]));
-    // PostgREST returns inserted rows in insert order, so a row missing from
-    // the re-read can fall back to its submitted payload.
-    const mapped = insertedIds.map((id, index) =>
-      mapIngredientRow(rowsById.get(id) || { ...getIngredientSupabasePayload(batch[index], ownerId), id })
-    );
+    const payloadsById = new Map(payloads.map((payload) => [payload.id, payload]));
+    // A row missing from the re-read falls back to its submitted payload.
+    const mapped = insertedIds.map((id) => mapIngredientRow(rowsById.get(id) || payloadsById.get(id)));
     remoteRegisteredIngredients = [...mapped, ...remoteRegisteredIngredients];
     saved += batch.length;
     onProgress?.(saved, items.length);

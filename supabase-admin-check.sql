@@ -7,16 +7,40 @@
 --
 -- Fix: decide admin from the is_admin flag alone, and pin profiles.email to
 -- the signed-in user's auth email so it cannot be spoofed.
+--
+-- Runs as one transaction: if any step fails, nothing is changed.
 
--- 1. Make sure the real admin keeps access before dropping the email rule.
---    auth.users.email cannot be changed by members.
+-- Pre-check (read-only, counts only). Rows here would fail the new email
+-- check on their next profile save; step 0 below aligns them.
+--   select count(*) from public.profiles p join auth.users u on u.id = p.id
+--   where lower(p.email) <> lower(u.email);
+
+begin;
+
+-- 0. Align profiles.email with the auth email (the source of truth).
 update public.profiles p
-set is_admin = true
+set email = u.email
 from auth.users u
 where p.id = u.id
-  and lower(u.email) = 'foden_@naver.com';
--- Expect exactly 1 row updated. If 0, the admin has no profile row yet:
--- STOP and create it before running step 2, or the admin loses access.
+  and lower(p.email) <> lower(u.email);
+
+-- 1. Make sure the real admin keeps access before dropping the email rule.
+--    auth.users.email cannot be changed by members. Aborts unless exactly
+--    one profile matches.
+do $$
+declare
+  n int;
+begin
+  update public.profiles p
+  set is_admin = true
+  from auth.users u
+  where p.id = u.id
+    and lower(u.email) = 'foden_@naver.com';
+  get diagnostics n = row_count;
+  if n <> 1 then
+    raise exception 'admin profile rows = %, aborting', n;
+  end if;
+end $$;
 
 -- 2. Admin = is_admin flag only.
 create or replace function public.is_admin()
@@ -39,11 +63,13 @@ drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own" on public.profiles
 for update
 using (id = auth.uid())
-with check (id = auth.uid() and is_admin = false and lower(email) = lower(auth.email()));
+with check (id = auth.uid() and is_admin = false and lower(email) = lower(auth.jwt() ->> 'email'));
 
 drop policy if exists "profiles_insert_own" on public.profiles;
 create policy "profiles_insert_own" on public.profiles
-for insert with check (id = auth.uid() and is_admin = false and lower(email) = lower(auth.email()));
+for insert with check (id = auth.uid() and is_admin = false and lower(email) = lower(auth.jwt() ->> 'email'));
+
+commit;
 
 -- Check: as a normal member,
 --   update profiles set email = 'foden_@naver.com' where id = auth.uid();  -> rejected by policy
@@ -63,4 +89,4 @@ for insert with check (id = auth.uid() and is_admin = false and lower(email) = l
 --   drop policy if exists "profiles_insert_own" on public.profiles;
 --   create policy "profiles_insert_own" on public.profiles for insert
 --     with check (id = auth.uid() and is_admin = false);
--- Step 1 (is_admin = true on the admin row) can stay; it matches the old rule.
+-- Steps 0 and 1 can stay: aligned emails and the admin flag match the old rules.
