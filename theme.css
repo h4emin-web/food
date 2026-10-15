@@ -79,7 +79,7 @@ html body .main-nav a,
 html body .main-nav a.active,
 html body .main-nav a.ingredient-register-nav {
   color: var(--ink);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -94,18 +94,28 @@ html body .header-actions .text-button {
   font-weight: 500;
 }
 
-html body .header-actions .auth-link {
+/* Black button only while the link reads 회원가입; once signed in the same
+   link shows "○○님" and should look like the other text links. */
+html body .header-actions .auth-link[href$="signup.html"] {
   padding: 0 16px;
   min-height: 38px;
+  border: 0;
   border-radius: var(--radius-s);
   background: var(--action);
   color: #fff;
   font-weight: 700;
+  box-shadow: none;
 }
 
-html body .header-actions .auth-link:hover {
+html body .header-actions .auth-link[href$="signup.html"]:hover {
   background: var(--action-hover);
   color: #fff;
+}
+
+html body .header-actions .auth-link[href$="mypage.html"] {
+  background: transparent;
+  color: var(--ink);
+  font-weight: 700;
 }
 
 /* ---------- Hero ---------- */
@@ -613,5 +623,147 @@ html body input:focus-visible {
     font-size: 15px;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+}
+
+
+/* ---------- Admin 쪽지함: 소싱요청 tab ---------- */
+html body .sourcing-admin-panel {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+html body .sourcing-admin-item {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--paper);
+}
+
+html body .sourcing-admin-item header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+html body .sourcing-admin-item header strong {
+  font-size: 17px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+html body .sourcing-admin-date,
+html body .sourcing-admin-requester {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+html body .sourcing-admin-item dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 16px;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-s);
+  background: var(--surface);
+}
+
+html body .sourcing-admin-item dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+html body .sourcing-admin-item dd {
+  margin: 2px 0 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+html body .sourcing-admin-note {
+  margin: 12px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+html body .sourcing-admin-reply {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+html body .sourcing-admin-reply label {
+  display: grid;
+  gap: 6px;
+}
+
+html body .sourcing-admin-reply label > span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+html body .sourcing-admin-reply select,
+html body .sourcing-admin-reply textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  font: inherit;
+}
+
+@media (max-width: 720px) {
+  html body .sourcing-admin-item dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The hidden attribute must win over component display rules (e.g. the
+   쪽지 composer was showing for signed-out visitors). */
+html body [hidden] {
+  display: none !important;
+}
+
+/* ---------- Korean line breaking ---------- */
+/* Break Korean text between words, not inside them ("씨아/노코발라민");
+   very long unbroken strings (URLs, emails) may still wrap anywhere. */
+html body {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  /* Ingredient rows: give 제조사 and 제조국 their own columns so they never
+     run together ("비공개오스트리아"). */
+  html body .ingredient-grid .ingredient-card {
+    grid-template-columns: minmax(0, 1fr) max-content max-content max-content;
+    column-gap: 10px;
+  }
+
+  html body .ingredient-card .ingredient-manufacturer,
+  html body .ingredient-card .ingredient-origin {
+    width: auto;
+    white-space: nowrap;
+  }
+
+  html body .ingredient-card .ingredient-origin {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Empty inbox states: centred, not a big box with text in the corner */
+  html body .message-thread-list:has(> .empty-mini:only-child),
+  html body .message-conversation:has(> .empty-mini:only-child),
+  html body .message-conversation:has(> .primary-button:only-child),
+  html body .message-room:has(> .message-conversation > .primary-button:only-child) {
+    display: grid;
+    min-height: 0;
+    place-items: center;
+    padding: 28px 16px;
   }
 }
