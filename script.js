@@ -149,6 +149,8 @@ let partnerCurrentPage = 1;
 let partnerPageSize = 10;
 let myIngredientCurrentPage = 1;
 const myIngredientPageSize = 50;
+let registeredIngredientsCacheKey = "";
+let registeredIngredientsCache = null;
 let remoteRegisteredIngredients = [];
 let remoteSearchResults = null;
 let remoteSearchRequestId = 0;
@@ -1999,10 +2001,16 @@ function getRegisteredIngredientKey() {
 function getRegisteredIngredients() {
   const key = getRegisteredIngredientKey();
   if (!key) return [];
+  if (registeredIngredientsCacheKey === key && Array.isArray(registeredIngredientsCache)) return registeredIngredientsCache;
 
   try {
-    return JSON.parse(localStorage.getItem(key)) || [];
+    const items = JSON.parse(localStorage.getItem(key)) || [];
+    registeredIngredientsCacheKey = key;
+    registeredIngredientsCache = Array.isArray(items) ? items : [];
+    return registeredIngredientsCache;
   } catch {
+    registeredIngredientsCacheKey = key;
+    registeredIngredientsCache = [];
     return [];
   }
 }
@@ -2010,6 +2018,8 @@ function getRegisteredIngredients() {
 function setRegisteredIngredients(items) {
   const key = getRegisteredIngredientKey();
   if (!key) return;
+  registeredIngredientsCacheKey = key;
+  registeredIngredientsCache = items;
   localStorage.setItem(key, JSON.stringify(items));
 }
 
@@ -2017,14 +2027,14 @@ function saveRegisteredIngredient(item) {
   const key = getRegisteredIngredientKey();
   if (!key) return;
   const items = getRegisteredIngredients();
-  localStorage.setItem(key, JSON.stringify([item, ...items]));
+  setRegisteredIngredients([item, ...items]);
   saveIngredientToSupabase(item).then(() => updateGrid()).catch(() => {});
 }
 
 async function saveRegisteredIngredients(items, onProgress) {
   const key = getRegisteredIngredientKey();
   if (!key || !items.length) return { saved: 0, error: new Error("회원 정보가 없습니다.") };
-  localStorage.setItem(key, JSON.stringify([...items, ...getRegisteredIngredients()]));
+  setRegisteredIngredients([...items, ...getRegisteredIngredients()]);
   const result = await saveIngredientsToSupabase(items, onProgress);
   updateGrid();
   return result;
