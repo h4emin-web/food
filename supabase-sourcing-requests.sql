@@ -68,7 +68,7 @@ before insert on public.sourcing_requests
 for each row execute function public.sourcing_requests_before_insert();
 
 -- Admin replies only change status/feedback; ownership and the request
--- itself stay as submitted, and updated_at comes from the server clock.
+-- body stay exactly as submitted, and updated_at comes from the server clock.
 create or replace function public.sourcing_requests_before_update()
 returns trigger
 language plpgsql
@@ -78,6 +78,12 @@ begin
   new.owner_id := old.owner_id;
   new.owner_email := old.owner_email;
   new.owner_name := old.owner_name;
+  new.sector := old.sector;
+  new.ingredient_name := old.ingredient_name;
+  new.quantity := old.quantity;
+  new.sample_quantity := old.sample_quantity;
+  new.required_documents := old.required_documents;
+  new.note := old.note;
   new.created_at := old.created_at;
   new.updated_at := now();
   return new;
