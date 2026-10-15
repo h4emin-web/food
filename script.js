@@ -1090,23 +1090,38 @@ async function signInWithSupabase(email, password) {
   return { ok: true, user: data.user };
 }
 
+// The browser can still remember a member after the server session is gone
+// (expired or revoked refresh token, or the old local-only login). Show the
+// signed-out state so saves do not fail behind a "logged in" header.
+function clearStaleMember() {
+  if (!getCurrentMember()) return;
+  localStorage.removeItem("foodsourceCurrentMember");
+  updateAuthLinks();
+  updateRegisterAccess();
+  updateMypageAccess();
+  updateAdminAccess();
+  renderFavorites();
+}
+
+// Network failures say nothing about the session; auth errors (e.g. an
+// invalid refresh token) mean it is gone.
+function isRetryableAuthError(error) {
+  return Boolean(error) && (error.name === "AuthRetryableFetchError" || error.status === 0 || error.status >= 500);
+}
+
+if (supabaseClient) {
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT" || (!session && event !== "INITIAL_SESSION")) clearStaleMember();
+  });
+}
+
 async function restoreSupabaseSession() {
   if (!supabaseClient) return;
   try {
     const { data, error } = await supabaseClient.auth.getSession();
-    if (error) return;
-    if (!data?.session?.user) {
-      // The browser still remembers a member but the server session is gone
-      // (expired, or signed in through the old local-only login). Show the
-      // signed-out state so saves do not fail behind a "logged in" header.
-      if (getCurrentMember()) {
-        localStorage.removeItem("foodsourceCurrentMember");
-        updateAuthLinks();
-        updateRegisterAccess();
-        updateMypageAccess();
-        updateAdminAccess();
-        renderFavorites();
-      }
+    if (isRetryableAuthError(error)) return;
+    if (error || !data?.session?.user) {
+      clearStaleMember();
       return;
     }
     const member = await getSupabaseProfileMember(data.session.user);
