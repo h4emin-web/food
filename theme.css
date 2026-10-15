@@ -61,9 +61,16 @@ html body .site-header .brand {
   color: var(--ink);
 }
 
-/* Wordmark only: the multicolor mark is retired */
+/* Keep the compact CI beside the wordmark across every page. */
 html body .site-header .brand .brand-mark {
-  display: none;
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  margin-right: 9px;
+  border-radius: 50%;
+  background: #f7faff url("favicon.svg") center / cover no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(15, 118, 110, .12);
 }
 
 html body .main-nav a {
