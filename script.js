@@ -909,8 +909,7 @@ function getCurrentMember() {
 
 function isAdminMember(member = getCurrentMember()) {
   if (!member) return false;
-  const email = normalizeEmail(member.email);
-  return email === "foden_@naver.com";
+  return member.isAdmin === true;
 }
 
 function getDisplayName(member = getCurrentMember()) {
@@ -972,7 +971,7 @@ function mapSupabaseProfileToMember(profile, fallbackUser = null) {
     role: profile?.role || fallback.role || "식품 개발",
     interest: profile?.interest || fallback.interest || "",
     memo: profile?.memo || fallback.memo || "",
-    isAdmin: Boolean(profile?.is_admin) || normalizeEmail(profile?.email || fallback.email) === "foden_@naver.com",
+    isAdmin: profile?.is_admin === true,
     joinedAt: profile?.created_at || fallback.joinedAt || new Date().toISOString(),
   });
 }

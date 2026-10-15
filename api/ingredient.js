@@ -16,18 +16,19 @@ function renderPage(item) {
   const englishName = item.english_name || "";
   const canonical = `${SITE_URL}/ingredients/${encodeURIComponent(item.id)}`;
   const sector = item.sector || item.type || "원료";
-  const title = `${name}${englishName ? ` (${englishName})` : ""} ${sector} 원료 소싱·공급사 | 원료나라`;
+  const sectorLabel = sector === "제약" ? "제약 원료" : sector === "화장품" ? "화장품 원료" : sector === "식품" ? "식품 원료" : `${sector} 원료`;
+  const title = `${name}${englishName ? ` (${englishName})` : ""} ${sectorLabel} 소싱·공급사 | 원료나라`;
   const description = [
-    `${name}${englishName ? `(${englishName})` : ""} ${sector} 원료 정보`,
+    `${name}${englishName ? `(${englishName})` : ""} ${sectorLabel} 정보`,
     item.origin ? `제조국 ${item.origin}` : "",
     item.company ? `공급사 ${item.company}` : "",
-    item.description || "샘플 요청과 견적 문의가 가능한 식품 원료입니다.",
+    item.description || `샘플 요청과 견적 문의가 가능한 ${sectorLabel}입니다.`,
   ].filter(Boolean).join(" · ").slice(0, 155);
   const schema = {
     "@context": "https://schema.org", "@type": "Product", name,
     alternateName: englishName || undefined,
     description: item.description || description,
-    category: `${sector} 원료`,
+    category: sectorLabel,
     countryOfOrigin: item.origin ? { "@type": "Country", name: item.origin } : undefined,
     manufacturer: item.manufacturer_visibility !== "private" && item.manufacturer ? { "@type": "Organization", name: item.manufacturer } : undefined,
     brand: item.company ? { "@type": "Organization", name: item.company } : undefined,
@@ -45,8 +46,8 @@ function renderPage(item) {
 <nav class="main-nav" aria-label="주요 메뉴"><a href="/index.html#ingredients">원료 찾기</a><a href="/messages.html?view=quote">견적문의</a><a href="/intro.html">소개</a></nav></header>
 <main class="seo-ingredient-page"><nav class="seo-breadcrumb" aria-label="경로"><a href="/index.html">홈</a><span>›</span><a href="/index.html#ingredients">${escapeHtml(sector)} 원료</a><span>›</span><strong>${escapeHtml(name)}</strong></nav>
 <article class="seo-ingredient-card"><p class="eyebrow">${escapeHtml(sector)} 원료 상세정보</p><h1>${escapeHtml(name)}${englishName ? ` <small>${escapeHtml(englishName)}</small>` : ""}</h1>
-<p class="seo-ingredient-description">${escapeHtml(item.description || `${name}의 식품원료 소싱 및 중개 정보입니다.`)}</p>
-<dl class="seo-ingredient-facts"><div><dt>공급사</dt><dd>${escapeHtml(item.company || "문의 필요")}</dd></div><div><dt>제조사</dt><dd>${escapeHtml(item.manufacturer_visibility === "private" ? "비공개" : item.manufacturer || "문의 필요")}</dd></div><div><dt>제조국</dt><dd>${escapeHtml(item.origin || "문의 필요")}</dd></div><div><dt>분류</dt><dd>${escapeHtml(item.category || "식품 원료")}</dd></div><div><dt>사용 용도</dt><dd>${escapeHtml(item.use || "문의 필요")}</dd></div><div><dt>인증</dt><dd>${escapeHtml(item.cert || "문의 필요")}</dd></div><div><dt>MOQ</dt><dd>${escapeHtml(item.moq || "문의 필요")}</dd></div><div><dt>리드타임</dt><dd>${escapeHtml(item.lead_time || "문의 필요")}</dd></div></dl>
+<p class="seo-ingredient-description">${escapeHtml(item.description || `${name}의 ${sectorLabel} 소싱 및 중개 정보입니다.`)}</p>
+<dl class="seo-ingredient-facts"><div><dt>공급사</dt><dd>${escapeHtml(item.company || "문의 필요")}</dd></div><div><dt>제조사</dt><dd>${escapeHtml(item.manufacturer_visibility === "private" ? "비공개" : item.manufacturer || "문의 필요")}</dd></div><div><dt>제조국</dt><dd>${escapeHtml(item.origin || "문의 필요")}</dd></div><div><dt>분류</dt><dd>${escapeHtml(item.category || sectorLabel)}</dd></div><div><dt>사용 용도</dt><dd>${escapeHtml(item.use || "문의 필요")}</dd></div><div><dt>인증</dt><dd>${escapeHtml(item.cert || "문의 필요")}</dd></div><div><dt>MOQ</dt><dd>${escapeHtml(item.moq || "문의 필요")}</dd></div><div><dt>리드타임</dt><dd>${escapeHtml(item.lead_time || "문의 필요")}</dd></div></dl>
 <div class="seo-ingredient-actions"><a class="primary-button" href="/index.html?search=${encodeURIComponent(name)}#ingredients">원료 목록에서 보기</a><a class="outline-button" href="/index.html?ingredientId=${encodeURIComponent(item.id)}&inquiry=quote#ingredients">견적 문의하기</a></div></article></main>
 <footer class="site-footer"><div><strong>원료나라</strong><p>식품·제약·화장품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p></div></footer></body></html>`;
 }

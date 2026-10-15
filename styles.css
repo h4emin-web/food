@@ -3831,7 +3831,8 @@ body {
   }
 
   .admin-table {
-    min-width: 680px;
+    min-width: 0;
+    table-layout: fixed;
   }
 
   .supplier-detail-grid {
