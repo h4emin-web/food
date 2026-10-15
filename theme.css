@@ -254,6 +254,24 @@ html body .sector-tabs button.active {
   border-color: transparent;
 }
 
+/* Sector labels use an inline highlighter treatment instead of a box. */
+html body .sector-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  min-height: 24px;
+  padding: 0 5px;
+  border: 0;
+  border-radius: 2px;
+  line-height: 1;
+  text-align: center;
+  background: transparent;
+}
+html body .sector-label.sector-식품 { color: #13795b; background: linear-gradient(transparent 38%, #d9f5e8 38%, #d9f5e8 88%, transparent 88%); }
+html body .sector-label.sector-제약 { color: #2459a6; background: linear-gradient(transparent 38%, #dbeafe 38%, #dbeafe 88%, transparent 88%); }
+html body .sector-label.sector-화장품 { color: #7c3aed; background: linear-gradient(transparent 38%, #eee3ff 38%, #eee3ff 88%, transparent 88%); }
+
 html body .sector-label {
   display: inline-flex;
   align-items: center;
