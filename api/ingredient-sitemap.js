@@ -6,9 +6,14 @@ function escapeXml(value = "") {
 
 module.exports = async function handler(req, res) {
   try {
-    const response = await fetchSupabase("ingredients?select=id,updated_at,created_at&order=created_at.desc&limit=5000");
-    if (!response.ok) throw new Error(`Supabase ${response.status}`);
-    const items = await response.json();
+    const items = [];
+    for (let offset = 0; offset < 20000; offset += 1000) {
+      const response = await fetchSupabase(`ingredients_public?select=id,updated_at,created_at&order=created_at.desc&limit=1000&offset=${offset}`);
+      if (!response.ok) throw new Error(`Supabase ${response.status}`);
+      const page = await response.json();
+      items.push(...page);
+      if (page.length < 1000) break;
+    }
     const urls = items.map((item) => {
       const modified = item.updated_at || item.created_at;
       return `<url><loc>https://www.foodingredients.help/ingredients/${escapeXml(item.id)}</loc>${modified ? `<lastmod>${escapeXml(new Date(modified).toISOString())}</lastmod>` : ""}<changefreq>weekly</changefreq><priority>0.8</priority></url>`;

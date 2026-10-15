@@ -326,7 +326,7 @@ function getIngredientCardMarkup(item) {
             : ""
         }
       </span>
-      <span class="ingredient-lead-time">리드타임 : ${escapeHtml(item.leadTime || "확인 필요")}</span>
+        ${item.leadTime && item.leadTime !== "확인 필요" ? `<span class="ingredient-lead-time">리드타임 : ${escapeHtml(item.leadTime)}</span>` : ""}
       <div class="card-actions">
         ${getSampleRequestButton(item)}
         <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의</button>
