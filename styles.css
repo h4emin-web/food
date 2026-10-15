@@ -5540,6 +5540,11 @@ body {
   .seo-topic-grid a:last-child { border-bottom: 0; }
 }
 
+@media (max-width: 600px) {
+  .sector-tabs { display: flex; align-items: stretch; gap: 4px; width: 100%; }
+  .sector-tabs button { display: inline-flex; align-items: center; justify-content: center; flex: 1 1 0; min-width: 0; min-height: 44px; padding: 0 8px; line-height: 1; text-align: center; white-space: nowrap; }
+}
+
 /* Wonyo Nara CI: falling ingredient particles */
 .brand-mark { background: #f7faff url('favicon.svg') center / cover no-repeat !important; color: transparent !important; }
 .brand-mark::before, .brand-mark::after { display: none !important; }
