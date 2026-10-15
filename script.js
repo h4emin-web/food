@@ -1293,9 +1293,12 @@ async function saveIngredientToSupabase(item) {
     data = retry.data;
     error = retry.error;
   }
+  // If the re-read fails, fall back to the submitted payload so a saved
+  // ingredient never looks unsaved (which invites duplicate registrations).
   const [row] = !error && data ? await loadIngredientRowsByIds([data.id]) : [];
-  if (row) {
-    remoteRegisteredIngredients = [mapIngredientRow(row), ...remoteRegisteredIngredients.filter((next) => next.id !== row.id)];
+  const savedRow = row || (!error && data ? { ...payload, id: data.id } : null);
+  if (savedRow) {
+    remoteRegisteredIngredients = [mapIngredientRow(savedRow), ...remoteRegisteredIngredients.filter((next) => next.id !== savedRow.id)];
   }
 }
 
@@ -1340,8 +1343,13 @@ async function saveIngredientsToSupabase(items, onProgress) {
       })).select("id");
     }
     if (result.error) return { saved, error: result.error };
-    const rows = await loadIngredientRowsByIds((result.data || []).map((row) => row.id));
-    const mapped = rows.map(mapIngredientRow);
+    const insertedIds = (result.data || []).map((row) => row.id);
+    const rowsById = new Map((await loadIngredientRowsByIds(insertedIds)).map((row) => [row.id, row]));
+    // PostgREST returns inserted rows in insert order, so a row missing from
+    // the re-read can fall back to its submitted payload.
+    const mapped = insertedIds.map((id, index) =>
+      mapIngredientRow(rowsById.get(id) || { ...getIngredientSupabasePayload(batch[index], ownerId), id })
+    );
     remoteRegisteredIngredients = [...mapped, ...remoteRegisteredIngredients];
     saved += batch.length;
     onProgress?.(saved, items.length);

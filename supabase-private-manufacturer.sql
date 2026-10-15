@@ -13,6 +13,10 @@
 -- ingredients.manufacturer, so an invoker view could not read it either.
 -- Running as the view owner bypasses RLS, which exposes nothing extra here
 -- because the only select policy on ingredients is "using (true)".
+-- MAINTENANCE: if a row-level select policy is ever added to ingredients
+-- (e.g. hiding pending/deleted rows), add the same condition to this view's
+-- WHERE clause - the view will not inherit it. Supabase Security Advisor
+-- flags this view as security_definer_view; that is expected.
 create or replace view public.ingredients_public as
 select
   i.id,
@@ -49,6 +53,9 @@ cross join (select auth.uid() as uid, public.is_admin() as admin) ctx;
 
 grant select on public.ingredients_public to anon, authenticated;
 
+-- Before deploying the code (step B), with A applied: run the fix branch
+-- locally (node serve.cjs) and check the list, the /ingredients/:id page and
+-- registering an ingredient against the real view.
 -- Check after A:
 --   select manufacturer_visibility, count(*) filter (where manufacturer <> '') as shown
 --   from public.ingredients_public group by 1;
@@ -60,6 +67,9 @@ grant select on public.ingredients_public to anon, authenticated;
 -- A column-level revoke has no effect while a table-level SELECT grant exists,
 -- so drop the table grant and re-grant every column except manufacturer.
 -- INSERT/UPDATE/DELETE grants are untouched.
+-- MAINTENANCE: columns added to ingredients later (e.g. cas_number) are NOT
+-- readable by anon/authenticated until added to this grant list and to the
+-- view above; reading them before that fails with permission denied.
 revoke select on public.ingredients from anon, authenticated;
 grant select (
   id, owner_id, owner_email, owner_name, company, company_website, name,
