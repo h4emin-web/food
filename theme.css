@@ -254,6 +254,17 @@ html body .sector-tabs button.active {
   border-color: transparent;
 }
 
+html body .sector-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  min-height: 26px;
+  line-height: 1;
+  text-align: center;
+  vertical-align: middle;
+}
+
 /* Other boards' tab bars follow the same active style */
 html body [role="tablist"] button.active {
   color: var(--ink);
