@@ -5561,3 +5561,12 @@ body {
 .sourcing-request-item p { margin: 8px 0; color: var(--muted); line-height: 1.6; }
 .sourcing-request-item .outline-button { margin-top: 10px; }
 @media (max-width: 640px) { .sourcing-request-page .form-grid-2 { grid-template-columns: 1fr; } .sourcing-request-page .form-panel { padding: 22px 16px; border-radius: 12px; } }
+
+/* Keep the fallback description visually centered inside every ingredient row. */
+.ingredient-card .ingredient-desc {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  line-height: 1.35;
+}
