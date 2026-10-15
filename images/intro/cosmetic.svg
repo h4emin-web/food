@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="t">
+  <title id="t">스포이트 앰플과 크림 용기</title>
+  <rect width="320" height="200" fill="#f8eff3"/>
+  <circle cx="264" cy="50" r="32" fill="#f1dde6"/>
+  <ellipse cx="160" cy="166" rx="118" ry="12" fill="#eed8e1"/>
+  <g transform="translate(108 30)">
+    <rect x="18" y="0" width="16" height="34" rx="6" fill="#d98aa5"/>
+    <rect x="12" y="30" width="28" height="14" rx="3" fill="#111827"/>
+    <rect x="0" y="42" width="52" height="92" rx="12" fill="#fbe9ef" stroke="#e8c4d1" stroke-width="2"/>
+    <rect x="11" y="66" width="30" height="30" rx="4" fill="#fff"/>
+    <rect x="16" y="74" width="20" height="4" rx="2" fill="#8a3358"/>
+  </g>
+  <g transform="translate(178 104)">
+    <rect x="0" y="0" width="76" height="16" rx="6" fill="#8a3358"/>
+    <rect x="-4" y="14" width="84" height="44" rx="12" fill="#fff" stroke="#e8c4d1" stroke-width="2"/>
+    <rect x="20" y="30" width="36" height="6" rx="3" fill="#e8c4d1"/>
+  </g>
+  <g transform="translate(40 96)"><path d="M0 40 C6 12 30 0 52 2 C48 26 30 42 0 40 Z" fill="#9fc7b3"/></g>
+  <g fill="#fff"><circle cx="86" cy="56" r="5"/><circle cx="74" cy="72" r="3"/></g>
+</svg>

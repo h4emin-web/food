@@ -3597,6 +3597,15 @@ if (ingredientSectorButtons.length) {
   });
 }
 
+// index.html?sector=제약 opens the list on that sector tab (links from the
+// intro page's sector cards). Only the three known sectors are accepted.
+if (ingredientSectorButtons.length) {
+  const requestedSector = new URLSearchParams(window.location.search).get("sector");
+  if (["식품", "제약", "화장품"].includes(requestedSector)) {
+    ingredientSectorButtons.find((button) => button.dataset.ingredientSector === requestedSector)?.click();
+  }
+}
+
 if (favoriteGrid) {
   favoriteGrid.addEventListener("click", (event) => {
     const inquiryButton = event.target.closest("[data-inquiry-type]");
