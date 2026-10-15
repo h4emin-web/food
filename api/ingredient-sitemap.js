@@ -8,7 +8,7 @@ module.exports = async function handler(req, res) {
   try {
     const items = [];
     for (let offset = 0; offset < 20000; offset += 1000) {
-      const response = await fetchSupabase(`ingredients_public?select=id,updated_at,created_at&order=created_at.desc&limit=1000&offset=${offset}`);
+      const response = await fetchSupabase(`ingredients_public?select=id,updated_at,created_at&order=created_at.desc,id.desc&limit=1000&offset=${offset}`);
       if (!response.ok) throw new Error(`Supabase ${response.status}`);
       const page = await response.json();
       items.push(...page);

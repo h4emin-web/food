@@ -152,6 +152,9 @@ const myIngredientPageSize = 50;
 let registeredIngredientsCacheKey = "";
 let registeredIngredientsCache = null;
 let remoteRegisteredIngredients = [];
+// Whether this page fetched the remote ingredient/community lists (see loadSupabaseBoardData).
+let remoteIngredientsLoaded = false;
+let remoteCommunityLoaded = false;
 let remoteSearchResults = null;
 let remoteSearchRequestId = 0;
 let remoteCommunityPosts = [];
@@ -357,6 +360,23 @@ function getIngredientCardMarkup(item) {
     </article>
     ${activeIngredientId === item.id ? getIngredientDetailMarkup(item) : ""}
   `;
+}
+
+// The search API caps a page at 50 rows, so walk pages until a short one.
+async function fetchAllIngredientSearchPages(query, sector, pageSize = 50, maxPages = 20) {
+  const rows = [];
+  for (let page = 1; page <= maxPages; page += 1) {
+    const response = await fetch(
+      `/api/ingredients?q=${encodeURIComponent(query)}&sector=${encodeURIComponent(sector)}&limit=${pageSize}&page=${page}`,
+      { headers: { Accept: "application/json" } }
+    );
+    if (!response.ok) throw new Error("search");
+    const batch = await response.json();
+    if (!Array.isArray(batch)) break;
+    rows.push(...batch);
+    if (batch.length < pageSize) break;
+  }
+  return rows;
 }
 
 function getIngredientDisplayDescription(item) {
@@ -855,7 +875,7 @@ function normalizeMember(member) {
   const normalized = {
     ...member,
     email: normalizeEmail(member?.email),
-    password: normalizePassword(member?.password),
+    password: "",
     name: String(member?.name || "").trim(),
     phone: String(member?.phone || "").trim(),
     nickname: String(member?.nickname || member?.name || "").trim(),
@@ -1215,8 +1235,10 @@ function mapPartnerRow(row) {
 async function loadSupabaseBoardData() {
   if (!supabaseClient) return;
   try {
-    const boardNeedsIngredients = Boolean(grid || favoriteGrid);
-    const boardNeedsCommunity = Boolean(communityList || partnerList);
+    const boardNeedsIngredients = Boolean(grid || favoriteGrid || adminIngredientList || messageConversation);
+    const boardNeedsCommunity = Boolean(communityList || partnerList || adminCommunityList);
+    remoteIngredientsLoaded = boardNeedsIngredients;
+    remoteCommunityLoaded = boardNeedsCommunity;
     const [ingredientsResult, communityResult, commentsResult] = await Promise.all([
       boardNeedsIngredients
         ? supabaseClient.from(INGREDIENT_READ_SOURCE).select(INGREDIENT_COLUMNS).order("created_at", { ascending: false }).limit(500)
@@ -1241,7 +1263,7 @@ async function loadSupabaseBoardData() {
     updateCommunityPosts();
     // 관리자 화면은 원격 데이터가 도착한 뒤 다시 그려야 전체 현황을 표시합니다.
     if (adminLayout && isAdminMember()) renderAdminPage();
-    if (boardNeedsIngredients && grid) loadRemainingRemoteIngredients(500);
+    if (grid || favoriteGrid || adminIngredientList || messageConversation) loadRemainingRemoteIngredients(500);
   } catch {
     // Local data remains available if Supabase tables are not ready yet.
   }
@@ -1444,6 +1466,10 @@ function setMigratedBoardItemIds(ids) {
   localStorage.setItem("foodsourceMigratedBoardItems", JSON.stringify([...new Set(ids)]));
 }
 
+function markBoardItemsMigrated(ids) {
+  if (ids.length) setMigratedBoardItemIds([...getMigratedBoardItemIds(), ...ids]);
+}
+
 function isIngredientAlreadyRemote(item) {
   const identity = getIngredientIdentity(item);
   return remoteRegisteredIngredients.some((remoteItem) => getIngredientIdentity(remoteItem) === identity);
@@ -1522,7 +1548,11 @@ async function syncLocalBoardsToSupabase() {
   const migratedIds = new Set(getMigratedBoardItemIds());
   const nextMigratedIds = new Set(migratedIds);
 
-  const localIngredients = getRegisteredIngredients().filter((item) => item.id && !migratedIds.has(`ingredient:${item.id}`));
+  // Only compare against remote lists this page actually loaded; an empty
+  // list would make every local item look new and re-insert it.
+  const localIngredients = remoteIngredientsLoaded
+    ? getRegisteredIngredients().filter((item) => item.id && !migratedIds.has(`ingredient:${item.id}`))
+    : [];
   // 대량 CSV 등록은 업로드 단계에서 서버에 저장한다. 페이지 진입 때 개별 재전송하면 로딩이 길어지고 중복 요청이 발생한다.
   if (localIngredients.length > 500) return;
   for (const item of localIngredients) {
@@ -1532,7 +1562,9 @@ async function syncLocalBoardsToSupabase() {
     nextMigratedIds.add(`ingredient:${item.id}`);
   }
 
-  const localCommunityPosts = getSavedCommunityPosts().filter((post) => post.id && !migratedIds.has(`community:${post.id}`));
+  const localCommunityPosts = remoteCommunityLoaded
+    ? getSavedCommunityPosts().filter((post) => post.id && !migratedIds.has(`community:${post.id}`))
+    : [];
   for (const post of localCommunityPosts) {
     if (!isCommunityPostAlreadyRemote(post)) {
       await saveCommunityPostToSupabase(post);
@@ -2036,6 +2068,7 @@ function saveRegisteredIngredient(item) {
   if (!key) return;
   const items = getRegisteredIngredients();
   setRegisteredIngredients([item, ...items]);
+  markBoardItemsMigrated([`ingredient:${item.id}`]);
   saveIngredientToSupabase(item).then(() => updateGrid()).catch(() => {});
 }
 
@@ -2044,6 +2077,7 @@ async function saveRegisteredIngredients(items, onProgress) {
   if (!key || !items.length) return { saved: 0, error: new Error("회원 정보가 없습니다.") };
   setRegisteredIngredients([...items, ...getRegisteredIngredients()]);
   const result = await saveIngredientsToSupabase(items, onProgress);
+  markBoardItemsMigrated(items.slice(0, result.saved).map((item) => `ingredient:${item.id}`));
   updateGrid();
   return result;
 }
@@ -3464,8 +3498,7 @@ if (grid && searchInput) {
       }
       const requestId = ++remoteSearchRequestId;
       grid.innerHTML = '<div class="empty-state">원료를 검색하고 있습니다...</div>';
-      fetch(`/api/ingredients?q=${encodeURIComponent(query)}&sector=${encodeURIComponent(activeIngredientSector === "전체" ? "" : activeIngredientSector)}&limit=50`, { headers: { Accept: "application/json" } })
-        .then((response) => response.ok ? response.json() : Promise.reject(new Error("search")))
+      fetchAllIngredientSearchPages(query, activeIngredientSector === "전체" ? "" : activeIngredientSector)
         .then((rows) => {
           if (requestId !== remoteSearchRequestId) return;
           remoteSearchResults = Array.isArray(rows) ? rows.map(mapIngredientRow) : [];
@@ -4669,11 +4702,8 @@ if (loginForm) {
         ...localMember,
         ...remoteMember,
         email,
-        password: localMember?.password || "",
       });
       updateStoredMember(member);
-    } else {
-      member = getMembers().find((item) => normalizeEmail(item.email) === email && normalizePassword(item.password) === password);
     }
 
     if (!member) {
