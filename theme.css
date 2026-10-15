@@ -546,6 +546,21 @@ html body input:focus-visible {
   }
 }
 
+/* Final override: no rounded boxes for sector UI, only a text highlighter. */
+html body .sector-label,
+html body .sector-label.sector-식품,
+html body .sector-label.sector-제약,
+html body .sector-label.sector-화장품 {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+html body .sector-label.sector-식품 { background: linear-gradient(transparent 38%, #d9f5e8 38%, #d9f5e8 88%, transparent 88%) !important; }
+html body .sector-label.sector-제약 { background: linear-gradient(transparent 38%, #dbeafe 38%, #dbeafe 88%, transparent 88%) !important; }
+html body .sector-label.sector-화장품 { background: linear-gradient(transparent 38%, #eee3ff 38%, #eee3ff 88%, transparent 88%) !important; }
+html body .sector-tabs button,
+html body .community-sector-tabs button { border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none; }
+
 /* Community rows between phone and desktop: the desktop track widths
    (280px + fixed columns) overflow, so use the two-line phone layout. */
 @media (min-width: 721px) and (max-width: 1100px) {
