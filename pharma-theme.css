@@ -3333,21 +3333,38 @@ html body.po-board .community-post.gb-row .post-stats {
     order: 9;
   }
 
-  /* One row: brand on the left, actions and the toggle on the right. */
+  /* One short row: brand on the left, actions and the toggle on the right. */
   html body .site-header {
     flex-wrap: nowrap;
-    position: sticky;
+    gap: 8px;
+    height: 44px;
+    min-height: 44px;
+    margin: 6px 12px 0;
+    padding: 0 6px 0 10px;
   }
 
+  html body .site-header .brand {
+    font-size: 18px;
+  }
+
+  html body .site-header .brand .brand-mark {
+    width: 26px;
+    height: 26px;
+    flex: 0 0 26px;
+    margin-right: 7px;
+  }
+
+  /* The menu opens as a wrapped row of chips, not a tall list. */
   .nav-drawer {
     display: none;
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 6px);
     right: 0;
     left: 0;
     z-index: 60;
-    flex-direction: column;
-    padding: 8px;
+    flex-flow: row wrap;
+    gap: 6px;
+    padding: 10px;
     border: 1px solid #e6e8ea;
     border-radius: 18px;
     background: #fff;
@@ -3360,8 +3377,8 @@ html body.po-board .community-post.gb-row .post-stats {
 
   html body .site-header .nav-drawer .main-nav {
     display: flex;
-    flex-direction: column;
-    gap: 0;
+    flex-flow: row wrap;
+    gap: 6px;
     margin: 0;
     overflow: visible;
     -webkit-mask-image: none;
@@ -3369,91 +3386,55 @@ html body.po-board .community-post.gb-row .post-stats {
   }
 
   html body .site-header .nav-drawer .main-nav a {
-    padding: 12px 14px;
-    border-radius: 10px;
-    font-size: 15px;
+    padding: 9px 14px;
+    border: 1px solid #e6e8ea;
+    border-radius: 999px;
+    font-size: 14px;
   }
 
   html body .site-header .nav-drawer .main-nav a[aria-current="page"],
   html body .site-header .nav-drawer .main-nav a.active {
-    background: var(--po-gray);
+    border-color: transparent;
+    background: var(--po-teal);
+    color: #fff;
   }
 
+  /* 공급사 is a desktop-only menu: on a phone it is one more tap for pages
+     a buyer on the move does not need. */
   .nav-drawer .supplier-menu {
-    padding: 0;
-    border-top: 1px solid #eceef3;
-    margin-top: 6px;
-    padding-top: 6px;
-  }
-
-  .nav-drawer .supplier-toggle {
-    width: 100%;
-    justify-content: space-between;
-    padding: 12px 14px;
-    font-size: 15px;
-  }
-
-  .nav-drawer .supplier-dropdown {
-    position: static;
-    margin: 0;
-    padding: 0 0 0 10px;
-    border: 0;
-    box-shadow: none;
-  }
-
-  .nav-drawer .supplier-dropdown a {
-    padding: 11px 14px;
-    font-size: 14px;
+    display: none;
   }
 }
 
-/* ---------- Phone: fit sections to a screen, not an endless column ----------
-   The desktop layout stacks every card, which on a phone turns each section
-   into a long scroll. These sections do not need to match the desktop; they
-   need to be readable at a glance, so cards go two-up and lose the generous
-   desktop padding. */
+/* ---------- Phone: a short homepage ----------
+   The desktop homepage is a long sell. On a phone it only needs the hero,
+   the search box and how it works, so the promo sections are dropped rather
+   than stacked into an endless scroll. They stay in the markup for desktop;
+   this is a display decision, not a content one. */
 @media (max-width: 720px) {
+  html body.po-home .po-popular,
+  html body.po-home .po-checks,
+  html body.po-home .po-audience,
+  html body.po-home .po-dark,
+  html body.po-home .po-why {
+    display: none;
+  }
+
   html body.po-home .po-section {
-    padding-top: 44px;
-    padding-bottom: 44px;
+    padding-top: 40px;
+    padding-bottom: 40px;
   }
 
   html body.po-home .po-section-title {
     font-size: 22px;
   }
 
-  /* 이런 분들을 위한 곳: 2 columns, compact cards */
-  html body.po-home .po-audience-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  html body.po-home .po-audience-card {
-    gap: 10px;
-    padding: 16px 10px;
-  }
-
-  html body.po-home .po-audience-card .po-icon-lg {
-    width: 52px;
-    height: 52px;
-  }
-
-  html body.po-home .po-audience-card .po-icon-lg .po-glyph {
-    width: 34px;
-    height: 34px;
-  }
-
-  html body.po-home .po-audience-card strong {
-    font-size: 13px;
-    line-height: 1.45;
-  }
-
-  /* 이용 방법: four steps as a 2x2 grid instead of a tall list */
+  /* 이용 방법: four steps two-up instead of a tall list */
   html body.po-home .po-steps {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px 10px;
-    margin: 24px 0 24px;
+    margin: 22px 0;
   }
 
   html body.po-home .po-steps li {
@@ -3462,7 +3443,7 @@ html body.po-board .community-post.gb-row .post-stats {
     padding-bottom: 0;
   }
 
-  /* The connector line only makes sense down a single column. */
+  /* The connector line only reads down a single column. */
   html body.po-home .po-steps li:not(:last-child)::before {
     content: none;
   }
@@ -3474,37 +3455,6 @@ html body.po-board .community-post.gb-row .post-stats {
   html body.po-home .po-steps p {
     font-size: 13px;
     line-height: 1.55;
-  }
-
-  /* 구매 · 공급 안내: two-up as well */
-  html body.po-home .po-why .seo-topic-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  html body.po-home .po-why .seo-topic-grid a,
-  html body.po-home .po-why .seo-topic-grid a:first-child {
-    min-height: 0;
-    padding: 16px 14px;
-  }
-
-  html body.po-home .po-why .seo-topic-grid a strong {
-    margin-top: 12px;
-    font-size: 14px;
-  }
-
-  html body.po-home .po-why .seo-topic-grid a > span:last-child {
-    font-size: 12px;
-    line-height: 1.6;
-  }
-
-  html body.po-home .po-why {
-    padding-top: 44px;
-    padding-bottom: 44px;
-  }
-
-  html body.po-home .po-dark {
-    padding: 48px 16px;
   }
 
   html body.po-home .po-cta {
