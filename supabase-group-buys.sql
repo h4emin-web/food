@@ -9,8 +9,9 @@
 --   * group_buy_quantities() returns the bare list of quantities for the
 --     progress breakdown — numbers only, no ids, no order by buyer.
 --
--- Run once in the Supabase SQL editor, AFTER supabase-admin-check.sql.
--- Safe to re-run.
+-- Run once in the Supabase SQL editor. Safe to re-run. It touches no
+-- existing table: it adds its own two, and creates public.is_admin() only
+-- if that function is missing.
 
 -- The policies below call public.is_admin(). If it is missing this creates
 -- the safe version — admin comes from the profiles.is_admin flag alone.
