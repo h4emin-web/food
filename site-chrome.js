@@ -117,17 +117,6 @@
       "home.step4": "Close the Deal",
       "home.step4d": "Agree terms directly with suppliers",
       "home.how.cta": "Get started – free",
-      "home.mock.query": "Vitamin D3",
-      "home.mock.r1": "Vitamin D3 100,000 IU",
-      "home.mock.o1": "Germany",
-      "home.mock.r2": "Vitamin D3 oil",
-      "home.mock.o2": "Switzerland",
-      "home.mock.r3": "Vitamin D3 powder",
-      "home.mock.o3": "India",
-      "home.mock.cta": "Request sample &amp; quote",
-      "home.mock.lead": "Lead time",
-      "home.mock.leadv": "4 weeks",
-      "home.mock.toast": "Request sent",
       "req.title": "Sourcing request",
       "req.example": "Example",
       "req.name": "Ingredient",
@@ -208,17 +197,6 @@
       "home.step4": "推进交易",
       "home.step4d": "与供应商直接协商交易条件",
       "home.how.cta": "免费开始使用",
-      "home.mock.query": "维生素 D3",
-      "home.mock.r1": "维生素 D3 100,000 IU",
-      "home.mock.o1": "德国",
-      "home.mock.r2": "维生素 D3 油剂",
-      "home.mock.o2": "瑞士",
-      "home.mock.r3": "维生素 D3 粉末",
-      "home.mock.o3": "印度",
-      "home.mock.cta": "申请样品 · 报价",
-      "home.mock.lead": "交货周期",
-      "home.mock.leadv": "4周",
-      "home.mock.toast": "请求已发送",
       "req.title": "采购需求表",
       "req.example": "填写示例",
       "req.name": "原料名称",
@@ -299,17 +277,6 @@
       "home.step4": "取引の開始",
       "home.step4d": "サプライヤーと直接条件を調整します",
       "home.how.cta": "無料ではじめる",
-      "home.mock.query": "ビタミン D3",
-      "home.mock.r1": "ビタミン D3 100,000 IU",
-      "home.mock.o1": "ドイツ",
-      "home.mock.r2": "ビタミン D3 オイル",
-      "home.mock.o2": "スイス",
-      "home.mock.r3": "ビタミン D3 パウダー",
-      "home.mock.o3": "インド",
-      "home.mock.cta": "サンプル・見積依頼",
-      "home.mock.lead": "リードタイム",
-      "home.mock.leadv": "4週間",
-      "home.mock.toast": "リクエストを送信しました",
       "req.title": "調達依頼書",
       "req.example": "記入例",
       "req.name": "原料名",
@@ -390,17 +357,6 @@
       "home.step4": "Chốt giao dịch",
       "home.step4d": "Thỏa thuận điều kiện trực tiếp với nhà cung cấp",
       "home.how.cta": "Bắt đầu miễn phí",
-      "home.mock.query": "Vitamin D3",
-      "home.mock.r1": "Vitamin D3 100,000 IU",
-      "home.mock.o1": "Đức",
-      "home.mock.r2": "Dầu Vitamin D3",
-      "home.mock.o2": "Thụy Sĩ",
-      "home.mock.r3": "Bột Vitamin D3",
-      "home.mock.o3": "Ấn Độ",
-      "home.mock.cta": "Yêu cầu mẫu · báo giá",
-      "home.mock.lead": "Thời gian giao",
-      "home.mock.leadv": "4 tuần",
-      "home.mock.toast": "Đã gửi yêu cầu",
       "req.title": "Phiếu yêu cầu tìm nguồn",
       "req.example": "Ví dụ",
       "req.name": "Nguyên liệu",
@@ -583,6 +539,27 @@
     document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
       const text = pageText[el.dataset.i18nPlaceholder];
       if (text != null) el.placeholder = text;
+    });
+  }
+
+  // The walkthrough video has its copy recorded into the pixels, so it cannot
+  // be translated like the rest of the page. Each language points at its own
+  // file (videos/how-it-works.en.mp4 …) and falls back to the Korean one
+  // until that file exists.
+  if (current.prefix) {
+    document.querySelectorAll("video.po-how-video").forEach((video) => {
+      const source = video.querySelector("source");
+      if (!source) return;
+      const localized = source.getAttribute("src").replace(/\.mp4$/, `.${current.prefix}.mp4`);
+      fetch(localized, { method: "HEAD" })
+        .then((response) => {
+          if (!response.ok) return;
+          source.setAttribute("src", localized);
+          const poster = video.getAttribute("poster");
+          if (poster) video.setAttribute("poster", poster.replace(/\.jpg$/, `.${current.prefix}.jpg`));
+          video.load();
+        })
+        .catch(() => {});
     });
   }
 
