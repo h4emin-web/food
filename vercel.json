@@ -32,6 +32,18 @@
   ],
   "rewrites": [
     {
+      "source": "/:lang(en|zh|ja|vi)/ingredients/:id",
+      "destination": "/api/ingredient?id=:id"
+    },
+    {
+      "source": "/:lang(en|zh|ja|vi)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/:lang(en|zh|ja|vi)/:path*",
+      "destination": "/:path*"
+    },
+    {
       "source": "/ingredients/:id",
       "destination": "/api/ingredient?id=:id"
     },

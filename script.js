@@ -43,8 +43,11 @@ const fallbackNewsItems = [
 const grid = document.querySelector("#ingredientGrid");
 const favoriteGrid = document.querySelector("#favoriteGrid");
 const searchInput = document.querySelector("#heroSearch");
-const filterInputs = [...document.querySelectorAll(".filter-panel input")];
-const ingredientSectorButtons = [...document.querySelectorAll("[data-ingredient-sector]")];
+const filterInputs = [...document.querySelectorAll(".filter-panel input[data-tag-filter]")];
+const ingredientSectorChecks = [...document.querySelectorAll("[data-sector-filter]")];
+const searchResultsTitle = document.querySelector("#searchResultsTitle");
+const searchResultsCount = document.querySelector("#searchResultsCount");
+const usesResultCards = document.body.classList.contains("po-list");
 const resetButton = document.querySelector("#resetFilters");
 const communityList = document.querySelector("#communityList");
 const communitySearch = document.querySelector("#communitySearch");
@@ -143,7 +146,8 @@ let ingredientCurrentPage = 1;
 let ingredientPageSize = 10;
 let communityCurrentPage = 1;
 let communityPageSize = 10;
-let activeIngredientSector = "전체";
+// Empty set = every sector; the search page lets several be checked at once.
+let activeIngredientSectors = new Set();
 let activeCommunitySector = "전체";
 let partnerCurrentPage = 1;
 let partnerPageSize = 10;
@@ -296,6 +300,7 @@ function getPaginationControls(scope, page, totalPages, pageSize) {
 
 function renderCards(items) {
   if (!grid) return;
+  updateSearchSummary(items);
 
   if (!items.length) {
     grid.innerHTML = '<div class="empty-state">조건에 맞는 원료가 없습니다. 검색어 또는 필터를 줄여보세요.</div>';
@@ -304,6 +309,12 @@ function renderCards(items) {
 
   const pagination = getPaginationState(items, ingredientCurrentPage, ingredientPageSize);
   ingredientCurrentPage = pagination.page;
+
+  if (usesResultCards) {
+    grid.innerHTML = pagination.items.map((item) => getResultCardMarkup(item)).join("");
+    grid.insertAdjacentHTML("beforeend", getPaginationControls("ingredients", ingredientCurrentPage, pagination.totalPages, ingredientPageSize));
+    return;
+  }
 
   grid.innerHTML = pagination.items.map((item) => getIngredientCardMarkup(item)).join("");
 
@@ -323,6 +334,77 @@ function renderCards(items) {
     `
   );
   grid.insertAdjacentHTML("beforeend", getPaginationControls("ingredients", ingredientCurrentPage, pagination.totalPages, ingredientPageSize));
+}
+
+// Result count, title and per-sector counts on the search page.
+function updateSearchSummary(items) {
+  if (searchResultsCount) searchResultsCount.textContent = `${items.length.toLocaleString("ko-KR")}개 원료`;
+  if (searchResultsTitle) {
+    const query = searchInput ? searchInput.value.trim() : "";
+    searchResultsTitle.innerHTML = query
+      ? `${escapeHtml(query)} <span>원료 · 공급사</span>`
+      : "전체 원료 <span>· 공급사</span>";
+  }
+  if (!ingredientSectorChecks.length) return;
+  const counts = { 식품: 0, 제약: 0, 화장품: 0 };
+  getFilteredItems({ ignoreSector: true }).forEach((item) => {
+    counts[normalizeSector(item.sector)] += 1;
+  });
+  ingredientSectorChecks.forEach((input) => {
+    const count = input.closest("label")?.querySelector("[data-sector-count]");
+    if (count) count.textContent = `(${(counts[input.value] || 0).toLocaleString("ko-KR")})`;
+  });
+}
+
+// Search page card: thumbnail, name + flag, type badge, details, actions.
+// Keeps the same data-* hooks as getIngredientCardMarkup so the grid's
+// click handlers (detail, inquiry, favorite) work unchanged.
+function getResultCardMarkup(item) {
+  const id = escapeHtml(item.id);
+  const name = escapeHtml(item.name);
+  const englishName = escapeHtml(item.englishName || "");
+  const origin = escapeHtml(item.origin || "확인 필요");
+  const sector = normalizeSector(item.sector);
+  const flagCode = String(item.originFlagCode || "").toLowerCase();
+  const flag = /^[a-z]{2}(-[a-z]{2,3})?$/.test(flagCode)
+    ? `<img class="po-result-flag" src="https://flagcdn.com/w40/${flagCode}.png" alt="${origin} 국기" loading="lazy" />`
+    : "";
+  const initial = escapeHtml((String(item.englishName || item.name || "?").trim()[0] || "?").toUpperCase());
+  const leadTime = item.leadTime && item.leadTime !== "확인 필요"
+    ? `<span>리드타임 <b>${escapeHtml(item.leadTime)}</b></span>`
+    : "";
+  return `
+    <article class="ingredient-card po-result-card" role="button" tabindex="0" data-ingredient-id="${id}">
+      <div class="po-result-thumb ${getSectorClass(sector)}" aria-hidden="true">${initial}</div>
+      <div class="po-result-body">
+        <div class="po-result-top">
+          <h3><a class="ingredient-seo-link" href="/ingredients/${encodeURIComponent(item.id)}">${name}</a>${flag}</h3>
+          <button
+            class="favorite-button ${isFavoriteIngredient(item.id) ? "active" : ""}"
+            type="button"
+            data-favorite-id="${id}"
+            aria-label="${name} 즐겨찾기"
+            aria-pressed="${isFavoriteIngredient(item.id)}"
+          >★</button>
+        </div>
+        ${englishName ? `<p class="po-result-en">${englishName}</p>` : ""}
+        <div class="po-result-meta">
+          <span class="po-type-badge ${getSectorClass(sector)}">${sector}</span>
+          <span>제조국 <b>${origin}</b></span>
+          <span>제조사 <b>${escapeHtml(getIngredientManufacturerText(item))}</b></span>
+          ${leadTime}
+        </div>
+        <div class="po-result-bottom">
+          <p class="po-result-desc">${escapeHtml(getIngredientDisplayDescription(item))}</p>
+          <div class="card-actions">
+            ${getSampleRequestButton(item)}
+            <button class="quote-button" type="button" data-inquiry-type="견적 문의">견적 문의 <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+    </article>
+    ${activeIngredientId === item.id ? getIngredientDetailMarkup(item) : ""}
+  `;
 }
 
 function getIngredientCardMarkup(item) {
@@ -519,7 +601,7 @@ function openIngredientDetail(ingredientId) {
   renderFavorites();
 }
 
-function getFilteredItems() {
+function getFilteredItems({ ignoreSector = false } = {}) {
   const visibleIngredients = remoteSearchResults || getVisibleIngredients();
   if (!searchInput) return visibleIngredients;
 
@@ -527,7 +609,8 @@ function getFilteredItems() {
   const checked = filterInputs.filter((input) => input.checked).map((input) => input.value);
 
   return visibleIngredients.filter((item) => {
-    const matchesSector = activeIngredientSector === "전체" || normalizeSector(item.sector) === activeIngredientSector;
+    const matchesSector =
+      ignoreSector || !activeIngredientSectors.size || activeIngredientSectors.has(normalizeSector(item.sector));
     const searchText = getIngredientSearchText(item);
     const matchesQuery = !query || searchText.includes(query);
 
@@ -3550,7 +3633,7 @@ if (grid && searchInput) {
       grid.innerHTML = '<div class="empty-state">원료를 검색하고 있습니다...</div>';
       fetchAllIngredientSearchPages(
         query,
-        activeIngredientSector === "전체" ? "" : activeIngredientSector,
+        "",
         () => requestId === remoteSearchRequestId
       )
         .then((rows) => {
@@ -3578,31 +3661,32 @@ if (grid && searchInput) {
     });
     searchInput.value = "";
     remoteSearchResults = null;
-    activeIngredientSector = "전체";
-    ingredientSectorButtons.forEach((button) => button.classList.toggle("active", button.dataset.ingredientSector === "전체"));
+    activeIngredientSectors = new Set();
+    ingredientSectorChecks.forEach((input) => {
+      input.checked = false;
+    });
     ingredientCurrentPage = 1;
     updateGrid();
   });
 
 }
 
-if (ingredientSectorButtons.length) {
-  ingredientSectorButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      activeIngredientSector = button.dataset.ingredientSector || "전체";
-      ingredientSectorButtons.forEach((item) => item.classList.toggle("active", item === button));
+if (ingredientSectorChecks.length) {
+  ingredientSectorChecks.forEach((input) => {
+    input.addEventListener("change", () => {
+      activeIngredientSectors = new Set(ingredientSectorChecks.filter((item) => item.checked).map((item) => item.value));
       ingredientCurrentPage = 1;
       updateGrid();
     });
   });
-}
 
-// search.html?sector=제약 opens the list on that sector tab (links from the
-// intro page's sector cards). Only the three known sectors are accepted.
-if (ingredientSectorButtons.length) {
+  // search.html?sector=제약 opens the list with that type checked (links
+  // from the intro page's sector cards). Only the three known sectors.
   const requestedSector = new URLSearchParams(window.location.search).get("sector");
-  if (["식품", "제약", "화장품"].includes(requestedSector)) {
-    ingredientSectorButtons.find((button) => button.dataset.ingredientSector === requestedSector)?.click();
+  const requestedCheck = ingredientSectorChecks.find((input) => input.value === requestedSector);
+  if (requestedCheck) {
+    requestedCheck.checked = true;
+    activeIngredientSectors = new Set([requestedSector]);
   }
 }
 

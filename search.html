@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Allingre" />
     <meta name="msapplication-TileColor" content="#111827" />
     <meta name="msapplication-TileImage" content="/favicon-96x96.png" />
-    <title>원료 찾기 · 식품·제약·화장품 원료 검색 | Allingre</title>
+    <title>Allingre</title>
     <meta name="description" content="식품·제약·화장품 원료를 원료명, 영문명, 공급사로 검색하고 샘플·견적을 요청하세요." />
     <meta name="naver-site-verification" content="95e0a9ba4595888d516d0fdad9b3d7ec17f2c9bc" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
@@ -88,42 +88,26 @@
         </div>
       </section>
 
-      <section class="marketplace" id="ingredients">
-        <aside class="filter-panel" aria-label="원료 필터" hidden>
-          <div class="filter-heading">
-            <h2>필터</h2>
+      <section class="marketplace po-results" id="ingredients">
+        <aside class="po-filter" aria-label="원료 필터">
+          <div class="po-filter-head">
+            <h2><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg>필터</h2>
             <button type="button" id="resetFilters">초기화</button>
           </div>
-          <div class="filter-group">
-            <h3>사용 목적</h3>
-            <label><input type="checkbox" value="건강기능" /> 건강기능</label>
-            <label><input type="checkbox" value="대체식품" /> 대체식품</label>
-            <label><input type="checkbox" value="음료" /> 음료</label>
-            <label><input type="checkbox" value="베이커리" /> 베이커리</label>
-          </div>
-          <div class="filter-group">
-            <h3>인증</h3>
-            <label><input type="checkbox" value="HACCP" /> HACCP</label>
-            <label><input type="checkbox" value="FSSC22000" /> FSSC 22000</label>
-            <label><input type="checkbox" value="유기농" /> 유기농</label>
-            <label><input type="checkbox" value="할랄" /> 할랄</label>
-          </div>
-          <div class="filter-group">
-            <h3>공급 조건</h3>
-            <label><input type="checkbox" value="국내재고" /> 국내 재고</label>
-            <label><input type="checkbox" value="소량샘플" /> 소량 샘플</label>
-            <label><input type="checkbox" value="빠른견적" /> 24시간 견적</label>
-          </div>
+          <fieldset class="po-filter-group">
+            <legend>유형</legend>
+            <label><input type="checkbox" value="식품" data-sector-filter /> <span>식품</span> <small data-sector-count></small></label>
+            <label><input type="checkbox" value="제약" data-sector-filter /> <span>제약</span> <small data-sector-count></small></label>
+            <label><input type="checkbox" value="화장품" data-sector-filter /> <span>화장품</span> <small data-sector-count></small></label>
+          </fieldset>
         </aside>
 
         <div class="content-area">
-          <div class="sector-tabs" role="tablist" aria-label="원료 분야">
-            <button class="active" type="button" data-ingredient-sector="전체">전체보기</button>
-            <button type="button" data-ingredient-sector="식품">식품</button>
-            <button type="button" data-ingredient-sector="제약">제약</button>
-            <button type="button" data-ingredient-sector="화장품">화장품</button>
+          <div class="po-results-head">
+            <h2 id="searchResultsTitle">전체 원료 <span>· 공급사</span></h2>
+            <p id="searchResultsCount"></p>
           </div>
-          <div class="ingredient-grid" id="ingredientGrid" aria-live="polite"></div>
+          <div class="ingredient-grid po-result-list" id="ingredientGrid" aria-live="polite"></div>
         </div>
       </section>
     </main>

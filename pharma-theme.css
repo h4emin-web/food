@@ -665,6 +665,105 @@ html body .site-header .header-actions {
   gap: 10px;
 }
 
+/* Menu items never wrap; if a language makes them too long for the bar,
+   the menu scrolls sideways instead of spilling out of the header. */
+html body .site-header .brand,
+html body .main-nav a,
+html body .header-actions,
+html body .header-actions > * {
+  white-space: nowrap;
+}
+
+html body .site-header .main-nav {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+html body .site-header .main-nav::-webkit-scrollbar {
+  display: none;
+}
+
+html body .site-header .brand,
+html body .site-header .header-actions {
+  flex: 0 0 auto;
+}
+
+/* 공급사 menu */
+.supplier-menu {
+  position: relative;
+  flex: 0 0 auto;
+  padding-left: 18px;
+  border-left: 1px solid #d9dde0;
+}
+
+.supplier-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: #8a9096;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.supplier-toggle:hover,
+.supplier-toggle[aria-expanded="true"] {
+  color: var(--po-teal);
+}
+
+.supplier-toggle svg {
+  transition: transform 0.15s ease;
+}
+
+.supplier-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.supplier-dropdown {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 6px;
+  z-index: 60;
+  display: grid;
+  min-width: 180px;
+  padding: 6px;
+  border: 1px solid #e6e8ea;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(16, 40, 46, 0.14);
+}
+
+.supplier-dropdown[hidden] {
+  display: none;
+}
+
+html body .supplier-dropdown a,
+html body .supplier-dropdown a.ingredient-register-nav {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--po-text);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+html body .supplier-dropdown a::after {
+  display: none;
+}
+
+html body .supplier-dropdown a:hover {
+  background: #f1f4f5;
+  color: var(--po-teal);
+}
+
 .header-search {
   display: flex;
   flex: 0 1 300px;
@@ -825,12 +924,425 @@ html body.po-list .po-search-hero {
   font-size: 17px;
 }
 
-html body.po-list .marketplace {
-  padding-top: 40px;
-  padding-bottom: 80px;
+html body.po-list .marketplace.po-results {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  align-items: start;
+  gap: 56px;
+  padding: 40px var(--page-gutter) 80px;
+  background: #f6f7f7;
+}
+
+html body.po-list .po-results .content-area {
+  width: 100%;
+  margin: 0;
+}
+
+/* Filter sidebar */
+.po-filter {
+  position: sticky;
+  top: 80px;
+}
+
+.po-filter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 16px;
+  border-bottom: 1px solid #e3e6e8;
+}
+
+.po-filter-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--po-text);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.po-filter-head h2 svg {
+  color: var(--po-teal);
+}
+
+.po-filter-head button {
+  border: 0;
+  background: none;
+  color: var(--po-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.po-filter-head button:hover {
+  color: var(--po-teal);
+}
+
+.po-filter-group {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 22px 0 24px;
+  border: 0;
+  border-bottom: 1px solid #e3e6e8;
+}
+
+.po-filter-group legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 4px;
+  color: var(--po-text);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.po-filter-group label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--po-text);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.po-filter-group input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--po-teal);
+  cursor: pointer;
+}
+
+.po-filter-group small {
+  color: #a3a8ad;
+  font-size: 13px;
+}
+
+/* Results header */
+.po-results-head {
+  margin-bottom: 20px;
+}
+
+.po-results-head h2 {
+  margin: 0;
+  color: var(--po-text);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  word-break: keep-all;
+}
+
+.po-results-head h2 span {
+  color: #8a9096;
+}
+
+.po-results-head p {
+  margin: 6px 0 0;
+  color: var(--po-muted);
+  font-size: 15px;
+}
+
+/* Result cards */
+html body.po-list .ingredient-grid.po-result-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  border: 0;
+}
+
+html body.po-list .po-result-list .ingredient-card.po-result-card {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-areas: "thumb body";
+  align-items: stretch;
+  gap: 24px;
+  min-height: 0;
+  padding: 20px 24px 20px 20px;
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(16, 40, 46, 0.06);
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+}
+
+html body.po-list .po-result-list .ingredient-card.po-result-card:hover {
+  background: #fff;
+  box-shadow: 0 6px 22px rgba(16, 40, 46, 0.12);
+}
+
+.po-result-thumb {
+  grid-area: thumb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 108px;
+  border-radius: 12px;
+  background: #f2f3f4;
+  color: #c3c8cc;
+  font-size: 44px;
+  font-weight: 700;
+}
+
+.po-result-thumb.sector-식품 { background: #eef8f3; color: #9fd3b8; }
+.po-result-thumb.sector-제약 { background: #eef4fc; color: #a5c3eb; }
+.po-result-thumb.sector-화장품 { background: #f5f0fc; color: #c8b3ea; }
+
+.po-result-body {
+  grid-area: body;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.po-result-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+html body.po-list .po-result-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  color: var(--po-text);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+html body.po-list .po-result-card h3 a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body.po-list .po-result-card h3 a:hover {
+  color: var(--po-teal);
+}
+
+.po-result-flag {
+  flex: 0 0 auto;
+  width: 22px;
+  height: auto;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+html body.po-list .po-result-card .favorite-button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e3e6e8;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 15px;
+}
+
+.po-result-en {
+  margin: 2px 0 0;
+  overflow: hidden;
+  color: #8a9096;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.po-result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 0;
+  margin-top: 12px;
+  color: #8a9096;
+  font-size: 13px;
+}
+
+.po-result-meta > span + span:not(.po-type-badge)::before {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  margin: 0 10px;
+  background: #d5d9dc;
+  vertical-align: -1px;
+}
+
+.po-result-meta b {
+  color: var(--po-text);
+  font-weight: 500;
+}
+
+.po-type-badge {
+  margin-right: 2px;
+  padding: 3px 10px;
+  border: 1px solid;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.po-type-badge.sector-식품 { border-color: #9fd3b8; background: #f1faf5; color: #1f7a4d; }
+.po-type-badge.sector-제약 { border-color: #a5c3eb; background: #f1f6fd; color: #2459a6; }
+.po-type-badge.sector-화장품 { border-color: #c8b3ea; background: #f7f3fd; color: #6a3fb0; }
+
+.po-result-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.po-result-desc {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #8a9096;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body.po-list .po-result-card .card-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+html body.po-list .po-result-card .card-actions button {
+  min-height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+html body.po-list .po-result-card .sample-button {
+  border: 1px solid var(--po-teal);
+  background: #fff;
+  color: var(--po-teal);
+}
+
+html body.po-list .po-result-card .quote-button {
+  border: 1px solid var(--po-teal);
+  background: var(--po-teal);
+  color: #fff;
+}
+
+html body.po-list .po-result-card .quote-button:hover {
+  background: var(--po-teal-deep);
+}
+
+html body.po-list .po-result-list .empty-state {
+  padding: 48px 24px;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
 }
 
 /* ---------- Responsive ---------- */
+/* 721-1023px: the header is two rows (theme.css); keep the pill around both. */
+@media (min-width: 721px) and (max-width: 1023px) {
+  html body .site-header {
+    height: auto;
+    min-height: 0;
+    padding: 8px 14px;
+    border-radius: 24px;
+    grid-template-areas:
+      "brand actions"
+      "nav supplier";
+  }
+
+  html body .site-header .main-nav {
+    margin-left: 0;
+  }
+
+  .supplier-menu {
+    grid-area: supplier;
+    align-self: center;
+  }
+
+  .supplier-dropdown {
+    right: 0;
+    left: auto;
+  }
+
+  html body.po-home .site-header,
+  html body.po-list .site-header {
+    margin-bottom: -100px;
+  }
+
+  html body.po-home .hero.po-hero {
+    padding-top: 150px;
+  }
+
+  html body.po-list .po-search-hero {
+    padding-top: 140px;
+  }
+}
+
+@media (max-width: 900px) {
+  html body.po-list .marketplace.po-results {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    padding: 24px 16px 56px;
+  }
+
+  .po-filter {
+    position: static;
+  }
+
+  .po-filter-head {
+    padding-bottom: 12px;
+  }
+
+  .po-filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    padding: 14px 0 16px;
+  }
+
+  .po-filter-group legend {
+    margin-bottom: 8px;
+  }
+
+  html body.po-list .po-result-list .ingredient-card.po-result-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "body";
+    padding: 18px;
+  }
+
+  .po-result-thumb {
+    display: none;
+  }
+
+  .po-result-bottom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .po-result-desc {
+    white-space: normal;
+  }
+
+  html body.po-list .po-result-card .card-actions {
+    width: 100%;
+  }
+
+  html body.po-list .po-result-card .card-actions button {
+    flex: 1;
+  }
+}
+
 @media (max-width: 1240px) {
   .header-search {
     display: none;
@@ -874,6 +1386,30 @@ html body.po-list .marketplace {
   html body.po-home .site-header,
   html body.po-list .site-header {
     margin-bottom: -96px;
+  }
+
+  html body .site-header {
+    grid-template-areas:
+      "brand actions"
+      "nav supplier";
+  }
+
+  html body .site-header .main-nav {
+    margin-left: 0;
+    overflow-x: auto;
+    -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent);
+    mask-image: linear-gradient(90deg, #000 82%, transparent);
+  }
+
+  .supplier-menu {
+    grid-area: supplier;
+    align-self: center;
+    padding-left: 10px;
+  }
+
+  .supplier-dropdown {
+    right: 0;
+    left: auto;
   }
 
   html body.po-home .hero.po-hero {
