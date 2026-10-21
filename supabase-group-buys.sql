@@ -36,6 +36,11 @@ create table if not exists public.group_buys (
   sector text not null check (sector in ('식품', '제약', '화장품')),
   ingredient_name text not null check (char_length(ingredient_name) between 1 and 200),
   spec text not null default '' check (char_length(spec) <= 200),
+  -- The maker the requester asked for. Blank means "no preference", and the
+  -- admin fills assigned_manufacturer in instead. Buyers who dislike the
+  -- assigned maker can withdraw while the 모집 is still open.
+  manufacturer text not null default '' check (char_length(manufacturer) <= 200),
+  assigned_manufacturer text not null default '' check (char_length(assigned_manufacturer) <= 200),
   unit text not null default 'kg' check (char_length(unit) between 1 and 20),
   note text not null default '' check (char_length(note) <= 4000),
   -- What the requester themselves wants. It cannot become a pledge yet (there
@@ -81,6 +86,8 @@ select
   g.sector,
   g.ingredient_name,
   g.spec,
+  g.manufacturer,
+  g.assigned_manufacturer,
   g.unit,
   g.note,
   g.moq,
@@ -153,6 +160,7 @@ begin
   new.owner_id := auth.uid();
   new.status := '요청';
   new.moq := 0;
+  new.assigned_manufacturer := '';
   new.unit_price_note := '';
   new.admin_note := '';
   new.deadline := null;
@@ -179,6 +187,9 @@ begin
   new.sector := old.sector;
   new.ingredient_name := old.ingredient_name;
   new.spec := old.spec;
+  -- The maker the requester asked for is part of the request body; only
+  -- assigned_manufacturer is the admin's to set.
+  new.manufacturer := old.manufacturer;
   new.unit := old.unit;
   new.note := old.note;
   new.owner_quantity := old.owner_quantity;
@@ -291,7 +302,9 @@ create policy "group_buys_select" on public.group_buys
 for select using (owner_id = auth.uid() or public.is_admin());
 
 create policy "group_buys_insert" on public.group_buys
-for insert with check (owner_id = auth.uid() and status = '요청' and moq = 0);
+for insert with check (
+  owner_id = auth.uid() and status = '요청' and moq = 0 and assigned_manufacturer = ''
+);
 
 create policy "group_buys_update_admin" on public.group_buys
 for update using (public.is_admin()) with check (public.is_admin());

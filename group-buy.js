@@ -18,7 +18,7 @@
   const sectorTabs = [...document.querySelectorAll("[data-group-buy-sector]")];
 
   const COLUMNS =
-    "id,sector,ingredient_name,spec,unit,note,moq,unit_price_note,deadline,status,admin_note,created_at,pledged_total,buyer_count,is_mine,has_joined,my_quantity";
+    "id,sector,ingredient_name,spec,manufacturer,assigned_manufacturer,unit,note,moq,unit_price_note,deadline,status,admin_note,created_at,pledged_total,buyer_count,is_mine,has_joined,my_quantity";
   const SECTORS = ["식품", "제약", "화장품"];
   const OPEN_STATUSES = ["모집중", "달성"];
 
@@ -108,6 +108,17 @@
       </div>`;
   }
 
+  // Three cases: the requester named a maker, Allingre assigned one, or it is
+  // still being sourced. An assigned maker is flagged, because it is the one
+  // a buyer did not choose and may want to withdraw over.
+  function makerMarkup(item) {
+    if (item.assigned_manufacturer) {
+      return `${esc(item.assigned_manufacturer)} <em class="gb-maker-tag">Allingre 지정</em>`;
+    }
+    if (item.manufacturer) return `${esc(item.manufacturer)} <em class="gb-maker-tag">요청자 지정</em>`;
+    return "Allingre가 확인 중";
+  }
+
   function breakdownMarkup(item) {
     if (breakdown.id !== item.id) return "";
     if (breakdown.quantities === null) {
@@ -149,6 +160,11 @@
           ${joined ? '<button class="outline-button danger-button" type="button" data-group-buy-leave>참여 취소</button>' : ""}
           <button class="primary-button" type="submit">${joined ? "수량 저장" : "공동구매 참여"}</button>
         </div>
+        <p class="gb-join-note">${esc(
+          item.assigned_manufacturer
+            ? "제조사는 Allingre가 지정했습니다. 마음에 들지 않으면 모집 중 언제든 참여를 취소할 수 있습니다."
+            : "제조사가 확정되면 이곳에 표시됩니다. 지정된 제조사가 마음에 들지 않으면 모집 중 언제든 참여를 취소할 수 있습니다."
+        )}</p>
         <p class="form-message" aria-live="polite"></p>
       </form>`;
   }
@@ -168,6 +184,7 @@
           ${progressMarkup(item)}
           <div class="partner-detail-meta">
             <span>규격 · 등급</span><strong>${esc(item.spec || "-")}</strong>
+            <span>제조사</span><strong>${makerMarkup(item)}</strong>
             <span>최소 주문수량</span><strong>${num(item.moq) > 0 ? `${esc(fmt(item.moq))}${esc(item.unit)}` : "지정 전"}</strong>
             <span>예상 단가</span><strong>${esc(item.unit_price_note || "확인 중")}</strong>
             <span>모집 마감</span><strong>${esc(formatDate(item.deadline) || "미정")}</strong>
@@ -177,6 +194,7 @@
         </article>
         <section class="comment-panel" aria-label="참여 현황">
           <div class="comment-title"><h3>참여 현황</h3><span>구매자는 서로 익명입니다</span></div>
+          <p class="gb-privacy-note">참여한 구매자끼리는 서로의 이름 · 회사 · 연락처를 알 수 없습니다. 아래에는 수량만 익명으로 표시됩니다.</p>
           ${breakdownMarkup(item)}
           ${joinMarkup(item)}
         </section>
@@ -357,6 +375,8 @@
       sector: sectorSelect?.value || "식품",
       ingredient_name: value("#groupBuyName"),
       spec: value("#groupBuySpec"),
+      // Blank is fine: an admin then fills in assigned_manufacturer.
+      manufacturer: value("#groupBuyManufacturer"),
       unit: document.querySelector("#groupBuyUnit")?.value || "kg",
       note: value("#groupBuyNote"),
       // Becomes this member's pledge automatically once an admin sets the MOQ.

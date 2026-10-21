@@ -11,7 +11,7 @@
 
   const STATUSES = ["요청", "모집중", "달성", "진행", "완료", "취소"];
   const COLUMNS =
-    "id,owner_id,sector,ingredient_name,spec,unit,note,owner_quantity,moq,unit_price_note,deadline,status,admin_note,created_at";
+    "id,owner_id,sector,ingredient_name,spec,manufacturer,assigned_manufacturer,unit,note,owner_quantity,moq,unit_price_note,deadline,status,admin_note,created_at";
 
   const esc = (value) =>
     String(value == null ? "" : value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[char]));
@@ -73,6 +73,7 @@
           <p class="sourcing-admin-requester">요청자 ${esc(item.ownerLabel || "회원")} · 희망 ${esc(fmt(item.owner_quantity))}${esc(item.unit)}</p>
           <dl>
             <div><dt>규격 · 등급</dt><dd>${esc(item.spec || "-")}</dd></div>
+            <div><dt>희망 제조사</dt><dd>${esc(item.manufacturer || "지정 안 함 — 공급사가 선정")}</dd></div>
             <div><dt>모집 현황</dt><dd>${target > 0 ? `${esc(fmt(total))} / ${esc(fmt(target))}${esc(item.unit)} (${done}%)` : "MOQ 지정 전"}</dd></div>
             <div><dt>참여</dt><dd>${joined.length}명</dd></div>
           </dl>
@@ -88,6 +89,10 @@
             <label>
               <span>최소 주문수량 (MOQ, ${esc(item.unit)})</span>
               <input name="moq" type="number" min="0" step="0.001" value="${target > 0 ? esc(target) : ""}" placeholder="예: 1000" />
+            </label>
+            <label>
+              <span>확정 제조사</span>
+              <input name="assigned_manufacturer" type="text" maxlength="200" value="${esc(item.assigned_manufacturer)}" placeholder="${esc(item.manufacturer ? `희망: ${item.manufacturer}` : "공급 가능한 제조사를 입력하세요")}" />
             </label>
             <label>
               <span>예상 단가 안내</span>
@@ -210,6 +215,7 @@
       .update({
         moq,
         status,
+        assigned_manufacturer: formEl.elements.assigned_manufacturer.value.trim(),
         unit_price_note: formEl.elements.unit_price_note.value.trim(),
         deadline: formEl.elements.deadline.value || null,
         admin_note: formEl.elements.admin_note.value.trim(),

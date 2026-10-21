@@ -3348,3 +3348,36 @@ html body.po-board .community-post.gb-row .post-stats span {
     overflow-wrap: anywhere;
   }
 }
+
+/* Who the maker is, and whether the buyer or Allingre picked it. */
+.gb-maker-tag {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #eef0f5;
+  color: var(--po-muted);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gb-join-note,
+.gb-privacy-note {
+  margin: 0;
+  color: var(--po-muted);
+  font-size: 12.5px;
+  line-height: 1.75;
+}
+
+.gb-privacy-note {
+  margin-bottom: 14px;
+}
+
+.field-optional {
+  margin-left: 6px;
+  color: var(--po-muted);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+}
