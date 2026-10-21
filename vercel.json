@@ -40,6 +40,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/:lang(en|zh|ja|vi)/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/:lang(en|zh|ja|vi)/:path*",
       "destination": "/:path*"
     },
