@@ -1,22 +1,25 @@
 /*
- * Pharmaoffer-style layer. Loaded after theme.css on every page; removing
+ * Pharmaoffer-style layout layer, in Allingre's own colors (deep navy +
+ * amber). Loaded after theme.css on every page; removing
  * its <link> restores the previous look. Shared parts (header, footer,
  * buttons) apply sitewide; .po-home rules only touch the homepage.
  */
 
 :root {
-  --po-teal: #1a444c;
-  --po-teal-deep: #133a41;
-  --po-accent: #4ab3c1;
-  --po-accent-hover: #3a9fac;
-  --po-black: #121212;
-  --po-gray: #f3f3f3;
-  --po-text: #161616;
-  --po-muted: #7b7f86;
-  --brand: #1a444c;
-  --brand-soft: #e3eff1;
-  --action: #1a444c;
-  --action-hover: #133a41;
+  /* --po-teal is the primary brand color (name kept from the first pass) */
+  --po-teal: #1f2a5c;
+  --po-teal-deep: #161f47;
+  --po-accent: #ffb547;
+  --po-accent-hover: #f5a32a;
+  --po-accent-ink: #1f2a5c;
+  --po-black: #11152c;
+  --po-gray: #f4f5f9;
+  --po-text: #161a2e;
+  --po-muted: #747a8c;
+  --brand: #1f2a5c;
+  --brand-soft: #eceffa;
+  --action: #1f2a5c;
+  --action-hover: #161f47;
 }
 
 html body {
@@ -110,7 +113,7 @@ html body .primary-button {
 }
 
 .po-btn-light:hover {
-  background: #e9f1f2;
+  background: #eef0f8;
 }
 
 .po-btn-outline {
@@ -129,9 +132,17 @@ html body.po-list .site-header {
   margin-bottom: -56px;
 }
 
+/* Tall hero, like the reference: fills most of the first screen. */
 html body.po-home .hero.po-hero {
-  padding: 136px 16px 72px;
-  background: var(--po-teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(640px, 94vh, 900px);
+  padding: 136px 16px 96px;
+  background:
+    radial-gradient(1100px 520px at 85% 0%, rgba(255, 181, 71, 0.10), transparent 60%),
+    radial-gradient(900px 500px at 0% 100%, rgba(120, 140, 255, 0.14), transparent 60%),
+    var(--po-teal);
   border: 0;
 }
 
@@ -204,7 +215,7 @@ html body :is(.po-hero, .po-search-hero) .search-field:focus-within {
 }
 
 html body :is(.po-hero, .po-search-hero) .search-field svg {
-  color: var(--po-accent);
+  color: var(--po-teal);
 }
 
 html body :is(.po-hero, .po-search-hero) .search-field input {
@@ -218,7 +229,7 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   border: 0;
   border-radius: 999px;
   background: var(--po-accent);
-  color: #fff;
+  color: var(--po-accent-ink);
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
@@ -277,7 +288,7 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   height: 16px;
   padding: 2px;
   border-radius: 50%;
-  background: rgba(74, 179, 193, 0.22);
+  background: rgba(255, 181, 71, 0.2);
   color: var(--po-accent);
 }
 
@@ -460,7 +471,7 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   padding: 22px 26px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  background: linear-gradient(135deg, #1c2a2d, #161818);
+  background: linear-gradient(135deg, #1d2547, #141831);
 }
 
 .po-dark-card:nth-child(2) {
@@ -760,7 +771,7 @@ html body .supplier-dropdown a::after {
 }
 
 html body .supplier-dropdown a:hover {
-  background: #f1f4f5;
+  background: #f1f2f8;
   color: var(--po-teal);
 }
 
@@ -826,7 +837,7 @@ html body .supplier-dropdown a:hover {
 
 .lang-toggle:hover,
 .lang-toggle[aria-expanded="true"] {
-  background: #eef2f3;
+  background: #eef0f8;
 }
 
 .lang-menu {
@@ -862,7 +873,7 @@ html body .supplier-dropdown a:hover {
 }
 
 .lang-menu button:hover {
-  background: #f1f4f5;
+  background: #f1f2f8;
 }
 
 .lang-menu button[aria-current="true"] {
@@ -890,7 +901,7 @@ html body :is(.po-hero, .po-search-hero) .search-field input:focus-visible,
 }
 
 html body :is(.po-hero, .po-search-hero) .search-panel:focus-within {
-  box-shadow: 0 0 0 3px rgba(74, 179, 193, 0.55), 0 10px 34px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 0 0 3px rgba(255, 181, 71, 0.6), 0 10px 34px rgba(0, 0, 0, 0.18);
 }
 
 /* Popular chips are links now */
@@ -1413,6 +1424,7 @@ html body.po-list .po-result-list .empty-state {
   }
 
   html body.po-home .hero.po-hero {
+    min-height: 0;
     padding: 140px 16px 56px;
   }
 
@@ -1556,5 +1568,374 @@ html body.po-list .po-result-list .empty-state {
     margin: 0 12px 12px;
     padding-top: 28px;
     padding-bottom: 28px;
+  }
+}
+
+/* ---------- 소개 page (intro.html, body.po-intro) ---------- */
+html body.po-intro .site-header {
+  margin-bottom: -56px;
+}
+
+html body.po-intro .intro-page .intro-hero {
+  align-items: center;
+  gap: 56px;
+  min-height: clamp(600px, 86vh, 820px);
+  padding: 136px var(--page-gutter) 88px;
+  background:
+    radial-gradient(1000px 480px at 90% 0%, rgba(255, 181, 71, 0.10), transparent 60%),
+    radial-gradient(800px 460px at 0% 100%, rgba(120, 140, 255, 0.14), transparent 60%),
+    var(--po-teal);
+  border: 0;
+}
+
+html body.po-intro .intro-hero-copy .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+html body.po-intro .intro-page .intro-hero-copy h1 {
+  color: #fff;
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+html body.po-intro .intro-page .intro-hero-copy p:not(.eyebrow) {
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+html body.po-intro .intro-hero-actions {
+  gap: 14px;
+  margin-top: 32px;
+}
+
+html body.po-intro .intro-hero-actions a,
+html body.po-intro .supplier-onboarding-section .primary-button {
+  min-height: 50px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+html body.po-intro .intro-hero-actions .primary-button {
+  border: 0;
+  background: var(--po-accent);
+  color: var(--po-accent-ink);
+}
+
+html body.po-intro .intro-hero-actions .primary-button:hover {
+  background: var(--po-accent-hover);
+}
+
+html body.po-intro .intro-hero-actions .outline-button {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: transparent;
+  color: #fff;
+}
+
+html body.po-intro .intro-hero-actions .outline-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+html body.po-intro .intro-page .intro-hero-media {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+html body.po-intro .intro-page .intro-hero-media img {
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+}
+
+/* Section heads: centered, light and large like the homepage */
+html body.po-intro .intro-section-head {
+  margin-bottom: 44px;
+  text-align: center;
+}
+
+html body.po-intro .intro-section-head .eyebrow,
+html body.po-intro .official-info-section .eyebrow,
+html body.po-intro .news-heading-copy .eyebrow {
+  color: #b77812;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+html body.po-intro .intro-section-head h2,
+html body.po-intro .official-info-section h2,
+html body.po-intro .news-heading h2 {
+  color: var(--po-text);
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+html body.po-intro .intro-steps,
+html body.po-intro .intro-sectors,
+html body.po-intro .intro-features {
+  padding-top: 96px;
+  padding-bottom: 96px;
+  border: 0;
+  background: #fff;
+}
+
+/* Steps: grey rounded cards with a round navy icon */
+html body.po-intro .intro-step-list {
+  gap: 20px;
+}
+
+html body.po-intro .intro-step-list li {
+  position: relative;
+  padding: 36px 32px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--po-gray);
+}
+
+html body.po-intro .intro-step-list svg,
+html body.po-intro .intro-feature-grid svg {
+  box-sizing: content-box;
+  width: 24px;
+  height: 24px;
+  padding: 16px;
+  border-radius: 50%;
+  background: var(--po-teal);
+  color: #fff;
+}
+
+html body.po-intro .intro-step-num {
+  color: #c9cddb;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+html body.po-intro .intro-step-list h3,
+html body.po-intro .intro-feature-grid h3 {
+  margin-top: 28px;
+  color: var(--po-text);
+  font-size: 21px;
+  font-weight: 500;
+}
+
+html body.po-intro .intro-step-list p,
+html body.po-intro .intro-feature-grid p {
+  color: var(--po-muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* Sector cards */
+html body.po-intro .intro-sectors {
+  background: var(--po-gray);
+}
+
+html body.po-intro .intro-sector-grid {
+  gap: 24px;
+}
+
+html body.po-intro .intro-sector-card {
+  overflow: hidden;
+  border: 0;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(22, 31, 71, 0.06);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+html body.po-intro .intro-sector-card:hover {
+  box-shadow: 0 10px 30px rgba(22, 31, 71, 0.12);
+  transform: translateY(-2px);
+}
+
+html body.po-intro .intro-sector-card > div {
+  padding: 24px 28px 30px;
+}
+
+html body.po-intro .intro-sector-card h3 {
+  font-size: 21px;
+  font-weight: 500;
+}
+
+/* Feature cards: white with a light border, like the homepage guide cards */
+html body.po-intro .intro-feature-grid {
+  gap: 24px;
+}
+
+html body.po-intro .intro-feature-grid article {
+  padding: 36px 32px;
+  border: 1px solid #eceef4;
+  border-radius: 18px;
+  background: #fff;
+}
+
+/* Supplier band: dark, like the homepage promo band */
+html body.po-intro .intro-page .supplier-onboarding-section {
+  padding-top: 110px;
+  padding-bottom: 110px;
+  border: 0;
+  background: var(--po-black);
+  color: #fff;
+}
+
+html body.po-intro .supplier-onboarding-copy .eyebrow {
+  color: var(--po-accent);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+html body.po-intro .supplier-onboarding-copy h2 {
+  color: #fff;
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+}
+
+html body.po-intro .supplier-onboarding-copy p:not(.eyebrow) {
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.75;
+}
+
+html body.po-intro .supplier-onboarding-section .primary-button {
+  border: 0;
+  background: #fff;
+  color: var(--po-teal);
+}
+
+html body.po-intro .supplier-onboarding-section .primary-button:hover {
+  background: #eef0f8;
+}
+
+html body.po-intro .supplier-onboarding-points {
+  display: grid;
+  gap: 14px;
+}
+
+html body.po-intro .supplier-onboarding-points div {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 26px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1d2547, #141831);
+}
+
+html body.po-intro .supplier-onboarding-points strong {
+  color: var(--po-accent);
+  font-size: 15px;
+}
+
+html body.po-intro .supplier-onboarding-points span {
+  color: #fff;
+  font-size: 17px;
+}
+
+/* Official info: grey rounded box like the homepage CTA */
+html body.po-intro .intro-page .official-info-section {
+  width: auto;
+  margin: 96px var(--page-gutter) 0;
+  padding: 64px clamp(24px, 5vw, 72px);
+  border: 0;
+  border-radius: 20px;
+  background: var(--po-gray);
+  text-align: center;
+}
+
+html body.po-intro .official-info-section > p:not(.eyebrow) {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--po-muted);
+}
+
+html body.po-intro .official-info-links {
+  justify-content: center;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+html body.po-intro .official-info-links a {
+  padding: 12px 22px;
+  border: 1px solid var(--po-teal);
+  border-radius: 999px;
+  color: var(--po-teal);
+  font-weight: 600;
+}
+
+html body.po-intro .official-info-links a:hover {
+  background: var(--po-teal);
+  color: #fff;
+}
+
+html body.po-intro .news-section {
+  padding-top: 96px;
+  padding-bottom: 96px;
+  border: 0;
+  background: #fff;
+}
+
+@media (max-width: 1023px) {
+  html body.po-intro .site-header {
+    margin-bottom: -100px;
+  }
+
+  html body.po-intro .intro-page .intro-hero {
+    padding-top: 150px;
+  }
+}
+
+@media (max-width: 720px) {
+  html body.po-intro .site-header {
+    margin-bottom: -96px;
+  }
+
+  html body.po-intro .intro-page .intro-hero {
+    min-height: 0;
+    gap: 32px;
+    padding: 140px 16px 56px;
+  }
+
+  html body.po-intro .intro-page .intro-hero-copy h1 {
+    font-size: 32px;
+  }
+
+  html body.po-intro .intro-page .intro-hero-copy p:not(.eyebrow) {
+    font-size: 15px;
+  }
+
+  html body.po-intro .intro-section-head h2,
+  html body.po-intro .official-info-section h2,
+  html body.po-intro .news-heading h2,
+  html body.po-intro .supplier-onboarding-copy h2 {
+    font-size: 28px;
+  }
+
+  html body.po-intro .intro-steps,
+  html body.po-intro .intro-sectors,
+  html body.po-intro .intro-features,
+  html body.po-intro .news-section,
+  html body.po-intro .intro-page .supplier-onboarding-section {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+
+  html body.po-intro .intro-page .official-info-section {
+    margin: 64px 16px 0;
+    padding: 44px 20px;
   }
 }
