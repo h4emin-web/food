@@ -17,7 +17,7 @@ function renderPage(item) {
   const canonical = `${SITE_URL}/ingredients/${encodeURIComponent(item.id)}`;
   const sector = item.sector || item.type || "원료";
   const sectorLabel = sector === "제약" ? "제약 원료" : sector === "화장품" ? "화장품 원료" : sector === "식품" ? "식품 원료" : `${sector} 원료`;
-  const title = `${name}${englishName ? ` (${englishName})` : ""} ${sectorLabel} 소싱·공급사 | 원료나라`;
+  const title = `${name}${englishName ? ` (${englishName})` : ""} ${sectorLabel} 소싱·공급사 | Allingre`;
   const description = [
     `${name}${englishName ? `(${englishName})` : ""} ${sectorLabel} 정보`,
     item.origin ? `제조국 ${item.origin}` : "",
@@ -39,17 +39,17 @@ function renderPage(item) {
 <meta name="keywords" content="${escapeHtml([name, englishName, `${sector} 원료`, `${sector} 원료 소싱`, "원료 공급사", "원료 중개"].filter(Boolean).join(", "))}">
 <title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1"><link rel="canonical" href="${canonical}">
-<meta property="og:type" content="product"><meta property="og:site_name" content="원료나라"><meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${canonical}">
+<meta property="og:type" content="product"><meta property="og:site_name" content="Allingre"><meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${canonical}">
 <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(title)}"><meta name="twitter:description" content="${escapeHtml(description)}">
 <link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/fonts/pretendard/pretendardvariable-dynamic-subset.css"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/theme.css"><link rel="stylesheet" href="/pharma-theme.css"><script type="application/ld+json">${jsonLd(schema)}</script>
-</head><body><header class="site-header"><a class="brand" href="/index.html" aria-label="원료나라 홈"><span class="brand-mark" aria-hidden="true"></span><span>원료나라</span></a>
-<nav class="main-nav" aria-label="주요 메뉴"><a href="/index.html#ingredients">원료 찾기</a><a href="/sourcing-request.html">원료 소싱요청</a><a href="/community.html">원료문의</a><a href="/intro.html">소개</a></nav></header>
-<main class="seo-ingredient-page"><nav class="seo-breadcrumb" aria-label="경로"><a href="/index.html">홈</a><span>›</span><a href="/index.html#ingredients">${escapeHtml(sector)} 원료</a><span>›</span><strong>${escapeHtml(name)}</strong></nav>
+</head><body><header class="site-header"><a class="brand" href="/index.html" aria-label="Allingre 홈"><span class="brand-mark" aria-hidden="true"></span><span>Allingre</span></a>
+<nav class="main-nav" aria-label="주요 메뉴"><a href="/search.html">원료 찾기</a><a href="/sourcing-request.html">원료 소싱요청</a><a href="/community.html">원료문의</a><a href="/intro.html">소개</a></nav></header>
+<main class="seo-ingredient-page"><nav class="seo-breadcrumb" aria-label="경로"><a href="/index.html">홈</a><span>›</span><a href="/search.html">${escapeHtml(sector)} 원료</a><span>›</span><strong>${escapeHtml(name)}</strong></nav>
 <article class="seo-ingredient-card"><p class="eyebrow">${escapeHtml(sector)} 원료 상세정보</p><h1>${escapeHtml(name)}${englishName ? ` <small>${escapeHtml(englishName)}</small>` : ""}</h1>
 <p class="seo-ingredient-description">${escapeHtml(item.description || `${name}의 ${sectorLabel} 소싱 및 중개 정보입니다.`)}</p>
 <dl class="seo-ingredient-facts"><div><dt>공급사</dt><dd>${escapeHtml(item.company || "문의 필요")}</dd></div><div><dt>제조사</dt><dd>${escapeHtml(item.manufacturer_visibility === "private" ? "비공개" : item.manufacturer || "문의 필요")}</dd></div><div><dt>제조국</dt><dd>${escapeHtml(item.origin || "문의 필요")}</dd></div><div><dt>분류</dt><dd>${escapeHtml(item.category || sectorLabel)}</dd></div><div><dt>사용 용도</dt><dd>${escapeHtml(item.use || "문의 필요")}</dd></div><div><dt>인증</dt><dd>${escapeHtml(item.cert || "문의 필요")}</dd></div><div><dt>MOQ</dt><dd>${escapeHtml(item.moq || "문의 필요")}</dd></div><div><dt>리드타임</dt><dd>${escapeHtml(item.lead_time || "문의 필요")}</dd></div></dl>
-<div class="seo-ingredient-actions"><a class="primary-button" href="/index.html?search=${encodeURIComponent(name)}#ingredients">원료 목록에서 보기</a><a class="outline-button" href="/index.html?ingredientId=${encodeURIComponent(item.id)}&inquiry=quote#ingredients">견적 문의하기</a></div></article></main>
-<footer class="site-footer"><div><strong>원료나라</strong><p>식품·제약·화장품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p></div></footer></body></html>`;
+<div class="seo-ingredient-actions"><a class="primary-button" href="/search.html?search=${encodeURIComponent(name)}">원료 목록에서 보기</a><a class="outline-button" href="/search.html?ingredientId=${encodeURIComponent(item.id)}&inquiry=quote">견적 문의하기</a></div></article></main>
+<footer class="site-footer"><div><strong>Allingre</strong><p>식품·제약·화장품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p></div></footer><script src="/site-chrome.js" defer></script></body></html>`;
 }
 
 module.exports = async function handler(req, res) {
