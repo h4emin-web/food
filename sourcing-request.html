@@ -11,9 +11,12 @@
     <link rel="stylesheet" href="fonts/pretendard/pretendardvariable-dynamic-subset.css" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="theme.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&amp;family=Roboto:wght@300;400;500;700&amp;display=swap" />
     <link rel="stylesheet" href="pharma-theme.css" />
   </head>
-  <body>
+  <body class="po-board">
     <header class="site-header">
       <a class="brand" href="index.html" aria-label="Allingre 홈">
         <span class="brand-mark" aria-hidden="true"></span>
@@ -42,13 +45,12 @@
     </header>
 
     <main class="community-page">
-      <section class="community-hero" aria-labelledby="sourcing-title">
-        <div>
-          <p class="eyebrow">원료 소싱요청</p>
+      <section class="community-hero po-board-hero" aria-labelledby="sourcing-title">
+        <div class="po-board-hero-inner">
           <h1 id="sourcing-title">원료 소싱요청</h1>
-          <p>
-            신규 제조사 발굴이 필요할 때 원하는 조건을 남겨주세요. 요청과 진행 현황은 본인에게만 표시됩니다.
-          </p>
+          <p class="po-board-desc">신규 제조사 발굴이 필요할 때 원하는 조건을 남겨주세요.<br class="po-br" /> 요청과 진행 현황은 본인에게만 표시됩니다.</p>
+          <button class="po-btn po-btn-accent" type="button" data-click-target="#sourcingWriteButton">요청 등록하기 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <ol class="po-board-steps" aria-label="진행 순서"><li><span>1</span>조건 입력</li><li><span>2</span>Allingre 확인</li><li><span>3</span>답변 · 진행 현황 확인</li></ol>
         </div>
       </section>
 

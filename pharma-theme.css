@@ -1,29 +1,59 @@
 /*
- * Pharmaoffer-style layout layer, in Allingre's own colors (deep navy +
- * amber). Loaded after theme.css on every page; removing
+ * Pharmaoffer-style layout layer, in Allingre's own colors (dark navy,
+ * white buttons on dark, a soft blue for small highlights). Loaded after theme.css on every page; removing
  * its <link> restores the previous look. Shared parts (header, footer,
  * buttons) apply sitewide; .po-home rules only touch the homepage.
  */
 
 :root {
+  /* Type: SK hynix's pairing — Roboto for Latin and numbers, Noto Sans KR
+     for Korean (Roboto has no Hangul, so Korean falls through to it). */
+  --font-main: "Roboto", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+
   /* --po-teal is the primary brand color (name kept from the first pass) */
-  --po-teal: #1f2a5c;
-  --po-teal-deep: #161f47;
-  --po-accent: #ffb547;
-  --po-accent-hover: #f5a32a;
-  --po-accent-ink: #1f2a5c;
-  --po-black: #11152c;
+  --po-teal: #141b3d;
+  --po-teal-deep: #0c1230;
+  /* Small highlights on dark backgrounds (stars, checks, step numbers) */
+  --po-accent: #a9b8ff;
+  --po-accent-hover: #93a5ff;
+  --po-accent-ink: #141b3d;
+  /* Buttons on dark backgrounds */
+  --po-cta: #ffffff;
+  --po-cta-hover: #e4e8f6;
+  --po-black: #0a0e22;
   --po-gray: #f4f5f9;
   --po-text: #161a2e;
   --po-muted: #747a8c;
-  --brand: #1f2a5c;
+  --brand: #141b3d;
   --brand-soft: #eceffa;
-  --action: #1f2a5c;
-  --action-hover: #161f47;
+  --action: #141b3d;
+  --action-hover: #0c1230;
 }
 
 html body {
   background: #fff;
+  font-family: var(--font-main);
+}
+
+/* Same pairing as SK hynix per language: Roboto for Latin, then the Noto
+   Sans family for that script. site-chrome.js loads the JP file. */
+html[lang="ja"] {
+  --font-main: "Roboto", "Noto Sans JP", "Noto Sans KR", sans-serif;
+}
+
+/* Chinese follows CXMT (cxmt.com): the system Chinese UI fonts, no web font */
+html[lang="zh-CN"] {
+  --font-main: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", "WenQuanYi Micro Hei", sans-serif;
+}
+
+/* English: NVIDIA Sans (nvidia.com) is proprietary, so Barlow — a free
+   DIN-like grotesk with the same straight, technical feel. */
+html[lang="en"] {
+  --font-main: "Barlow", "Roboto", "Noto Sans KR", sans-serif;
+}
+
+html[lang="vi"] {
+  --font-main: "Roboto", "Noto Sans KR", sans-serif;
 }
 
 /* ---------- Floating pill header ---------- */
@@ -140,7 +170,7 @@ html body.po-home .hero.po-hero {
   min-height: clamp(640px, 94vh, 900px);
   padding: 136px 16px 96px;
   background:
-    radial-gradient(1100px 520px at 85% 0%, rgba(255, 181, 71, 0.10), transparent 60%),
+    radial-gradient(1100px 520px at 85% 0%, rgba(169, 184, 255, 0.10), transparent 60%),
     radial-gradient(900px 500px at 0% 100%, rgba(120, 140, 255, 0.14), transparent 60%),
     var(--po-teal);
   border: 0;
@@ -228,15 +258,15 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   padding: 0 34px;
   border: 0;
   border-radius: 999px;
-  background: var(--po-accent);
-  color: var(--po-accent-ink);
+  background: var(--po-teal);
+  color: #fff;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
 }
 
 .po-search-button:hover {
-  background: var(--po-accent-hover);
+  background: var(--po-teal-deep);
 }
 
 .po-popular {
@@ -288,7 +318,7 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   height: 16px;
   padding: 2px;
   border-radius: 50%;
-  background: rgba(255, 181, 71, 0.2);
+  background: rgba(169, 184, 255, 0.2);
   color: var(--po-accent);
 }
 
@@ -356,6 +386,14 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   width: 46px;
   height: 46px;
   stroke-width: 1.6;
+}
+
+/* Solid illustrated glyphs: white shapes, navy cut-outs (currentColor) */
+.po-icon-lg .po-glyph {
+  width: 72px;
+  height: 72px;
+  color: var(--po-teal);
+  overflow: visible;
 }
 
 .po-icon-sm {
@@ -446,10 +484,15 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   box-shadow: 0 16px 40px rgba(16, 40, 46, 0.14);
 }
 
-/* Dark promo band */
+/* Dark promo band: a product mock-up of the sourcing request flow */
 .po-dark {
-  padding: 120px var(--page-gutter);
-  background: var(--po-black);
+  position: relative;
+  overflow: hidden;
+  padding: 130px var(--page-gutter);
+  background:
+    radial-gradient(700px 420px at 18% 30%, rgba(110, 130, 255, 0.20), transparent 65%),
+    radial-gradient(600px 400px at 95% 100%, rgba(169, 184, 255, 0.12), transparent 60%),
+    var(--po-black);
   color: #fff;
 }
 
@@ -457,51 +500,240 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   align-items: center;
-  gap: 80px;
+  gap: 88px;
 }
 
 .po-dark-visual {
-  display: grid;
-  gap: 14px;
+  position: relative;
+  padding: 0 40px 56px 0;
 }
 
-.po-dark-card {
-  display: grid;
-  gap: 6px;
-  padding: 22px 26px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  background: linear-gradient(135deg, #1d2547, #141831);
+.po-req-card {
+  position: relative;
+  z-index: 1;
+  max-width: 470px;
+  padding: 26px 26px 24px;
+  border-radius: 20px;
+  background: #fff;
+  color: var(--po-text);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
 }
 
-.po-dark-card:nth-child(2) {
-  margin-left: 48px;
-}
-
-.po-dark-card:nth-child(3) {
-  margin-left: 96px;
-}
-
-.po-dark-card small {
-  color: var(--po-accent);
-  font-size: 12px;
+.po-req-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #eceef4;
+  font-size: 17px;
   font-weight: 700;
 }
 
-.po-dark-card strong {
-  font-size: 19px;
+.po-req-head em {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef0fa;
+  color: #3a4790;
+  font-size: 12px;
+  font-style: normal;
   font-weight: 600;
 }
 
-.po-dark-card span {
-  color: rgba(255, 255, 255, 0.55);
+.po-req-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: url("favicon.svg") center / cover no-repeat;
+}
+
+.po-req-field {
+  display: grid;
+  gap: 6px;
+  padding: 11px 14px;
+  border: 1px solid #e3e6ef;
+  border-radius: 10px;
+}
+
+.po-req-field small {
+  color: #8a90a2;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.po-req-field b {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.po-req-wide {
+  margin-top: 18px;
+  border-color: var(--po-teal);
+  box-shadow: 0 0 0 3px #e6e9f7;
+}
+
+.po-req-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.po-req-submit {
+  margin-top: 18px;
+  padding: 13px;
+  border-radius: 999px;
+  background: var(--po-teal);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.po-req-steps {
+  position: absolute;
+  top: 92px;
+  right: 0;
+  z-index: 2;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 18px 20px;
+  list-style: none;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(29, 37, 71, 0.92);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
   font-size: 14px;
 }
 
-.po-dark-eyebrow {
-  margin: 0 0 16px;
-  font-size: 16px;
+.po-req-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+.po-req-steps span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.po-req-steps .done {
+  color: #fff;
+}
+
+.po-req-steps .done span {
+  background: #3fbf8a;
+  color: #fff;
+}
+
+.po-req-steps .now {
+  color: var(--po-accent);
   font-weight: 600;
+}
+
+.po-req-steps .now span {
+  background: var(--po-accent);
+  color: var(--po-accent-ink);
+}
+
+.po-req-toast {
+  position: absolute;
+  right: 6px;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--po-text);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.po-req-toast-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--po-accent);
+  color: var(--po-accent-ink);
+}
+
+.po-req-toast b {
+  display: block;
+  font-size: 14px;
+}
+
+.po-req-toast small {
+  color: #8a90a2;
+  font-size: 12px;
+}
+
+.po-dark-eyebrow {
+  display: inline-flex;
+  margin: 0 0 18px;
+  padding: 6px 14px;
+  border: 1px solid rgba(169, 184, 255, 0.4);
+  border-radius: 999px;
+  color: var(--po-accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.po-dark-points {
+  display: grid;
+  gap: 12px;
+  margin: -16px 0 40px;
+  padding: 0;
+  list-style: none;
+}
+
+.po-dark-points li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 15px;
+}
+
+.po-dark-points li::before {
+  content: "✓";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(169, 184, 255, 0.18);
+  color: var(--po-accent);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.po-btn-accent {
+  border: 0;
+  background: var(--po-cta);
+  color: var(--po-teal);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.po-btn-accent:hover {
+  background: var(--po-cta-hover);
 }
 
 .po-dark-copy h2 {
@@ -579,7 +811,7 @@ html body.po-home .po-why .seo-topic-grid a::before {
 }
 
 html body.po-home .po-why .seo-topic-grid a strong {
-  margin-top: auto;
+  margin-top: 32px;
   color: var(--po-text);
   font-size: 22px;
   font-weight: 500;
@@ -901,7 +1133,7 @@ html body :is(.po-hero, .po-search-hero) .search-field input:focus-visible,
 }
 
 html body :is(.po-hero, .po-search-hero) .search-panel:focus-within {
-  box-shadow: 0 0 0 3px rgba(255, 181, 71, 0.6), 0 10px 34px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 0 0 3px rgba(169, 184, 255, 0.6), 0 10px 34px rgba(0, 0, 0, 0.18);
 }
 
 /* Popular chips are links now */
@@ -1518,6 +1750,11 @@ html body.po-list .po-result-list .empty-state {
     height: 32px;
   }
 
+  .po-icon-lg .po-glyph {
+    width: 50px;
+    height: 50px;
+  }
+
   .po-audience-card strong {
     font-size: 15px;
   }
@@ -1530,9 +1767,23 @@ html body.po-list .po-result-list .empty-state {
     padding: 72px 16px;
   }
 
-  .po-dark-card:nth-child(2),
-  .po-dark-card:nth-child(3) {
-    margin-left: 0;
+  .po-dark-visual {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+  }
+
+  .po-req-card {
+    padding: 20px 18px;
+  }
+
+  .po-req-steps,
+  .po-req-toast {
+    position: static;
+  }
+
+  .po-dark-points {
+    margin-top: -12px;
   }
 
   html body.po-home .po-why {
@@ -1582,7 +1833,7 @@ html body.po-intro .intro-page .intro-hero {
   min-height: clamp(600px, 86vh, 820px);
   padding: 136px var(--page-gutter) 88px;
   background:
-    radial-gradient(1000px 480px at 90% 0%, rgba(255, 181, 71, 0.10), transparent 60%),
+    radial-gradient(1000px 480px at 90% 0%, rgba(169, 184, 255, 0.10), transparent 60%),
     radial-gradient(800px 460px at 0% 100%, rgba(120, 140, 255, 0.14), transparent 60%),
     var(--po-teal);
   border: 0;
@@ -1632,12 +1883,12 @@ html body.po-intro .supplier-onboarding-section .primary-button {
 
 html body.po-intro .intro-hero-actions .primary-button {
   border: 0;
-  background: var(--po-accent);
-  color: var(--po-accent-ink);
+  background: var(--po-cta);
+  color: var(--po-teal);
 }
 
 html body.po-intro .intro-hero-actions .primary-button:hover {
-  background: var(--po-accent-hover);
+  background: var(--po-cta-hover);
 }
 
 html body.po-intro .intro-hero-actions .outline-button {
@@ -1670,7 +1921,7 @@ html body.po-intro .intro-section-head {
 html body.po-intro .intro-section-head .eyebrow,
 html body.po-intro .official-info-section .eyebrow,
 html body.po-intro .news-heading-copy .eyebrow {
-  color: #b77812;
+  color: #4352a0;
   font-size: 14px;
   font-weight: 700;
 }
@@ -1761,6 +2012,15 @@ html body.po-intro .intro-sector-card:hover {
   transform: translateY(-2px);
 }
 
+html body.po-intro .intro-sector-card img {
+  object-fit: cover;
+}
+
+html body.po-intro .intro-page .intro-hero-media img {
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
 html body.po-intro .intro-sector-card > div {
   padding: 24px 28px 30px;
 }
@@ -1836,6 +2096,8 @@ html body.po-intro .supplier-onboarding-points div {
 }
 
 html body.po-intro .supplier-onboarding-points strong {
+  flex: 0 0 auto;
+  white-space: nowrap;
   color: var(--po-accent);
   font-size: 15px;
 }
@@ -1937,5 +2199,345 @@ html body.po-intro .news-section {
   html body.po-intro .intro-page .official-info-section {
     margin: 64px 16px 0;
     padding: 44px 20px;
+  }
+}
+
+/* ---------- Boards: 원료 소싱요청 / 원료문의 (body.po-board) ---------- */
+html body.po-board .site-header {
+  margin-bottom: -56px;
+}
+
+html body.po-board .community-page {
+  background: #f6f7fa;
+}
+
+html body.po-board .community-hero.po-board-hero {
+  display: block;
+  padding: 132px 16px 72px;
+  border: 0;
+  background:
+    radial-gradient(900px 420px at 85% 0%, rgba(169, 184, 255, 0.10), transparent 60%),
+    radial-gradient(800px 420px at 0% 100%, rgba(120, 140, 255, 0.14), transparent 60%),
+    var(--po-teal);
+  text-align: center;
+}
+
+.po-board-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+html body.po-board .po-board-hero .po-badge {
+  margin: 0 0 22px;
+  color: #fff;
+}
+
+html body.po-board .community-list .pagination-bar {
+  background: transparent;
+}
+
+html body.po-board .po-board-hero h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+html body.po-board .po-board-hero .po-board-desc {
+  max-width: none;
+  margin: 18px 0 30px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.po-board-steps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 28px;
+  margin: 30px 0 0;
+  padding: 0;
+  list-style: none;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+}
+
+.po-board-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.po-board-steps span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(169, 184, 255, 0.2);
+  color: var(--po-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+html body.po-board .community-section {
+  padding-top: 48px;
+  padding-bottom: 96px;
+  background: #f6f7fa;
+}
+
+/* Sector tabs as a segmented pill */
+html body.po-board .community-sector-tabs {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding: 5px;
+  border: 0 !important;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(22, 31, 71, 0.06);
+}
+
+html body.po-board .community-sector-tabs button,
+html body.po-board .community-sector-tabs button:hover {
+  min-height: 38px;
+  padding: 0 20px !important;
+  border-radius: 999px !important;
+  color: var(--po-muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+html body.po-board .community-sector-tabs button::after {
+  display: none !important;
+}
+
+html body.po-board .community-sector-tabs button.active {
+  background: var(--po-teal) !important;
+  color: #fff;
+}
+
+/* Toolbar: pill search + navy write button */
+html body.po-board .community-toolbar {
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+html body.po-board .community-search {
+  min-height: 52px;
+  padding: 0 22px;
+  border: 1px solid #e3e6ef;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(22, 31, 71, 0.05);
+}
+
+html body.po-board .community-search:focus-within {
+  border-color: var(--po-teal);
+  box-shadow: 0 0 0 3px #e6e9f7;
+}
+
+html body.po-board .community-search input:focus-visible {
+  outline: none;
+}
+
+html body.po-board .community-write-button {
+  min-height: 52px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--po-teal);
+  color: #fff;
+  font-weight: 700;
+}
+
+html body.po-board .community-write-button:hover {
+  background: var(--po-teal-deep);
+  color: #fff;
+}
+
+/* Write form as a card */
+html body.po-board .community-write-form {
+  margin-bottom: 20px;
+  padding: 28px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(22, 31, 71, 0.08);
+}
+
+html body.po-board .community-write-form input,
+html body.po-board .community-write-form select,
+html body.po-board .community-write-form textarea {
+  border-radius: 10px;
+}
+
+html body.po-board .community-write-form .primary-button,
+html body.po-board .community-write-form .outline-button {
+  border-radius: 999px;
+}
+
+/* Posts as white cards */
+html body.po-board .community-list {
+  display: grid;
+  gap: 12px;
+  border: 0;
+}
+
+html body.po-board .community-board-head {
+  display: none !important;
+}
+
+html body.po-board .community-post,
+html body.po-board .community-post:last-child {
+  grid-template-columns: max-content minmax(0, 1fr) max-content max-content max-content;
+  grid-template-areas: "badge title author date stats";
+  gap: 18px;
+  min-height: 0;
+  padding: 22px 26px;
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(22, 31, 71, 0.06);
+}
+
+html body.po-board .community-post:hover {
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(22, 31, 71, 0.12);
+}
+
+html body.po-board .community-post:hover > * {
+  transform: none;
+}
+
+html body.po-board .community-post .sector-label {
+  grid-area: badge;
+  padding: 3px 10px;
+  border: 1px solid !important;
+  border-radius: 6px !important;
+  font-size: 13px;
+}
+
+html body.po-board .community-post .sector-label.sector-식품 { border-color: #9fd3b8 !important; background: #f1faf5 !important; color: #1f7a4d; }
+html body.po-board .community-post .sector-label.sector-제약 { border-color: #a5c3eb !important; background: #f1f6fd !important; color: #2459a6; }
+html body.po-board .community-post .sector-label.sector-화장품 { border-color: #c8b3ea !important; background: #f7f3fd !important; color: #6a3fb0; }
+
+html body.po-board .community-post h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  color: var(--po-text);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+html body.po-board .community-post .post-author {
+  grid-area: author;
+  color: var(--po-muted);
+  font-size: 13px;
+}
+
+html body.po-board .community-post h3 {
+  grid-area: title;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body.po-board .community-post .post-date {
+  grid-area: date;
+  color: #9aa0b1;
+  font-size: 13px;
+}
+
+html body.po-board .community-post .post-stats {
+  grid-area: stats;
+  display: flex;
+  gap: 14px;
+  color: #9aa0b1;
+  font-size: 13px;
+}
+
+html body.po-board .community-list .empty-state {
+  padding: 56px 24px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(22, 31, 71, 0.06);
+  color: var(--po-muted);
+  text-align: center;
+}
+
+@media (max-width: 1023px) {
+  html body.po-board .site-header {
+    margin-bottom: -100px;
+  }
+
+  html body.po-board .community-hero.po-board-hero {
+    padding-top: 148px;
+  }
+}
+
+@media (max-width: 720px) {
+  html body.po-board .site-header {
+    margin-bottom: -96px;
+  }
+
+  html body.po-board .community-hero.po-board-hero {
+    padding: 140px 16px 52px;
+  }
+
+  html body.po-board .po-board-hero h1 {
+    font-size: 32px;
+  }
+
+  html body.po-board .po-board-hero .po-board-desc {
+    font-size: 15px;
+  }
+
+  html body.po-board .community-section {
+    padding: 28px 16px 64px;
+  }
+
+  html body.po-board .community-sector-tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  html body.po-board .community-sector-tabs button {
+    flex: 1;
+    padding: 0 8px !important;
+  }
+
+  html body.po-board .community-post,
+  html body.po-board .community-post:last-child {
+    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-areas:
+      "badge title"
+      "badge meta";
+    row-gap: 6px;
+    padding: 18px;
+  }
+
+  html body.po-board .community-post .post-author {
+    grid-area: meta;
+    justify-self: start;
+  }
+
+  html body.po-board .community-post .post-date {
+    grid-area: meta;
+    justify-self: end;
+  }
+
+  html body.po-board .community-post .post-stats {
+    display: none;
   }
 }

@@ -110,6 +110,20 @@
     });
   };
 
+  // Fonts follow SK hynix per language; Noto Sans KR and Roboto load on
+  // every page, the Japanese / Chinese faces only when that language is on.
+  // Chinese uses the system font stack (as cxmt.com does), so nothing loads.
+  const EXTRA_FONTS = {
+    en: "Barlow:wght@300;400;500;600;700",
+    ja: "Noto+Sans+JP:wght@300;400;500;700",
+  };
+  if (EXTRA_FONTS[current.prefix]) {
+    const fontLink = document.createElement("link");
+    fontLink.rel = "stylesheet";
+    fontLink.href = `https://fonts.googleapis.com/css2?family=${EXTRA_FONTS[current.prefix]}&display=swap`;
+    document.head.appendChild(fontLink);
+  }
+
   if (current.prefix) {
     clearCookie();
     document.cookie = `googtrans=/ko/${current.google}; path=/`;
@@ -132,6 +146,18 @@
       true,
     );
   }
+
+  // Hero buttons that stand in for an existing button further down the page
+  // (e.g. 요청 등록), so the page's own logic — login checks included — runs.
+  document.addEventListener("click", (event) => {
+    const proxy = event.target.closest && event.target.closest("[data-click-target]");
+    if (!proxy) return;
+    const target = document.querySelector(proxy.dataset.clickTarget);
+    if (!target) return;
+    target.click();
+    const form = target.closest("section") || target;
+    window.setTimeout(() => form.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  });
 
   if (!header) {
     if (current.prefix) loadGoogleTranslate();
@@ -272,6 +298,24 @@
     // script.js rewrites the account links after sign-in checks.
     new MutationObserver(relabel).observe(header, { childList: true, subtree: true, characterData: true });
     loadGoogleTranslate();
+  }
+
+  // Chinese: drop the full stops (。) machine translation adds, which look
+  // fussy in short UI text. Mid-text ones become a space.
+  if (current.prefix === "zh") {
+    const stripStops = (root) => {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (!node.nodeValue.includes("。")) continue;
+        node.nodeValue = node.nodeValue.replace(/。\s*$/, "").replace(/。\s*/g, " ");
+      }
+    };
+    new MutationObserver((records) => {
+      records.forEach((record) => {
+        if (record.type === "characterData") stripStops(record.target.parentNode || document.body);
+        record.addedNodes.forEach((node) => stripStops(node.nodeType === 3 ? node.parentNode : node));
+      });
+    }).observe(document.body, { childList: true, subtree: true, characterData: true });
   }
 
   function loadGoogleTranslate() {
