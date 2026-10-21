@@ -58,6 +58,11 @@
   ],
   "redirects": [
     {
+      "source": "/:lang(en|zh|ja|vi)?/group-buy.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/(.*)",
       "has": [
         {
