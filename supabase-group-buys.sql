@@ -12,21 +12,36 @@
 -- Run once in the Supabase SQL editor, AFTER supabase-admin-check.sql.
 -- Safe to re-run.
 
+-- The policies below call public.is_admin(). If it is missing this creates
+-- the safe version — admin comes from the profiles.is_admin flag alone.
+-- It never replaces an existing one: an is_admin() that still trusts
+-- profiles.email is a takeover risk (any member can claim that address), and
+-- fixing it is supabase-admin-check.sql's job, not this file's.
 do $$
 begin
-  if not exists (
-    select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-    where n.nspname = 'public' and p.proname = 'is_admin'
-  ) then
-    raise exception 'run supabase-admin-check.sql first (is_admin() is missing)';
-  end if;
   if exists (
     select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-    where n.nspname = 'public' and p.proname = 'is_admin' and p.prosrc ilike '%foden_@naver.com%'
+    where n.nspname = 'public' and p.proname = 'is_admin' and p.prosrc ilike '%@%'
   ) then
-    raise exception 'run supabase-admin-check.sql first (is_admin() still trusts profiles.email)';
+    raise exception 'run supabase-admin-check.sql first (is_admin() still trusts an email address)';
   end if;
 end $$;
+
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, auth
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and is_admin = true
+  );
+$$;
+
+revoke all on function public.is_admin() from public;
+grant execute on function public.is_admin() to authenticated;
 
 -- ---------------------------------------------------------------- tables
 
