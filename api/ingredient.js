@@ -49,7 +49,7 @@ function renderPage(item) {
 <p class="seo-ingredient-description">${escapeHtml(item.description || `${name}의 ${sectorLabel} 소싱 및 중개 정보입니다.`)}</p>
 <dl class="seo-ingredient-facts"><div><dt>공급사</dt><dd>${escapeHtml(item.company || "문의 필요")}</dd></div><div><dt>제조사</dt><dd>${escapeHtml(item.manufacturer_visibility === "private" ? "비공개" : item.manufacturer || "문의 필요")}</dd></div><div><dt>제조국</dt><dd>${escapeHtml(item.origin || "문의 필요")}</dd></div><div><dt>분류</dt><dd>${escapeHtml(item.category || sectorLabel)}</dd></div><div><dt>사용 용도</dt><dd>${escapeHtml(item.use || "문의 필요")}</dd></div><div><dt>인증</dt><dd>${escapeHtml(item.cert || "문의 필요")}</dd></div><div><dt>MOQ</dt><dd>${escapeHtml(item.moq || "문의 필요")}</dd></div><div><dt>리드타임</dt><dd>${escapeHtml(item.lead_time || "문의 필요")}</dd></div></dl>
 <div class="seo-ingredient-actions"><a class="primary-button" href="/search.html?search=${encodeURIComponent(name)}">원료 목록에서 보기</a><a class="outline-button" href="/search.html?ingredientId=${encodeURIComponent(item.id)}&inquiry=quote">견적 문의하기</a></div></article></main>
-<footer class="site-footer"><div><strong>Allingre</strong><p>식품·제약·화장품 원료 탐색, 샘플, 견적을 돕는 B2B 플랫폼</p></div></footer><script src="/site-chrome.js" defer></script></body></html>`;
+<footer class="site-footer"><div class="footer-brand-block"><p class="footer-copyright">Copyright © 2026 Haim company. All Rights Reserved.</p></div></footer><script src="/site-chrome.js" defer></script></body></html>`;
 }
 
 module.exports = async function handler(req, res) {
