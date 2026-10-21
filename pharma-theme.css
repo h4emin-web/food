@@ -3461,3 +3461,68 @@ html body.po-board .community-post.gb-row .post-stats {
     padding: 36px 16px;
   }
 }
+
+/* ---------- Phone: strip the pages back further ----------
+   Everything here is explanatory copy that a phone visitor scrolls past to
+   reach the thing they came for. It stays in the markup for desktop. */
+@media (max-width: 720px) {
+  /* Home: the closing "더 알고 싶으신가요" block repeats links already in
+     the menu, so the page ends at 이용 방법. */
+  html body.po-home .po-cta {
+    display: none;
+  }
+
+  html body.po-home .po-hero h1 {
+    font-size: 30px;
+  }
+
+  html body.po-home .hero .hero-description {
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  html body.po-home .hero.po-hero {
+    padding-bottom: 36px;
+  }
+
+  /* Boards: the title, the button and the list are the page. The numbered
+     "진행 순서" strip and the side notes are desktop explanation. */
+  html body.po-board .po-board-steps,
+  html body.po-board .po-board-note {
+    display: none;
+  }
+
+  html body.po-board .community-hero.po-board-hero {
+    padding: 120px 16px 36px;
+  }
+
+  html body.po-board .po-board-hero h1 {
+    font-size: 28px;
+  }
+
+  html body.po-board .po-board-hero .po-board-desc {
+    margin: 12px 0 22px;
+    font-size: 14px;
+  }
+
+  /* Search: the heading and the box say enough. */
+  html body.po-list .po-search-hero > .po-search-hero-inner > p {
+    display: none;
+  }
+
+  /* Footer: one compact line each. */
+  html body .site-footer {
+    padding-top: 28px;
+    padding-bottom: 28px;
+    gap: 12px;
+  }
+
+  html body .site-footer .footer-copyright {
+    font-size: 11.5px;
+  }
+
+  html body .site-footer .footer-links {
+    gap: 14px;
+    font-size: 12px;
+  }
+}
