@@ -26,7 +26,8 @@
   let openId = "";
   let items = [];
   let breakdown = { id: "", quantities: null };
-  let loadState = "loading"; // loading | ready | signed-out | unavailable
+  let signedIn = false;
+  let loadState = "loading"; // loading | ready | unavailable
 
   const client = typeof supabaseClient !== "undefined" ? supabaseClient : null;
   const getMember = () => (typeof getCurrentMember === "function" ? getCurrentMember() : null);
@@ -58,16 +59,15 @@
   };
   const isOpen = (item) => OPEN_STATUSES.includes(item.status) && num(item.moq) > 0;
 
+  // The board itself is public: a visitor should see what is being gathered
+  // and how full it is before deciding to sign up. Only joining needs an
+  // account. The view carries no identity, so there is nothing to withhold.
   async function load() {
-    if (!getMember() || !client) {
-      loadState = "signed-out";
+    if (!client) {
+      loadState = "unavailable";
       return render();
     }
-    const userId = typeof getSupabaseUserId === "function" ? await getSupabaseUserId() : "";
-    if (!userId) {
-      loadState = "signed-out";
-      return render();
-    }
+    signedIn = Boolean(getMember()) && Boolean(typeof getSupabaseUserId === "function" ? await getSupabaseUserId() : "");
     const { data, error } = await client
       .from("group_buys_public")
       .select(COLUMNS)
@@ -90,6 +90,21 @@
     if (breakdown.id !== id) return;
     breakdown = { id, quantities: error ? [] : (data || []).map((row) => num(row.quantity)) };
     render();
+  }
+
+  // The list row answers "how full is it, and out of how much" without
+  // opening anything — and without signing in.
+  function rowProgressMarkup(item) {
+    const target = num(item.moq);
+    if (target <= 0) {
+      return '<span class="gb-row-pending">목표수량 확인 중</span>';
+    }
+    const done = percent(item);
+    return `
+      <span class="gb-row-percent">${done}%</span>
+      <span class="gb-row-track"><i style="width: ${done}%"></i></span>
+      <span class="gb-row-amount">${esc(fmt(item.pledged_total))} / ${esc(fmt(target))}${esc(item.unit)}</span>
+      <span class="gb-row-buyers">참여 ${esc(item.buyer_count)}명</span>`;
   }
 
   function progressMarkup(item) {
@@ -144,6 +159,9 @@
   }
 
   function joinMarkup(item) {
+    if (!signedIn) {
+      return `<p class="gb-join-note gb-join-signin">수량을 모으는 현황은 누구나 볼 수 있습니다. 참여하려면 <a href="login.html">로그인</a>하세요.</p>`;
+    }
     if (!isOpen(item)) {
       return `<p class="comment-empty">${esc(
         item.status === "요청" ? "MOQ가 지정되면 참여할 수 있습니다." : "이 공동구매는 모집이 끝났습니다."
@@ -206,10 +224,6 @@
       list.innerHTML = '<div class="empty-state">공동구매를 불러오고 있습니다...</div>';
       return;
     }
-    if (loadState === "signed-out") {
-      list.innerHTML = '<div class="empty-state">로그인 후 공동구매에 참여할 수 있습니다. <a href="login.html">로그인</a></div>';
-      return;
-    }
     if (loadState === "unavailable") {
       list.innerHTML = '<div class="empty-state">공동구매를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</div>';
       return;
@@ -232,10 +246,7 @@
           <h3>${esc(item.ingredient_name)}${item.has_joined ? '<em class="gb-joined-flag">참여중</em>' : ""}</h3>
           <span class="post-author gb-status gb-status-${esc(item.status)}">${esc(item.status)}</span>
           <span class="post-date">${esc(formatDate(item.created_at))}</span>
-          <div class="post-stats">
-            <span>${num(item.moq) > 0 ? `${esc(fmt(item.pledged_total))} / ${esc(fmt(item.moq))}${esc(item.unit)} · ${percent(item)}%` : "MOQ 지정 전"}</span>
-            <span>참여 ${esc(item.buyer_count)}명</span>
-          </div>
+          <div class="post-stats">${rowProgressMarkup(item)}</div>
         </article>
         ${openId === item.id ? detailMarkup(item) : ""}`
       )

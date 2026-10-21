@@ -125,6 +125,9 @@
       "home.mock.r3": "Vitamin D3 powder",
       "home.mock.o3": "India",
       "home.mock.cta": "Request sample &amp; quote",
+      "home.mock.lead": "Lead time",
+      "home.mock.leadv": "4 weeks",
+      "home.mock.toast": "Request sent",
       "req.title": "Sourcing request",
       "req.example": "Example",
       "req.name": "Ingredient",
@@ -213,6 +216,9 @@
       "home.mock.r3": "维生素 D3 粉末",
       "home.mock.o3": "印度",
       "home.mock.cta": "申请样品 · 报价",
+      "home.mock.lead": "交货周期",
+      "home.mock.leadv": "4周",
+      "home.mock.toast": "请求已发送",
       "req.title": "采购需求表",
       "req.example": "填写示例",
       "req.name": "原料名称",
@@ -301,6 +307,9 @@
       "home.mock.r3": "ビタミン D3 パウダー",
       "home.mock.o3": "インド",
       "home.mock.cta": "サンプル・見積依頼",
+      "home.mock.lead": "リードタイム",
+      "home.mock.leadv": "4週間",
+      "home.mock.toast": "リクエストを送信しました",
       "req.title": "調達依頼書",
       "req.example": "記入例",
       "req.name": "原料名",
@@ -389,6 +398,9 @@
       "home.mock.r3": "Bột Vitamin D3",
       "home.mock.o3": "Ấn Độ",
       "home.mock.cta": "Yêu cầu mẫu · báo giá",
+      "home.mock.lead": "Thời gian giao",
+      "home.mock.leadv": "4 tuần",
+      "home.mock.toast": "Đã gửi yêu cầu",
       "req.title": "Phiếu yêu cầu tìm nguồn",
       "req.example": "Ví dụ",
       "req.name": "Nguyên liệu",
@@ -683,6 +695,45 @@
   supplierDropdown.append(registerLink, guideLink);
   if (nav) nav.after(supplier);
   else header.insertBefore(supplier, actions);
+
+  // ---------- Menu drawer ----------
+  // On a phone the menu was a sideways-scrolling strip that pushed the header
+  // into two rows. The same elements now live in a drawer behind a toggle, so
+  // the bar stays one row. The wrapper is display:contents above the phone
+  // breakpoint, so the desktop header lays out exactly as before, and nav /
+  // supplier keep their identity for the code that updates their links.
+  const drawer = document.createElement("div");
+  drawer.className = "nav-drawer";
+  (nav || supplier).before(drawer);
+  if (nav) drawer.appendChild(nav);
+  drawer.appendChild(supplier);
+
+  const navToggle = document.createElement("button");
+  navToggle.className = "nav-toggle";
+  navToggle.type = "button";
+  navToggle.setAttribute("aria-expanded", "false");
+  navToggle.setAttribute("aria-label", "메뉴");
+  navToggle.innerHTML =
+    '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+  actions.prepend(navToggle);
+  const setNavOpen = (open) => {
+    header.classList.toggle("nav-open", open);
+    navToggle.setAttribute("aria-expanded", String(open));
+    if (!open) setSupplierOpen(false);
+  };
+  navToggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    setNavOpen(!header.classList.contains("nav-open"));
+  });
+  drawer.addEventListener("click", (event) => {
+    if (event.target.closest("a")) setNavOpen(false);
+  });
+  document.addEventListener("click", (event) => {
+    if (!header.contains(event.target)) setNavOpen(false);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setNavOpen(false);
+  });
   const supplierToggle = supplier.querySelector(".supplier-toggle");
   const setSupplierOpen = (open) => {
     supplierDropdown.hidden = !open;

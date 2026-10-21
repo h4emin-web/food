@@ -352,7 +352,6 @@ for delete using ((buyer_id = auth.uid() and public.group_buy_is_open(group_buy_
 
 revoke all on public.group_buys from anon;
 revoke all on public.group_buy_orders from anon;
-revoke all on public.group_buys_public from anon;
 
 grant select, insert, delete on public.group_buys to authenticated;
 grant update on public.group_buys to authenticated; -- narrowed by RLS to admins
@@ -360,6 +359,13 @@ grant select, insert, update, delete on public.group_buy_orders to authenticated
 grant select on public.group_buys_public to authenticated;
 grant execute on function public.group_buy_quantities(uuid) to authenticated;
 grant execute on function public.group_buy_is_open(uuid) to authenticated;
+
+-- The board is a shop window: a visitor should see what is being gathered and
+-- how close it is to the MOQ before signing up. Both of these carry totals and
+-- quantities only — no owner_id, no buyer_id, no email — so opening them to
+-- anon reveals nothing about who is buying. The base tables stay revoked.
+grant select on public.group_buys_public to anon;
+grant execute on function public.group_buy_quantities(uuid) to anon;
 
 -- Check, signed in as two different members:
 --   member A: insert a 공동구매 request        -> status 요청

@@ -474,13 +474,20 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   background: var(--po-gray);
 }
 
-/* The "how it works" mock. It replaced a screen-recorded mp4, which had
-   Korean copy and the old purple palette burned into the pixels: the markup
-   version follows the site's colors and translates with the page. */
+/* The "how it works" walkthrough. It replays the same click-through the old
+   screen recording showed — search, pick a result, request a sample — but as
+   markup, because the recording had the old amber/purple palette and Korean
+   copy baked into the pixels. Here the colors are the site's own variables
+   and the labels translate with the page.
+   The cursor path is in px, so the card is pinned to one width; below the
+   phone breakpoint the cursor is dropped and the steps simply fade in. */
 .po-mock {
+  position: relative;
   display: grid;
   gap: 0;
   width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
   overflow: hidden;
   border-radius: 12px;
   background: #fff;
@@ -562,10 +569,18 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   display: flex;
   align-items: center;
   gap: 9px;
-  padding: 10px 12px;
+  height: 36px;
+  padding: 0 12px;
   border-radius: 8px;
   background: var(--po-gray);
-  animation: po-mock-row 4.8s ease-out calc(var(--i) * 0.35s) infinite;
+  opacity: 0;
+  animation: po-mock-row var(--po-mock-cycle) ease-out calc(var(--i) * 0.22s) infinite;
+}
+
+/* Row 1 is the one the cursor picks, so it highlights on cue. */
+.po-mock-rows li:first-child {
+  animation-name: po-mock-row, po-mock-pick;
+  animation-delay: 0.22s, 0s;
 }
 
 .po-mock-dot {
@@ -612,21 +627,218 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   }
 }
 
+/* ---- walkthrough timeline (one 12s cycle) ----
+   0–16%   typing in the search box
+   16–24%  cursor on 검색, click
+   24–40%  results appear
+   40–52%  cursor picks the first result
+   52–64%  detail opens
+   64–76%  cursor on 샘플 · 견적 요청, click
+   76–92%  toast
+   92–100% reset                                         */
+.po-mock {
+  --po-mock-cycle: 12s;
+}
+
 @keyframes po-mock-row {
-  0% {
+  0%,
+  24% {
     opacity: 0;
     transform: translateY(6px);
   }
 
-  12%,
-  88% {
+  32%,
+  92% {
     opacity: 1;
     transform: none;
   }
 
+  96%,
   100% {
     opacity: 0;
     transform: translateY(6px);
+  }
+}
+
+@keyframes po-mock-pick {
+  0%,
+  46% {
+    background: var(--po-gray);
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+
+  52%,
+  92% {
+    background: #fff;
+    box-shadow: inset 0 0 0 1.5px var(--po-teal);
+  }
+
+  96%,
+  100% {
+    background: var(--po-gray);
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+}
+
+.po-mock-go {
+  margin-left: auto;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: var(--po-teal);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  animation: po-mock-press var(--po-mock-cycle) ease-out infinite;
+}
+
+.po-mock-detail {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 14px;
+  overflow: hidden;
+  height: 0;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: #f7f8fc;
+  font-size: 12px;
+  animation: po-mock-detail var(--po-mock-cycle) ease-out infinite;
+}
+
+.po-mock-detail span {
+  color: var(--po-muted);
+}
+
+.po-mock-detail b {
+  color: var(--po-text);
+  font-weight: 600;
+}
+
+@keyframes po-mock-detail {
+  0%,
+  52% {
+    height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+
+  60%,
+  92% {
+    height: 48px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    opacity: 1;
+  }
+
+  96%,
+  100% {
+    height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+}
+
+/* A press dips the button for a beat. Two elements share it, each with its
+   own delay so they are pressed at their own point in the cycle. */
+@keyframes po-mock-press {
+  0%,
+  18%,
+  24%,
+  100% {
+    transform: none;
+  }
+
+  21% {
+    transform: scale(0.93);
+  }
+}
+
+.po-mock-cta {
+  animation: po-mock-press var(--po-mock-cycle) ease-out -8.4s infinite;
+}
+
+.po-mock-toast {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--po-teal);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 500;
+  box-shadow: 0 10px 24px rgba(16, 40, 46, 0.22);
+  opacity: 0;
+  animation: po-mock-toast var(--po-mock-cycle) ease-out infinite;
+}
+
+@keyframes po-mock-toast {
+  0%,
+  74% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  78%,
+  90% {
+    opacity: 1;
+    transform: none;
+  }
+
+  94%,
+  100% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.po-mock-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
+  margin: -5px 0 0 -4px;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  background: rgba(20, 27, 61, 0.55);
+  box-shadow: 0 2px 8px rgba(16, 40, 46, 0.35);
+  pointer-events: none;
+  animation: po-mock-cursor var(--po-mock-cycle) ease-in-out infinite;
+}
+
+/* Waypoints measured against the 420px card: search box, 검색 button,
+   first result row, then the 샘플 · 견적 요청 button. */
+@keyframes po-mock-cursor {
+  0%,
+  12% {
+    transform: translate(150px, 76px);
+  }
+
+  20%,
+  26% {
+    transform: translate(352px, 76px);
+  }
+
+  44%,
+  50% {
+    transform: translate(140px, 132px);
+  }
+
+  68%,
+  74% {
+    transform: translate(100px, 268px);
+  }
+
+  92%,
+  100% {
+    transform: translate(150px, 76px);
   }
 }
 
@@ -3380,4 +3592,291 @@ html body.po-board .community-post.gb-row .post-stats span {
   font-size: 11px;
   font-style: normal;
   font-weight: 500;
+}
+
+/* List-row progress: readable at a glance, and shown to signed-out visitors
+   too — the board is public, only joining needs an account. */
+html body.po-board .community-post.gb-row .post-stats {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 3px 8px;
+}
+
+.gb-row-percent {
+  grid-column: 1;
+  color: var(--po-teal);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.gb-row-track {
+  grid-column: 2;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e9ebf2;
+}
+
+.gb-row-track > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--po-teal);
+}
+
+.gb-row-amount {
+  grid-column: 1 / -1;
+  color: var(--po-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.gb-row-buyers,
+.gb-row-pending {
+  grid-column: 1 / -1;
+  color: var(--po-muted);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.gb-join-signin a {
+  color: var(--po-teal);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  html body.po-board .community-post.gb-row .post-stats {
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    gap: 8px;
+  }
+
+  .gb-row-amount,
+  .gb-row-buyers {
+    grid-column: auto;
+  }
+
+  .gb-row-buyers {
+    display: none;
+  }
+}
+
+/* Phone: the cursor path is measured in px against the 420px card, so it is
+   dropped rather than shown landing in the wrong places. The steps still
+   appear in order, which is the part that explains the flow. */
+@media (max-width: 720px) {
+  .po-mock-cursor {
+    display: none;
+  }
+
+  .po-mock {
+    max-width: none;
+  }
+}
+
+/* ---------- Mobile menu drawer ----------
+   display:contents above the phone breakpoint, so the desktop header is laid
+   out exactly as if the wrapper were not there. */
+.nav-drawer {
+  display: contents;
+}
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--po-text);
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .nav-toggle {
+    display: inline-flex;
+    order: 9;
+  }
+
+  /* One row: brand on the left, actions and the toggle on the right. */
+  html body .site-header {
+    flex-wrap: nowrap;
+    position: sticky;
+  }
+
+  .nav-drawer {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    z-index: 60;
+    flex-direction: column;
+    padding: 8px;
+    border: 1px solid #e6e8ea;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 18px 40px rgba(16, 40, 46, 0.16);
+  }
+
+  html body .site-header.nav-open .nav-drawer {
+    display: flex;
+  }
+
+  html body .site-header .nav-drawer .main-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  html body .site-header .nav-drawer .main-nav a {
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+
+  html body .site-header .nav-drawer .main-nav a[aria-current="page"],
+  html body .site-header .nav-drawer .main-nav a.active {
+    background: var(--po-gray);
+  }
+
+  .nav-drawer .supplier-menu {
+    padding: 0;
+    border-top: 1px solid #eceef3;
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  .nav-drawer .supplier-toggle {
+    width: 100%;
+    justify-content: space-between;
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+
+  .nav-drawer .supplier-dropdown {
+    position: static;
+    margin: 0;
+    padding: 0 0 0 10px;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .nav-drawer .supplier-dropdown a {
+    padding: 11px 14px;
+    font-size: 14px;
+  }
+}
+
+/* ---------- Phone: fit sections to a screen, not an endless column ----------
+   The desktop layout stacks every card, which on a phone turns each section
+   into a long scroll. These sections do not need to match the desktop; they
+   need to be readable at a glance, so cards go two-up and lose the generous
+   desktop padding. */
+@media (max-width: 720px) {
+  html body.po-home .po-section {
+    padding-top: 44px;
+    padding-bottom: 44px;
+  }
+
+  html body.po-home .po-section-title {
+    font-size: 22px;
+  }
+
+  /* 이런 분들을 위한 곳: 2 columns, compact cards */
+  html body.po-home .po-audience-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  html body.po-home .po-audience-card {
+    gap: 10px;
+    padding: 16px 10px;
+  }
+
+  html body.po-home .po-audience-card .po-icon-lg {
+    width: 52px;
+    height: 52px;
+  }
+
+  html body.po-home .po-audience-card .po-icon-lg .po-glyph {
+    width: 34px;
+    height: 34px;
+  }
+
+  html body.po-home .po-audience-card strong {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  /* 이용 방법: four steps as a 2x2 grid instead of a tall list */
+  html body.po-home .po-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 10px;
+    margin: 24px 0 24px;
+  }
+
+  html body.po-home .po-steps li {
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 0;
+  }
+
+  /* The connector line only makes sense down a single column. */
+  html body.po-home .po-steps li:not(:last-child)::before {
+    content: none;
+  }
+
+  html body.po-home .po-steps strong {
+    font-size: 14px;
+  }
+
+  html body.po-home .po-steps p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  /* 구매 · 공급 안내: two-up as well */
+  html body.po-home .po-why .seo-topic-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  html body.po-home .po-why .seo-topic-grid a,
+  html body.po-home .po-why .seo-topic-grid a:first-child {
+    min-height: 0;
+    padding: 16px 14px;
+  }
+
+  html body.po-home .po-why .seo-topic-grid a strong {
+    margin-top: 12px;
+    font-size: 14px;
+  }
+
+  html body.po-home .po-why .seo-topic-grid a > span:last-child {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  html body.po-home .po-why {
+    padding-top: 44px;
+    padding-bottom: 44px;
+  }
+
+  html body.po-home .po-dark {
+    padding: 48px 16px;
+  }
+
+  html body.po-home .po-cta {
+    padding: 36px 16px;
+  }
 }
