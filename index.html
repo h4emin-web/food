@@ -207,8 +207,8 @@
     <main>
       <section class="hero po-hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <h1 id="hero-title">원료 소싱을<br />쉽고 빠르게</h1>
-          <p class="hero-description">식품·제약·화장품 원료와 공급사를 한곳에서 찾고,<br class="po-br" /> 샘플과 견적을 바로 요청하세요.</p>
+          <h1 id="hero-title" data-i18n="home.hero.title">원료 소싱을<br />쉽고 빠르게</h1>
+          <p class="hero-description" data-i18n="home.hero.desc">식품·제약·화장품 원료와 공급사를 한곳에서 찾고,<br class="po-br" /> 샘플과 견적을 바로 요청하세요.</p>
           <form class="search-panel" action="search.html" method="get" aria-label="원료 검색">
             <label class="search-field">
               <i data-lucide="search"></i>
@@ -217,13 +217,14 @@
                 name="search"
                 type="search"
                 placeholder="원료명 또는 소싱 키워드를 검색하세요"
+                data-i18n-placeholder="home.search.placeholder"
                 aria-label="원료 검색"
               />
             </label>
-            <button class="po-search-button" type="submit">검색</button>
+            <button class="po-search-button" type="submit" data-i18n="search.button">검색</button>
           </form>
           <div class="po-popular" aria-label="인기 원료">
-            <span>인기 원료:</span>
+            <span data-i18n="home.popular">인기 원료:</span>
             <a href="search.html?search=유산균">유산균</a>
             <a href="search.html?search=콜라겐">콜라겐</a>
             <a href="search.html?search=메코발라민">메코발라민</a>
@@ -231,15 +232,15 @@
             <a href="search.html?search=히알루론산">히알루론산</a>
           </div>
           <ul class="po-checks">
-            <li><i data-lucide="check"></i> 구매자는 무료로 이용</li>
-            <li><i data-lucide="check"></i> 샘플 · 견적 바로 요청</li>
-            <li><i data-lucide="check"></i> 국내외 원료 공급사</li>
+            <li><i data-lucide="check"></i> <span data-i18n="home.check1">구매자는 무료로 이용</span></li>
+            <li><i data-lucide="check"></i> <span data-i18n="home.check2">샘플 · 견적 바로 요청</span></li>
+            <li><i data-lucide="check"></i> <span data-i18n="home.check3">국내외 원료 공급사</span></li>
           </ul>
         </div>
       </section>
 
       <section class="po-section po-audience" aria-labelledby="po-audience-title">
-        <h2 class="po-section-title" id="po-audience-title">Allingre는 이런 분들을 위한 곳입니다</h2>
+        <h2 class="po-section-title" id="po-audience-title" data-i18n="home.aud.title">Allingre는 이런 분들을 위한 곳입니다</h2>
         <div class="po-audience-grid">
           <div class="po-audience-card"><span class="po-icon-lg"><svg class="po-glyph" viewBox="0 0 64 64" aria-hidden="true">
               <rect x="5" y="50" width="54" height="3" rx="1.5" fill="#fff"/>
@@ -257,7 +258,7 @@
                 <ellipse cx="46.4" cy="45.6" rx="2.3" ry="1.3" transform="rotate(35 46.4 45.6)"/>
                 <ellipse cx="51.6" cy="45.6" rx="2.3" ry="1.3" transform="rotate(-35 51.6 45.6)"/>
               </g>
-            </svg></span><strong>식품<br />제조사</strong></div>
+            </svg></span><strong data-i18n="home.aud1">식품<br />제조사</strong></div>
           <div class="po-audience-card"><span class="po-icon-lg"><svg class="po-glyph" viewBox="0 0 64 64" aria-hidden="true">
               <ellipse cx="25" cy="14" rx="15" ry="4.5" fill="#fff"/>
               <path d="M10 14v34c0 2.5 6.7 4.5 15 4.5s15-2 15-4.5V14c0 2.5-6.7 4.5-15 4.5S10 16.5 10 14z" fill="#fff"/>
@@ -269,7 +270,7 @@
                 <path d="M46 40.2h4.7a3.8 3.8 0 0 1 0 7.6H46z" fill="currentColor"/>
               </g>
               <circle cx="20" cy="58" r="1.6" fill="#fff"/><circle cx="27" cy="59" r="1.1" fill="#fff"/>
-            </svg></span><strong>제약사 ·<br />원료의약품 구매</strong></div>
+            </svg></span><strong data-i18n="home.aud2">제약사 ·<br />원료의약품 구매</strong></div>
           <div class="po-audience-card"><span class="po-icon-lg"><svg class="po-glyph" viewBox="0 0 64 64" aria-hidden="true">
               <rect x="15" y="6" width="9" height="10" rx="4" fill="#fff"/>
               <rect x="13" y="16" width="13" height="6" rx="1.5" fill="#fff"/>
@@ -283,7 +284,7 @@
               <rect x="32" y="43" width="28" height="2.2" fill="currentColor"/>
               <path d="M48 7l1.8 5.2L55 14l-5.2 1.8L48 21l-1.8-5.2L41 14l5.2-1.8z" fill="#fff"/>
               <path d="M57 21l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z" fill="#fff"/>
-            </svg></span><strong>화장품<br />브랜드 · 제조사</strong></div>
+            </svg></span><strong data-i18n="home.aud3">화장품<br />브랜드 · 제조사</strong></div>
           <div class="po-audience-card"><span class="po-icon-lg"><svg class="po-glyph" viewBox="0 0 64 64" aria-hidden="true">
               <path d="M19 7h14v4h-3v11l11 20c1.7 3.1-.5 6.8-4 6.8H15c-3.5 0-5.7-3.7-4-6.8l11-20V11h-3z" fill="#fff"/>
               <path d="M16.6 36h18.8l4 7.4c.8 1.5-.3 3.4-2 3.4H14.6c-1.7 0-2.8-1.9-2-3.4z" fill="currentColor"/>
@@ -294,7 +295,7 @@
               <circle cx="44" cy="44" r="11" fill="#fff" stroke="currentColor" stroke-width="3"/>
               <circle cx="44" cy="44" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/>
               <path d="M40.5 42a4 4 0 0 1 3-2.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg></span><strong>연구개발 ·<br />OEM · ODM</strong></div>
+            </svg></span><strong data-i18n="home.aud4">연구개발 ·<br />OEM · ODM</strong></div>
           <div class="po-audience-card"><span class="po-icon-lg"><svg class="po-glyph" viewBox="0 0 64 64" aria-hidden="true">
               <path d="M12.6 27.2A20 20 0 0 1 40 13.7" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/>
               <path d="M36.4 8.6l9.4 5.6-8.6 6.4z" fill="#fff"/>
@@ -305,20 +306,20 @@
               <path d="M33.2 32.8l12.2-6.2v14.5l-12.2 6.1z" fill="#fff"/>
               <path d="M25.6 21.6l12.6 6.3v4.8l-3.4 1.7v-4.8L22.3 23.3z" fill="currentColor"/>
               <rect x="21.5" y="36" width="5" height="1.6" rx=".8" transform="rotate(27 24 36.8)" fill="currentColor"/>
-            </svg></span><strong>원료 공급사 ·<br />유통사</strong></div>
+            </svg></span><strong data-i18n="home.aud5">원료 공급사 ·<br />유통사</strong></div>
         </div>
       </section>
 
       <section class="po-section po-how" aria-labelledby="po-how-title">
         <div class="po-how-copy">
-          <h2 class="po-section-title" id="po-how-title">Allingre 이용 방법</h2>
+          <h2 class="po-section-title" id="po-how-title" data-i18n="home.how.title">Allingre 이용 방법</h2>
           <ol class="po-steps">
-            <li><span>1</span><div><strong>검색 · 비교</strong><p>원료와 공급사를 한곳에서 찾아 비교하세요</p></div></li>
-            <li><span>2</span><div><strong>샘플 · 견적 요청</strong><p>공급사에 샘플과 견적을 바로 요청하세요</p></div></li>
-            <li><span>3</span><div><strong>소싱 지원</strong><p>찾는 원료가 없으면 소싱요청을 남기세요</p></div></li>
-            <li><span>4</span><div><strong>거래 진행</strong><p>공급사와 직접 조건을 협의하세요</p></div></li>
+            <li><span>1</span><div><strong data-i18n="home.step1">검색 · 비교</strong><p data-i18n="home.step1d">원료와 공급사를 한곳에서 찾아 비교하세요</p></div></li>
+            <li><span>2</span><div><strong data-i18n="home.step2">샘플 · 견적 요청</strong><p data-i18n="home.step2d">공급사에 샘플과 견적을 바로 요청하세요</p></div></li>
+            <li><span>3</span><div><strong data-i18n="home.step3">소싱 지원</strong><p data-i18n="home.step3d">찾는 원료가 없으면 소싱요청을 남기세요</p></div></li>
+            <li><span>4</span><div><strong data-i18n="home.step4">거래 진행</strong><p data-i18n="home.step4d">공급사와 직접 조건을 협의하세요</p></div></li>
           </ol>
-          <a class="po-btn po-btn-dark" href="signup.html">무료로 시작하기 <i data-lucide="arrow-right"></i></a>
+          <a class="po-btn po-btn-dark" href="signup.html"><span data-i18n="home.how.cta">무료로 시작하기</span> <i data-lucide="arrow-right"></i></a>
         </div>
         <div class="po-how-visual">
           <video class="po-how-video" autoplay muted loop playsinline preload="metadata" poster="videos/how-it-works-poster.jpg" aria-label="Allingre에서 원료를 검색하고 샘플·견적을 요청하는 화면 영상">
@@ -331,74 +332,74 @@
         <div class="po-dark-inner">
           <div class="po-dark-visual" aria-hidden="true">
             <div class="po-req-card">
-              <div class="po-req-head"><span class="po-req-logo"></span>소싱요청서<em>작성 예시</em></div>
-              <div class="po-req-field po-req-wide"><small>원료명</small><b>비타민 D3</b></div>
+              <div class="po-req-head"><span class="po-req-logo"></span><span data-i18n="req.title">소싱요청서</span><em data-i18n="req.example">작성 예시</em></div>
+              <div class="po-req-field po-req-wide"><small data-i18n="req.name">원료명</small><b data-i18n="req.vitd">비타민 D3</b></div>
               <div class="po-req-grid">
-                <div class="po-req-field"><small>분야</small><b>식품</b></div>
-                <div class="po-req-field"><small>필요 수량</small><b>월 500kg</b></div>
-                <div class="po-req-field"><small>필요 샘플 수량</small><b>500g</b></div>
-                <div class="po-req-field"><small>필요 서류</small><b>COA · MSDS</b></div>
+                <div class="po-req-field"><small data-i18n="req.sector">분야</small><b data-i18n="sector.food">식품</b></div>
+                <div class="po-req-field"><small data-i18n="req.qty">필요 수량</small><b data-i18n="req.qtyv">월 500kg</b></div>
+                <div class="po-req-field"><small data-i18n="req.sample">필요 샘플 수량</small><b>500g</b></div>
+                <div class="po-req-field"><small data-i18n="req.docs">필요 서류</small><b>COA · MSDS</b></div>
               </div>
-              <div class="po-req-submit">등록하기</div>
+              <div class="po-req-submit" data-i18n="req.submit">등록하기</div>
             </div>
             <ol class="po-req-steps">
-              <li class="done"><span>✓</span>요청 등록</li>
-              <li class="done"><span>✓</span>Allingre 확인</li>
-              <li class="now"><span>3</span>답변 확인</li>
+              <li class="done"><span>✓</span><em data-i18n="req.s1">요청 등록</em></li>
+              <li class="done"><span>✓</span><em data-i18n="req.s2">Allingre 확인</em></li>
+              <li class="now"><span>3</span><em data-i18n="req.s3">답변 확인</em></li>
             </ol>
             <div class="po-req-toast">
               <span class="po-req-toast-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></span>
-              <div><b>답변이 등록되었습니다</b><small>비타민 D3 · 진행 현황 업데이트</small></div>
+              <div><b data-i18n="req.toast">답변이 등록되었습니다</b><small data-i18n="req.toastd">비타민 D3 · 진행 현황 업데이트</small></div>
             </div>
           </div>
           <div class="po-dark-copy">
-            <p class="po-dark-eyebrow">원료 소싱요청</p>
-            <h2 id="po-dark-title">찾는 원료가 없다면<br />소싱을 요청하세요</h2>
-            <p>원료명, 수량, 규격을 남기면 공급 가능한 업체를 찾아 연결해 드립니다.</p>
+            <p class="po-dark-eyebrow" data-i18n="home.dark.eyebrow">원료 소싱요청</p>
+            <h2 id="po-dark-title" data-i18n="home.dark.title">찾는 원료가 없다면<br />소싱을 요청하세요</h2>
+            <p data-i18n="home.dark.desc">원료명, 수량, 규격을 남기면 공급 가능한 업체를 찾아 연결해 드립니다.</p>
             <ul class="po-dark-points">
-              <li>요청과 진행 현황은 본인에게만 표시</li>
-              <li>필요 수량 · 샘플 · 서류 조건까지 한 번에</li>
-              <li>답변이 오면 소싱요청 페이지에서 바로 확인</li>
+              <li data-i18n="home.dark.p1">요청과 진행 현황은 본인에게만 표시</li>
+              <li data-i18n="home.dark.p2">필요 수량 · 샘플 · 서류 조건까지 한 번에</li>
+              <li data-i18n="home.dark.p3">답변이 오면 소싱요청 페이지에서 바로 확인</li>
             </ul>
-            <a class="po-btn po-btn-light" href="sourcing-request.html">소싱요청 하기 <i data-lucide="arrow-right"></i></a>
+            <a class="po-btn po-btn-light" href="sourcing-request.html"><span data-i18n="home.dark.cta">소싱요청 하기</span> <i data-lucide="arrow-right"></i></a>
           </div>
         </div>
       </section>
 
       <section class="seo-topic-section po-why" aria-labelledby="seo-topic-title">
         <div class="seo-topic-inner">
-          <h2 class="po-section-title" id="seo-topic-title">원료 구매 · 공급 안내</h2>
-          <p>필요한 원료를 찾고, 공급 조건을 확인하세요.</p>
+          <h2 class="po-section-title" id="seo-topic-title" data-i18n="home.guide.title">원료 구매 · 공급 안내</h2>
+          <p data-i18n="home.guide.sub">필요한 원료를 찾고, 공급 조건을 확인하세요.</p>
           <div class="seo-topic-grid">
             <a href="search.html">
               <span class="po-icon-sm"><i data-lucide="search"></i></span>
-              <strong>원료 검색</strong>
-              <span>식품·제약·화장품 원료의 제조사와 공급 정보를 확인하세요.</span>
+              <strong data-i18n="home.g1">원료 검색</strong>
+              <span data-i18n="home.g1d">식품·제약·화장품 원료의 제조사와 공급 정보를 확인하세요.</span>
             </a>
             <a href="community.html">
               <span class="po-icon-sm"><i data-lucide="message-circle"></i></span>
-              <strong>원료 문의</strong>
-              <span>찾는 원료가 없다면 문의를 남겨 공급 가능 여부를 확인하세요.</span>
+              <strong data-i18n="home.g2">원료 문의</strong>
+              <span data-i18n="home.g2d">찾는 원료가 없다면 문의를 남겨 공급 가능 여부를 확인하세요.</span>
             </a>
             <a href="search.html">
               <span class="po-icon-sm"><i data-lucide="package"></i></span>
-              <strong>샘플 · 견적</strong>
-              <span>원료 목록에서 공급사에 샘플과 견적을 요청하세요.</span>
+              <strong data-i18n="home.g3">샘플 · 견적</strong>
+              <span data-i18n="home.g3d">원료 목록에서 공급사에 샘플과 견적을 요청하세요.</span>
             </a>
             <a href="intro.html#supplier-onboarding">
               <span class="po-icon-sm"><i data-lucide="building-2"></i></span>
-              <strong>공급사 등록</strong>
-              <span>제품 리스트를 보내주시면 원료 등록을 도와드립니다.</span>
+              <strong data-i18n="home.g4">공급사 등록</strong>
+              <span data-i18n="home.g4d">제품 리스트를 보내주시면 원료 등록을 도와드립니다.</span>
             </a>
           </div>
         </div>
       </section>
 
       <section class="po-cta" aria-labelledby="po-cta-title">
-        <h2 id="po-cta-title">더 알고 싶으신가요?</h2>
+        <h2 id="po-cta-title" data-i18n="home.cta.title">더 알고 싶으신가요?</h2>
         <div class="po-cta-actions">
-          <a class="po-btn po-btn-dark" href="intro.html">Allingre 소개 <i data-lucide="arrow-right"></i></a>
-          <a class="po-btn po-btn-outline" href="community.html">문의하기 <i data-lucide="arrow-right"></i></a>
+          <a class="po-btn po-btn-dark" href="intro.html"><span data-i18n="home.cta.about">Allingre 소개</span> <i data-lucide="arrow-right"></i></a>
+          <a class="po-btn po-btn-outline" href="community.html"><span data-i18n="home.cta.contact">문의하기</span> <i data-lucide="arrow-right"></i></a>
         </div>
       </section>
     </main>

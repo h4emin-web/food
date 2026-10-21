@@ -84,6 +84,115 @@
     },
   };
 
+  // Hand-written page copy, keyed by data-i18n / data-i18n-placeholder.
+  // Machine translation of these runs long and overflows the cards, so the
+  // short versions below win; anything without a key is left to Google.
+  const PAGE_TEXT = {
+    en: {
+      "home.hero.title": "Ingredient sourcing,<br />made simple",
+      "home.hero.desc": "Find food, pharma and cosmetic ingredients and suppliers in one place.<br class=\"po-br\" /> Request samples and quotes instantly.",
+      "home.search.placeholder": "Search ingredients or keywords",
+      "search.button": "Search",
+      "home.popular": "Popular:",
+      "home.check1": "Free for buyers",
+      "home.check2": "Instant samples &amp; quotes",
+      "home.check3": "Global suppliers",
+      "home.aud.title": "Who Allingre is for",
+      "home.aud1": "Food<br />Manufacturers",
+      "home.aud2": "Pharma<br />Companies",
+      "home.aud3": "Cosmetic<br />Brands",
+      "home.aud4": "R&amp;D ·<br />OEM · ODM",
+      "home.aud5": "Suppliers &amp;<br />Distributors",
+      "home.how.title": "How Allingre works",
+      "home.step1": "Search &amp; Compare",
+      "home.step1d": "Find ingredients and suppliers in one place",
+      "home.step2": "Request Samples &amp; Quotes",
+      "home.step2d": "Contact suppliers directly",
+      "home.step3": "Sourcing Support",
+      "home.step3d": "Can't find it? Post a sourcing request",
+      "home.step4": "Close the Deal",
+      "home.step4d": "Agree terms directly with suppliers",
+      "home.how.cta": "Get started – free",
+      "req.title": "Sourcing request",
+      "req.example": "Example",
+      "req.name": "Ingredient",
+      "req.vitd": "Vitamin D3",
+      "req.sector": "Sector",
+      "req.qty": "Volume",
+      "req.qtyv": "500 kg / month",
+      "req.sample": "Sample size",
+      "req.docs": "Documents",
+      "req.submit": "Submit",
+      "req.s1": "Submitted",
+      "req.s2": "Reviewed",
+      "req.s3": "Reply ready",
+      "req.toast": "New reply received",
+      "req.toastd": "Vitamin D3 · status updated",
+      "home.dark.eyebrow": "Sourcing Request",
+      "home.dark.title": "Can't find an ingredient?<br />Request it",
+      "home.dark.desc": "Share the name, volume and specs. We'll find suppliers who can deliver.",
+      "home.dark.p1": "Only you can see your requests",
+      "home.dark.p2": "Volume, samples and documents in one form",
+      "home.dark.p3": "Replies appear on your sourcing page",
+      "home.dark.cta": "Request sourcing",
+      "home.guide.title": "Buying &amp; Supplying",
+      "home.guide.sub": "Find ingredients and check supply terms.",
+      "home.g1": "Search",
+      "home.g1d": "Find makers and supply details for food, pharma and cosmetic ingredients.",
+      "home.g2": "Inquiries",
+      "home.g2d": "Can't find it? Post an inquiry to check availability.",
+      "home.g3": "Samples &amp; Quotes",
+      "home.g3d": "Request samples and quotes from listed suppliers.",
+      "home.g4": "List as a Supplier",
+      "home.g4d": "Send us your product list and we'll get you listed.",
+      "home.cta.title": "Want to know more?",
+      "home.cta.about": "About Allingre",
+      "home.cta.contact": "Contact us",
+      "search.title": "Find Ingredients",
+      "search.desc": "Search food, pharma and cosmetic ingredients, then request samples and quotes.",
+      "filter.title": "Filter",
+      "filter.reset": "Reset",
+      "filter.type": "Type",
+      "sector.food": "Food",
+      "sector.pharma": "Pharma",
+      "sector.cosmetic": "Cosmetics",
+    },
+  };
+
+  // Short words for text the scripts render later (result cards, detail
+  // panel). Matched on a whole text node only.
+  const GLOSSARY = {
+    en: {
+      exact: {
+        "샘플 요청": "Sample",
+        "견적 문의": "Quote",
+        "쪽지 보내기": "Message",
+        "제조국": "Origin",
+        "제조사": "Maker",
+        "공급사": "Supplier",
+        "공급사 홈페이지": "Website",
+        "공급사 이메일": "Email",
+        "리드타임": "Lead time",
+        "비공개": "Private",
+        "확인 필요": "TBC",
+        "규격 확인 필요": "Spec TBC",
+        "제조국 확인 필요": "Origin TBC",
+        "비공개 시 제조국만 노출됩니다.": "Only the country is shown.",
+        "상세 정보는 공급사에 문의하세요": "Ask the supplier for details",
+        "식품": "Food",
+        "제약": "Pharma",
+        "화장품": "Cosmetics",
+        "전체 원료": "All ingredients",
+        "· 공급사": "· suppliers",
+        "원료 · 공급사": "ingredients · suppliers",
+        "다음": "Next",
+        "원료를 검색하고 있습니다...": "Searching…",
+        "조건에 맞는 원료가 없습니다. 검색어 또는 필터를 줄여보세요.": "No matches. Try a broader search.",
+      },
+      patterns: [[/^([\d,]+)개 원료$/, "$1 results"]],
+    },
+  };
+
   const PREFIX_PATTERN = /^\/(en|zh|ja|vi)(?=\/|$)/;
   const prefixMatch = window.location.pathname.match(PREFIX_PATTERN);
   const current = LANGUAGES.find((lang) => lang.prefix === (prefixMatch ? prefixMatch[1] : "")) || LANGUAGES[0];
@@ -130,6 +239,58 @@
     document.documentElement.lang = current.html;
   } else if (/(?:^|;\s*)googtrans=/.test(document.cookie)) {
     clearCookie();
+  }
+
+  // ---------- Hand-written copy for this language ----------
+  const pageText = PAGE_TEXT[current.prefix];
+  if (pageText) {
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const text = pageText[el.dataset.i18n];
+      if (text == null) return;
+      el.innerHTML = text;
+      el.setAttribute("translate", "no");
+      el.classList.add("notranslate");
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+      const text = pageText[el.dataset.i18nPlaceholder];
+      if (text != null) el.placeholder = text;
+    });
+  }
+
+  const glossary = GLOSSARY[current.prefix];
+  if (glossary) {
+    const lookup = (text) => {
+      if (glossary.exact[text]) return glossary.exact[text];
+      const hit = glossary.patterns.find(([pattern]) => pattern.test(text));
+      return hit ? text.replace(hit[0], hit[1]) : "";
+    };
+    // Each replaced text node becomes its own no-translate span, so the
+    // rest of its parent (e.g. a country name next to "제조국") still gets
+    // machine-translated.
+    const applyGlossary = (root) => {
+      if (!root || root.nodeType !== 1 || root.closest(".notranslate")) return;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const hits = [];
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const text = node.nodeValue.trim();
+        const next = text && lookup(text);
+        if (next && !node.parentElement.closest(".notranslate")) hits.push([node, next]);
+      }
+      hits.forEach(([node, next]) => {
+        const span = document.createElement("span");
+        span.className = "notranslate";
+        span.setAttribute("translate", "no");
+        span.textContent = node.nodeValue.replace(node.nodeValue.trim(), next);
+        node.replaceWith(span);
+      });
+    };
+    const main = document.querySelector("main") || document.body;
+    applyGlossary(main);
+    new MutationObserver((records) => {
+      records.forEach((record) =>
+        record.addedNodes.forEach((node) => applyGlossary(node.nodeType === 3 ? node.parentElement : node)),
+      );
+    }).observe(main, { childList: true, subtree: true });
   }
 
   // Internal absolute links (also ones rendered later) keep the prefix.

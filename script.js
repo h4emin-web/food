@@ -535,40 +535,61 @@ function getIngredientDetailMarkup(item) {
       ? ""
       : '<small class="private-manufacturer-note">비공개 시 제조국만 노출됩니다.</small>';
 
+  const sector = normalizeSector(item.sector);
+  const type = String(item.type || "").trim();
+  const flagCode = String(item.originFlagCode || "").toLowerCase();
+  const flag = /^[a-z]{2}(-[a-z]{2,3})?$/.test(flagCode)
+    ? `<img class="detail-flag" src="https://flagcdn.com/w40/${flagCode}.png" alt="" loading="lazy" />`
+    : "";
+  const icon = (path) =>
+    `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
+  const ICONS = {
+    supplier: icon('<path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/>'),
+    maker: icon('<path d="M3 21V10l6 4V10l6 4V6h6v15z"/>'),
+    origin: icon('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
+    web: icon('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
+    mail: icon('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
+  };
+
   return `
     <section class="ingredient-detail" data-detail-ingredient-id="${escapeHtml(item.id)}" aria-label="${escapeHtml(item.name)} 상세">
       <article class="detail-post ingredient-detail-card">
         <div class="detail-head">
-          <h2>${escapeHtml(item.name)} <span>(${escapeHtml(item.englishName)})</span></h2>
+          <h2>${escapeHtml(item.name)} <span>${escapeHtml(item.englishName || "")}</span></h2>
           <div class="detail-meta">
-            <span>${escapeHtml(item.type || "원료")}</span>
-            <span>${normalizeSector(item.sector)}</span>
-            <span>${escapeHtml(item.origin || "제조국 확인 필요")}</span>
-            <span>${escapeHtml(supplier.spec || "규격 확인 필요")}</span>
+            <span class="detail-chip detail-chip-sector ${getSectorClass(sector)}">${sector}</span>
+            ${type && type !== sector && type !== "원료" ? `<span class="detail-chip">${escapeHtml(type)}</span>` : ""}
+            <span class="detail-chip">${flag}${escapeHtml(item.origin || "제조국 확인 필요")}</span>
+            <span class="detail-chip">${escapeHtml(supplier.spec || "규격 확인 필요")}</span>
           </div>
         </div>
-        <p>${escapeHtml(getIngredientDisplayDescription(item))}</p>
+        <p class="detail-desc">${escapeHtml(getIngredientDisplayDescription(item))}</p>
         <div class="supplier-detail-grid">
           <div>
+            <i aria-hidden="true">${ICONS.supplier}</i>
             <span>공급사</span>
             <strong>${escapeHtml(supplier.name || "확인 필요")}</strong>
           </div>
           <div>
-            <span>공급사 홈페이지</span>
-            <a href="${website || "#"}" target="_blank" rel="noreferrer">${website || "확인 필요"}</a>
-          </div>
-          <div>
-            <span>공급사 이메일</span>
-            <a href="mailto:${email}">${email}</a>
-          </div>
-          <div>
+            <i aria-hidden="true">${ICONS.maker}</i>
             <span>제조사</span>
             <strong>${manufacturerText}</strong>
             ${manufacturerNote}
           </div>
           <div>
+            <i aria-hidden="true">${ICONS.origin}</i>
             <span>제조국</span>
-            <strong>${escapeHtml(item.origin || "확인 필요")}</strong>
+            <strong>${flag}${escapeHtml(item.origin || "확인 필요")}</strong>
+          </div>
+          <div>
+            <i aria-hidden="true">${ICONS.web}</i>
+            <span>공급사 홈페이지</span>
+            ${website ? `<a href="${website}" target="_blank" rel="noreferrer">${website}</a>` : "<strong>확인 필요</strong>"}
+          </div>
+          <div>
+            <i aria-hidden="true">${ICONS.mail}</i>
+            <span>공급사 이메일</span>
+            ${supplier.email ? `<a href="mailto:${email}">${email}</a>` : "<strong>확인 필요</strong>"}
           </div>
         </div>
         <div class="detail-actions">

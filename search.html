@@ -73,8 +73,8 @@
     <main>
       <section class="po-search-hero" aria-labelledby="search-title">
         <div class="po-search-hero-inner">
-          <h1 id="search-title">원료 찾기</h1>
-          <p>식품 · 제약 · 화장품 원료와 공급사를 검색하고 샘플 · 견적을 요청하세요.</p>
+          <h1 id="search-title" data-i18n="search.title">원료 찾기</h1>
+          <p data-i18n="search.desc">식품 · 제약 · 화장품 원료와 공급사를 검색하고 샘플 · 견적을 요청하세요.</p>
           <form class="search-panel" aria-label="원료 검색">
             <label class="search-field">
               <i data-lucide="search"></i>
@@ -82,9 +82,10 @@
                 id="heroSearch"
                 type="search"
                 placeholder="원료명 또는 소싱 키워드를 검색하세요"
+                data-i18n-placeholder="home.search.placeholder"
               />
             </label>
-            <button class="po-search-button" type="submit">검색</button>
+            <button class="po-search-button" type="submit" data-i18n="search.button">검색</button>
           </form>
         </div>
       </section>
@@ -92,14 +93,14 @@
       <section class="marketplace po-results" id="ingredients">
         <aside class="po-filter" aria-label="원료 필터">
           <div class="po-filter-head">
-            <h2><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg>필터</h2>
-            <button type="button" id="resetFilters">초기화</button>
+            <h2><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg><span data-i18n="filter.title">필터</span></h2>
+            <button type="button" id="resetFilters" data-i18n="filter.reset">초기화</button>
           </div>
           <fieldset class="po-filter-group">
-            <legend>유형</legend>
-            <label><input type="checkbox" value="식품" data-sector-filter /> <span>식품</span> <small data-sector-count></small></label>
-            <label><input type="checkbox" value="제약" data-sector-filter /> <span>제약</span> <small data-sector-count></small></label>
-            <label><input type="checkbox" value="화장품" data-sector-filter /> <span>화장품</span> <small data-sector-count></small></label>
+            <legend data-i18n="filter.type">유형</legend>
+            <label><input type="checkbox" value="식품" data-sector-filter /> <span data-i18n="sector.food">식품</span> <small data-sector-count></small></label>
+            <label><input type="checkbox" value="제약" data-sector-filter /> <span data-i18n="sector.pharma">제약</span> <small data-sector-count></small></label>
+            <label><input type="checkbox" value="화장품" data-sector-filter /> <span data-i18n="sector.cosmetic">화장품</span> <small data-sector-count></small></label>
           </fieldset>
         </aside>
 

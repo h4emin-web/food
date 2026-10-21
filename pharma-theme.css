@@ -628,6 +628,10 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   font-weight: 700;
 }
 
+.po-req-steps em {
+  font-style: normal;
+}
+
 .po-req-steps .done {
   color: #fff;
 }
@@ -1276,7 +1280,15 @@ html body.po-list .po-results .content-area {
 }
 
 .po-results-head h2 span {
+  margin-left: 0.2em;
   color: #8a9096;
+}
+
+/* Machine-translated country names come back lower-case ("germany") */
+html[lang="en"] .po-result-meta b,
+html[lang="en"] .ingredient-detail .detail-chip,
+html[lang="en"] .ingredient-detail .supplier-detail-grid strong {
+  text-transform: capitalize;
 }
 
 .po-results-head p {
@@ -2539,5 +2551,401 @@ html body.po-board .community-list .empty-state {
 
   html body.po-board .community-post .post-stats {
     display: none;
+  }
+}
+
+/* ---------- Ingredient detail panel (opens under a clicked ingredient) ---------- */
+html body .ingredient-detail {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+html body .ingredient-detail .ingredient-detail-card {
+  margin: 0;
+  padding: 32px 36px 28px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 34px rgba(22, 31, 71, 0.12);
+}
+
+html body.po-list .po-result-list .ingredient-detail {
+  margin-top: -8px;
+}
+
+html body .ingredient-detail .detail-head {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #eceef4;
+}
+
+html body .ingredient-detail .detail-head h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+  color: var(--po-text);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+html body .ingredient-detail .detail-head h2 span {
+  color: #8a90a2;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+html body .ingredient-detail .detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+html body .ingredient-detail .detail-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid #e3e6ef;
+  border-radius: 999px;
+  background: #fff;
+  color: #4a5068;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+html body .ingredient-detail .detail-chip-sector.sector-식품 { border-color: #9fd3b8; background: #f1faf5; color: #1f7a4d; }
+html body .ingredient-detail .detail-chip-sector.sector-제약 { border-color: #a5c3eb; background: #f1f6fd; color: #2459a6; }
+html body .ingredient-detail .detail-chip-sector.sector-화장품 { border-color: #c8b3ea; background: #f7f3fd; color: #6a3fb0; }
+
+html body .ingredient-detail .detail-flag {
+  width: 18px;
+  height: auto;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+html body .ingredient-detail .detail-desc {
+  margin: 18px 0 0;
+  color: #4a5068;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+html body .ingredient-detail .supplier-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+html body .ingredient-detail .supplier-detail-grid > div {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  grid-template-areas:
+    "icon label"
+    "icon value"
+    "icon note";
+  align-content: start;
+  column-gap: 12px;
+  row-gap: 3px;
+  min-height: 0;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--po-gray);
+  box-shadow: none;
+}
+
+html body .ingredient-detail .supplier-detail-grid i {
+  grid-area: icon;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--po-teal);
+  color: #fff;
+  font-style: normal;
+}
+
+html body .ingredient-detail .supplier-detail-grid span {
+  grid-area: label;
+  color: #8a90a2;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+html body .ingredient-detail .supplier-detail-grid strong,
+html body .ingredient-detail .supplier-detail-grid a {
+  grid-area: value;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--po-text);
+  font-size: 15px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body .ingredient-detail .supplier-detail-grid a {
+  display: block;
+  color: var(--po-teal);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+html body .ingredient-detail .supplier-detail-grid small {
+  grid-area: note;
+  color: #9aa0b1;
+  font-size: 12px;
+}
+
+html body .ingredient-detail .detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #eceef4;
+}
+
+html body .ingredient-detail .detail-actions button {
+  min-height: 42px;
+  padding: 0 22px;
+  border: 1px solid var(--po-teal);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--po-teal);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+html body .ingredient-detail .detail-actions .quote-button {
+  background: var(--po-teal);
+  color: #fff;
+}
+
+html body .ingredient-detail .detail-actions .quote-button:hover {
+  background: var(--po-teal-deep);
+}
+
+html body .ingredient-detail .detail-actions .outline-button:hover,
+html body .ingredient-detail .detail-actions .sample-button:hover {
+  background: #eef0f8;
+}
+
+@media (max-width: 900px) {
+  html body .ingredient-detail .ingredient-detail-card {
+    padding: 22px 18px;
+  }
+
+  html body .ingredient-detail .detail-head h2 {
+    font-size: 21px;
+  }
+
+  html body .ingredient-detail .supplier-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  html body .ingredient-detail .detail-actions button {
+    flex: 1;
+  }
+}
+
+/* ---------- Other pages (body.po-page): register, messages, my page,
+   favorites, login, signup, suggestions, terms, privacy ---------- */
+html body.po-page .site-header {
+  margin-bottom: -56px;
+}
+
+html body.po-page main {
+  padding-bottom: 96px;
+  background: #f6f7fa;
+}
+
+html body.po-page :is(.register-hero, .signup-hero, .community-hero, .legal-hero) {
+  display: block;
+  margin: 0 0 48px;
+  padding: 128px 16px 64px;
+  border: 0;
+  background:
+    radial-gradient(900px 420px at 85% 0%, rgba(169, 184, 255, 0.10), transparent 60%),
+    radial-gradient(800px 420px at 0% 100%, rgba(110, 130, 255, 0.14), transparent 60%),
+    var(--po-teal);
+  text-align: center;
+}
+
+html body.po-page :is(.register-hero, .signup-hero, .community-hero, .legal-hero) > * {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+html body.po-page :is(.register-hero, .signup-hero, .community-hero, .legal-hero) .eyebrow {
+  color: var(--po-accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+html body.po-page :is(.register-hero, .signup-hero, .community-hero, .legal-hero) h1 {
+  margin-top: 8px;
+  color: #fff;
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+html body.po-page :is(.register-hero, .signup-hero, .community-hero, .legal-hero) p:not(.eyebrow) {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+/* White rounded cards */
+html body.po-page :is(.auth-required, .register-form, .signup-form, .legal-document, .message-thread-list, .message-room) {
+  border: 0;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(22, 31, 71, 0.07);
+}
+
+html body.po-page :is(.register-form, .signup-form, .legal-document) {
+  padding: 36px 40px;
+}
+
+html body.po-page .form-section h2,
+html body.po-page .form-section h3,
+html body.po-page .legal-document h2 {
+  color: var(--po-text);
+  font-weight: 600;
+}
+
+/* Inputs */
+html body.po-page :is(input[type="text"], input[type="email"], input[type="password"], input[type="tel"], input[type="url"], input[type="number"], input:not([type]), select, textarea) {
+  border: 1px solid #e1e4ee;
+  border-radius: 10px;
+  background: #fbfbfd;
+}
+
+html body.po-page :is(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: var(--po-teal);
+  box-shadow: 0 0 0 3px #e6e9f7;
+}
+
+/* Buttons */
+html body.po-page :is(.primary-button, .outline-button) {
+  border-radius: 999px;
+}
+
+html body.po-page .primary-button {
+  border-color: var(--po-teal);
+  background: var(--po-teal);
+  color: #fff;
+}
+
+html body.po-page .primary-button:hover {
+  background: var(--po-teal-deep);
+}
+
+html body.po-page .outline-button {
+  border-color: var(--po-teal);
+  color: var(--po-teal);
+}
+
+/* Messages: tabs as a segmented pill */
+html body.po-page .message-view-tabs {
+  display: flex;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  margin: 0 auto 20px;
+  gap: 4px;
+  padding: 5px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(22, 31, 71, 0.06);
+}
+
+html body.po-page .message-view-tabs button {
+  min-height: 38px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--po-muted);
+  font-weight: 600;
+}
+
+html body.po-page .message-view-tabs button::after {
+  display: none;
+}
+
+html body.po-page .message-view-tabs button.active,
+html body.po-page .message-view-tabs button[aria-selected="true"] {
+  background: var(--po-teal);
+  color: #fff;
+}
+
+html body.po-page .marketplace {
+  background: transparent;
+}
+
+/* Favorites list rows */
+html body.po-page .favorites-page .ingredient-grid {
+  gap: 10px;
+  border: 0;
+}
+
+html body.po-page .favorites-page .ingredient-grid .ingredient-card {
+  border: 0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(22, 31, 71, 0.06);
+}
+
+html body.po-page .favorites-page .empty-state {
+  border: 0;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(22, 31, 71, 0.07);
+}
+
+@media (max-width: 1023px) {
+  html body.po-page .site-header {
+    margin-bottom: -100px;
+  }
+
+  html body.po-page :is(.register-hero, .signup-hero, .community-hero, .legal-hero) {
+    padding-top: 148px;
+  }
+}
+
+@media (max-width: 720px) {
+  html body.po-page .site-header {
+    margin-bottom: -96px;
+  }
+
+  html body.po-page :is(.register-hero, .signup-hero, .community-hero, .legal-hero) {
+    margin-bottom: 28px;
+    padding: 140px 16px 44px;
+  }
+
+  html body.po-page :is(.register-hero, .signup-hero, .community-hero, .legal-hero) h1 {
+    font-size: 30px;
+  }
+
+  html body.po-page :is(.register-form, .signup-form, .legal-document) {
+    padding: 24px 18px;
   }
 }
