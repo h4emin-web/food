@@ -38,6 +38,7 @@
     <link rel="alternate" type="text/plain" href="/llms-full.txt" title="원료나라 LLM full guide" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="theme.css" />
+    <link rel="stylesheet" href="pharma-theme.css" />
 
     <script type="application/ld+json">
 {
@@ -166,7 +167,7 @@
 }
     </script>
   </head>
-  <body>
+  <body class="po-home">
     <header class="site-header">
       <a class="brand" href="index.html" aria-label="원료나라 홈">
         <span class="brand-mark" aria-hidden="true"></span>
@@ -195,11 +196,11 @@
     </header>
 
     <main>
-      <section class="hero" aria-labelledby="hero-title">
+      <section class="hero po-hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow">식품 · 제약 · 화장품 원료</p>
-          <h1 id="hero-title">원료를 쉽고 빠르게</h1>
-          <p class="hero-description">원료 정보 확인부터 공급사 문의까지</p>
+          <p class="po-badge"><span aria-hidden="true">★</span> 식품 · 제약 · 화장품 원료 B2B 플랫폼</p>
+          <h1 id="hero-title">원료 소싱을<br />쉽고 빠르게</h1>
+          <p class="hero-description">식품·제약·화장품 원료와 공급사를 한곳에서 찾고,<br class="po-br" /> 샘플과 견적을 바로 요청하세요.</p>
           <form class="search-panel" aria-label="원료 검색">
             <label class="search-field">
               <i data-lucide="search"></i>
@@ -209,7 +210,21 @@
                 placeholder="원료명 또는 소싱 키워드를 검색하세요"
               />
             </label>
+            <button class="po-search-button" type="submit">검색</button>
           </form>
+          <div class="po-popular" aria-label="인기 원료">
+            <span>인기 원료:</span>
+            <button type="button" data-po-keyword="유산균">유산균</button>
+            <button type="button" data-po-keyword="콜라겐">콜라겐</button>
+            <button type="button" data-po-keyword="메코발라민">메코발라민</button>
+            <button type="button" data-po-keyword="루테인">루테인</button>
+            <button type="button" data-po-keyword="히알루론산">히알루론산</button>
+          </div>
+          <ul class="po-checks">
+            <li><i data-lucide="check"></i> 구매자는 무료로 이용</li>
+            <li><i data-lucide="check"></i> 샘플 · 견적 바로 요청</li>
+            <li><i data-lucide="check"></i> 국내외 원료 공급사</li>
+          </ul>
         </div>
       </section>
 
@@ -242,6 +257,7 @@
         </aside>
 
         <div class="content-area">
+          <h2 class="po-section-title po-list-title">원료 찾기</h2>
           <div class="sector-tabs" role="tablist" aria-label="원료 분야">
             <button class="active" type="button" data-ingredient-sector="전체">전체보기</button>
             <button type="button" data-ingredient-sector="식품">식품</button>
@@ -252,26 +268,78 @@
         </div>
       </section>
 
-      <section class="seo-topic-section" aria-labelledby="seo-topic-title">
+      <section class="po-section po-audience" aria-labelledby="po-audience-title">
+        <h2 class="po-section-title" id="po-audience-title">원료나라는 이런 분들을 위한 곳입니다</h2>
+        <div class="po-audience-grid">
+          <div class="po-audience-card"><span class="po-icon-lg"><i data-lucide="factory"></i></span><strong>식품<br />제조사</strong></div>
+          <div class="po-audience-card"><span class="po-icon-lg"><i data-lucide="pill"></i></span><strong>제약사 ·<br />원료의약품 구매</strong></div>
+          <div class="po-audience-card"><span class="po-icon-lg"><i data-lucide="sparkles"></i></span><strong>화장품<br />브랜드 · 제조사</strong></div>
+          <div class="po-audience-card"><span class="po-icon-lg"><i data-lucide="flask-conical"></i></span><strong>연구개발 ·<br />OEM · ODM</strong></div>
+          <div class="po-audience-card"><span class="po-icon-lg"><i data-lucide="truck"></i></span><strong>원료 공급사 ·<br />유통사</strong></div>
+        </div>
+      </section>
+
+      <section class="po-section po-how" aria-labelledby="po-how-title">
+        <div class="po-how-copy">
+          <h2 class="po-section-title" id="po-how-title">원료나라 이용 방법</h2>
+          <ol class="po-steps">
+            <li><span>1</span><div><strong>검색 · 비교</strong><p>원료와 공급사를 한곳에서 찾아 비교하세요</p></div></li>
+            <li><span>2</span><div><strong>샘플 · 견적 요청</strong><p>공급사에 샘플과 견적을 바로 요청하세요</p></div></li>
+            <li><span>3</span><div><strong>소싱 지원</strong><p>찾는 원료가 없으면 소싱요청을 남기세요</p></div></li>
+            <li><span>4</span><div><strong>거래 진행</strong><p>공급사와 직접 조건을 협의하세요</p></div></li>
+          </ol>
+          <a class="po-btn po-btn-dark" href="signup.html">무료로 시작하기 <i data-lucide="arrow-right"></i></a>
+        </div>
+        <div class="po-how-visual" aria-hidden="true">
+          <div class="po-mock">
+            <div class="po-mock-bar"><span class="po-mock-dot"></span>원료나라<em></em></div>
+            <div class="po-mock-search"><i data-lucide="search"></i>원료 검색</div>
+            <div class="po-mock-row"><b>루테인</b><i class="g">식품</i><u>샘플 요청</u><u>견적 문의</u></div>
+            <div class="po-mock-row"><b>메코발라민</b><i class="b">제약</i><u>샘플 요청</u><u>견적 문의</u></div>
+            <div class="po-mock-row"><b>콜라겐 펩타이드</b><i class="g">식품</i><u>샘플 요청</u><u>견적 문의</u></div>
+            <div class="po-mock-row"><b>나이아신아마이드</b><i class="p">화장품</i><u>샘플 요청</u><u>견적 문의</u></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="po-dark" aria-labelledby="po-dark-title">
+        <div class="po-dark-inner">
+          <div class="po-dark-visual" aria-hidden="true">
+            <div class="po-dark-card"><small>소싱요청 예시</small><strong>비타민 D3</strong><span>식품 · 수량 · 규격 · 견적 요청</span></div>
+            <div class="po-dark-card"><small>소싱요청 예시</small><strong>히알루론산나트륨</strong><span>화장품 · 수량 · 규격 · 샘플 요청</span></div>
+            <div class="po-dark-card"><small>소싱요청 예시</small><strong>아세트아미노펜</strong><span>제약 · 수량 · 규격 · 견적 요청</span></div>
+          </div>
+          <div class="po-dark-copy">
+            <p class="po-dark-eyebrow">원료 소싱요청</p>
+            <h2 id="po-dark-title">찾는 원료가 없다면<br />소싱을 요청하세요</h2>
+            <p>원료명, 수량, 규격을 남기면 공급 가능한 업체를 찾아 연결해 드립니다.</p>
+            <a class="po-btn po-btn-light" href="sourcing-request.html">소싱요청 하기 <i data-lucide="arrow-right"></i></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="seo-topic-section po-why" aria-labelledby="seo-topic-title">
         <div class="seo-topic-inner">
-          <h2 id="seo-topic-title">원료 구매 · 공급 안내</h2>
-          <p>
-            필요한 원료를 찾고, 공급 조건을 확인하세요.
-          </p>
+          <h2 class="po-section-title" id="seo-topic-title">원료 구매 · 공급 안내</h2>
+          <p>필요한 원료를 찾고, 공급 조건을 확인하세요.</p>
           <div class="seo-topic-grid">
             <a href="#ingredients">
+              <span class="po-icon-sm"><i data-lucide="search"></i></span>
               <strong>원료 검색</strong>
               <span>식품·제약·화장품 원료의 제조사와 공급 정보를 확인하세요.</span>
             </a>
             <a href="community.html">
+              <span class="po-icon-sm"><i data-lucide="message-circle"></i></span>
               <strong>원료 문의</strong>
               <span>찾는 원료가 없다면 문의를 남겨 공급 가능 여부를 확인하세요.</span>
             </a>
             <a href="#ingredients">
+              <span class="po-icon-sm"><i data-lucide="package"></i></span>
               <strong>샘플 · 견적</strong>
               <span>원료 목록에서 공급사에 샘플과 견적을 요청하세요.</span>
             </a>
             <a href="intro.html#supplier-onboarding">
+              <span class="po-icon-sm"><i data-lucide="building-2"></i></span>
               <strong>공급사 등록</strong>
               <span>제품 리스트를 보내주시면 원료 등록을 도와드립니다.</span>
             </a>
@@ -279,6 +347,13 @@
         </div>
       </section>
 
+      <section class="po-cta" aria-labelledby="po-cta-title">
+        <h2 id="po-cta-title">더 알고 싶으신가요?</h2>
+        <div class="po-cta-actions">
+          <a class="po-btn po-btn-dark" href="intro.html">원료나라 소개 <i data-lucide="arrow-right"></i></a>
+          <a class="po-btn po-btn-outline" href="community.html">문의하기 <i data-lucide="arrow-right"></i></a>
+        </div>
+      </section>
     </main>
 
     <footer class="site-footer">
@@ -303,6 +378,16 @@
     <script src="supabase-config.js"></script>
     <script src="country-flags.js"></script>
     <script src="script.js"></script>
+    <script>
+      document.querySelectorAll("[data-po-keyword]").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const input = document.getElementById("heroSearch");
+          input.value = chip.dataset.poKeyword;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          document.getElementById("ingredients").scrollIntoView({ behavior: "smooth" });
+        });
+      });
+    </script>
   </body>
 </html>
 
