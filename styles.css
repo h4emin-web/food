@@ -17,6 +17,8 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -24,7 +26,25 @@ body {
   color: var(--ink);
   background: var(--paper);
   font-family: var(--font-main);
+  /* clip, not hidden: hidden turns body into a scroll container, which costs
+     a frame on every scroll and kills momentum scrolling on iOS. Browsers
+     without clip fall back to the hidden above it. */
   overflow-x: hidden;
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .page-ripple {
@@ -215,6 +235,18 @@ img {
 
 .message-bell.has-unread {
   color: #2563eb;
+}
+
+/* The pulse runs forever inside the sticky header, so it animates only
+   transform/opacity on a pseudo-element. Animating box-shadow repainted the
+   whole header on every frame and made the page stutter while scrolling. */
+.message-bell.has-unread::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 7px rgba(37, 99, 235, 0.28);
+  pointer-events: none;
   animation: message-alert 1s ease-in-out infinite;
 }
 
@@ -241,11 +273,13 @@ img {
 @keyframes message-alert {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.28);
+    opacity: 0.85;
+    transform: scale(0.74);
   }
 
   50% {
-    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+    opacity: 0;
+    transform: scale(1);
   }
 }
 
@@ -2226,11 +2260,13 @@ body {
 
 .signup-form-layout .signup-form {
   width: 820px;
+  max-width: 100%;
   min-height: 560px;
 }
 
 .login-form-layout .signup-form {
   width: 560px;
+  max-width: 100%;
   min-height: 420px;
 }
 
@@ -3199,6 +3235,7 @@ body {
   .community-layout,
   .register-layout,
   .signup-layout,
+  .mypage-layout,
   .messages-layout {
     grid-template-columns: 1fr;
   }

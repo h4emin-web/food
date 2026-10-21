@@ -185,6 +185,7 @@
       <nav class="main-nav" aria-label="주요 메뉴">
         <a href="search.html">원료 찾기</a>
         <a href="sourcing-request.html">원료 소싱요청</a>
+        <a href="group-buy.html">공동구매</a>
         <a href="community.html">원료문의</a>
         <a class="ingredient-register-nav" href="login.html">원료 등록</a>
         <a href="intro.html">소개</a>
@@ -321,10 +322,28 @@
           </ol>
           <a class="po-btn po-btn-dark" href="signup.html"><span data-i18n="home.how.cta">무료로 시작하기</span> <i data-lucide="arrow-right"></i></a>
         </div>
+        <!-- The steps beside this mock already describe the flow in text, so
+             the mock itself is decorative. Its labels carry data-i18n so it
+             reads in the visitor's language instead of being baked in. -->
         <div class="po-how-visual">
-          <video class="po-how-video" autoplay muted loop playsinline preload="metadata" poster="videos/how-it-works-poster.jpg" aria-label="Allingre에서 원료를 검색하고 샘플·견적을 요청하는 화면 영상">
-            <source src="videos/how-it-works.mp4" type="video/mp4" />
-          </video>
+          <div class="po-mock" aria-hidden="true">
+            <div class="po-mock-chrome">
+              <span></span><span></span><span></span>
+              <em class="notranslate" translate="no">allingre</em>
+            </div>
+            <div class="po-mock-body">
+              <div class="po-mock-search">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+                <b data-i18n="home.mock.query">비타민 D3</b>
+              </div>
+              <ul class="po-mock-rows">
+                <li style="--i: 1"><i class="po-mock-dot s-food"></i><b data-i18n="home.mock.r1">비타민 D3 100,000 IU</b><em data-i18n="home.mock.o1">독일</em></li>
+                <li style="--i: 2"><i class="po-mock-dot s-pharma"></i><b data-i18n="home.mock.r2">비타민 D3 오일</b><em data-i18n="home.mock.o2">스위스</em></li>
+                <li style="--i: 3"><i class="po-mock-dot s-cos"></i><b data-i18n="home.mock.r3">비타민 D3 분말</b><em data-i18n="home.mock.o3">인도</em></li>
+              </ul>
+              <div class="po-mock-cta" data-i18n="home.mock.cta">샘플 · 견적 요청</div>
+            </div>
+          </div>
         </div>
       </section>
 

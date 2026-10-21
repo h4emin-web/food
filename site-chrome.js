@@ -21,6 +21,7 @@
     en: {
       "원료 찾기": "Find ingredients",
       "원료 소싱요청": "Sourcing request",
+      "공동구매": "Group buy",
       "원료문의": "Inquiries",
       "원료 등록": "List ingredient",
       "소개": "About",
@@ -37,6 +38,7 @@
     zh: {
       "원료 찾기": "原料搜索",
       "원료 소싱요청": "采购需求",
+      "공동구매": "联合采购",
       "원료문의": "原料咨询",
       "원료 등록": "原料登记",
       "소개": "关于我们",
@@ -53,6 +55,7 @@
     ja: {
       "원료 찾기": "原料を探す",
       "원료 소싱요청": "調達依頼",
+      "공동구매": "共同購入",
       "원료문의": "お問い合わせ",
       "원료 등록": "原料登録",
       "소개": "紹介",
@@ -69,6 +72,7 @@
     vi: {
       "원료 찾기": "Tìm nguyên liệu",
       "원료 소싱요청": "Tìm nguồn",
+      "공동구매": "Mua chung",
       "원료문의": "Hỏi đáp",
       "원료 등록": "Đăng nguyên liệu",
       "소개": "Giới thiệu",
@@ -113,6 +117,14 @@
       "home.step4": "Close the Deal",
       "home.step4d": "Agree terms directly with suppliers",
       "home.how.cta": "Get started – free",
+      "home.mock.query": "Vitamin D3",
+      "home.mock.r1": "Vitamin D3 100,000 IU",
+      "home.mock.o1": "Germany",
+      "home.mock.r2": "Vitamin D3 oil",
+      "home.mock.o2": "Switzerland",
+      "home.mock.r3": "Vitamin D3 powder",
+      "home.mock.o3": "India",
+      "home.mock.cta": "Request sample &amp; quote",
       "req.title": "Sourcing request",
       "req.example": "Example",
       "req.name": "Ingredient",
@@ -156,6 +168,277 @@
       "sector.food": "Food",
       "sector.pharma": "Pharma",
       "sector.cosmetic": "Cosmetics",
+      "gb.title": "Group buy",
+      "gb.desc": "Pool your order with other buyers<br class=\"po-br\" /> to reach a supplier's minimum order quantity.",
+      "gb.hero.cta": "Start a group buy",
+      "gb.step1": "Request the item",
+      "gb.step2": "Allingre sets the MOQ",
+      "gb.step3": "Buyers pledge volume",
+      "gb.step4": "MOQ met – order placed",
+      "gb.privacy": "Buyers stay anonymous to each other. Only the volumes are shown.",
+      "gb.search": "Search group buys",
+      "gb.write": "Start a group buy",
+    },
+    zh: {
+      "home.hero.title": "原料采购<br />更简单、更快速",
+      "home.hero.desc": "在一个平台找到食品、医药、化妆品原料与供应商，<br class=\"po-br\" />立即索取样品和报价。",
+      "home.search.placeholder": "搜索原料名称或关键词",
+      "search.button": "搜索",
+      "home.popular": "热门原料：",
+      "home.check1": "买家免费使用",
+      "home.check2": "样品 · 报价即时申请",
+      "home.check3": "国内外原料供应商",
+      "home.aud.title": "Allingre 适合这些用户",
+      "home.aud1": "食品<br />制造商",
+      "home.aud2": "制药企业 ·<br />原料药采购",
+      "home.aud3": "化妆品<br />品牌 · 制造商",
+      "home.aud4": "研发 ·<br />OEM · ODM",
+      "home.aud5": "原料供应商 ·<br />经销商",
+      "home.how.title": "Allingre 使用方法",
+      "home.step1": "搜索 · 比较",
+      "home.step1d": "在一个平台查找并比较原料与供应商",
+      "home.step2": "申请样品 · 报价",
+      "home.step2d": "直接向供应商申请样品和报价",
+      "home.step3": "采购支持",
+      "home.step3d": "找不到所需原料？提交采购需求",
+      "home.step4": "推进交易",
+      "home.step4d": "与供应商直接协商交易条件",
+      "home.how.cta": "免费开始使用",
+      "home.mock.query": "维生素 D3",
+      "home.mock.r1": "维生素 D3 100,000 IU",
+      "home.mock.o1": "德国",
+      "home.mock.r2": "维生素 D3 油剂",
+      "home.mock.o2": "瑞士",
+      "home.mock.r3": "维生素 D3 粉末",
+      "home.mock.o3": "印度",
+      "home.mock.cta": "申请样品 · 报价",
+      "req.title": "采购需求表",
+      "req.example": "填写示例",
+      "req.name": "原料名称",
+      "req.vitd": "维生素 D3",
+      "req.sector": "领域",
+      "req.qty": "需求量",
+      "req.qtyv": "每月 500kg",
+      "req.sample": "样品数量",
+      "req.docs": "所需文件",
+      "req.submit": "提交",
+      "req.s1": "提交需求",
+      "req.s2": "Allingre 确认",
+      "req.s3": "查看答复",
+      "req.toast": "已收到答复",
+      "req.toastd": "维生素 D3 · 进度已更新",
+      "home.dark.eyebrow": "原料采购需求",
+      "home.dark.title": "找不到所需原料？<br />请提交采购需求",
+      "home.dark.desc": "留下原料名称、数量和规格，我们为您对接可供货的企业。",
+      "home.dark.p1": "需求与进度仅对本人显示",
+      "home.dark.p2": "需求量 · 样品 · 文件条件一次填写",
+      "home.dark.p3": "收到答复后可在采购需求页面查看",
+      "home.dark.cta": "提交采购需求",
+      "home.guide.title": "原料采购与供应指南",
+      "home.guide.sub": "找到所需原料，确认供应条件。",
+      "home.g1": "原料搜索",
+      "home.g1d": "查看食品、医药、化妆品原料的制造商与供应信息。",
+      "home.g2": "原料咨询",
+      "home.g2d": "找不到所需原料？留下咨询确认供货情况。",
+      "home.g3": "样品 · 报价",
+      "home.g3d": "在原料列表中向供应商申请样品和报价。",
+      "home.g4": "供应商登记",
+      "home.g4d": "发送产品清单，我们协助您完成原料登记。",
+      "home.cta.title": "想了解更多？",
+      "home.cta.about": "关于 Allingre",
+      "home.cta.contact": "联系我们",
+      "search.title": "原料搜索",
+      "search.desc": "搜索食品、医药、化妆品原料，并申请样品与报价。",
+      "filter.title": "筛选",
+      "filter.reset": "重置",
+      "filter.type": "类别",
+      "sector.food": "食品",
+      "sector.pharma": "医药",
+      "sector.cosmetic": "化妆品",
+      "gb.title": "联合采购",
+      "gb.desc": "采购量较小、难以单独下单的原料，<br class=\"po-br\" />由多位买家共同凑齐最小起订量。",
+      "gb.hero.cta": "发起联合采购",
+      "gb.step1": "提交品项需求",
+      "gb.step2": "Allingre 指定 MOQ",
+      "gb.step3": "买家认购数量",
+      "gb.step4": "达成后下单采购",
+      "gb.privacy": "参与的买家之间互不知晓身份，仅以匿名方式显示数量。",
+      "gb.search": "搜索联合采购",
+      "gb.write": "发起联合采购",
+    },
+    ja: {
+      "home.hero.title": "原料調達を<br />もっと簡単に、速く",
+      "home.hero.desc": "食品・医薬品・化粧品の原料とサプライヤーを一か所で探し、<br class=\"po-br\" />サンプルと見積をすぐに依頼できます。",
+      "home.search.placeholder": "原料名・キーワードで検索",
+      "search.button": "検索",
+      "home.popular": "人気の原料：",
+      "home.check1": "バイヤーは無料",
+      "home.check2": "サンプル・見積をすぐ依頼",
+      "home.check3": "国内外のサプライヤー",
+      "home.aud.title": "Allingre はこんな方のために",
+      "home.aud1": "食品<br />メーカー",
+      "home.aud2": "製薬会社 ·<br />原薬の調達",
+      "home.aud3": "化粧品<br />ブランド · メーカー",
+      "home.aud4": "研究開発 ·<br />OEM · ODM",
+      "home.aud5": "原料サプライヤー ·<br />商社",
+      "home.how.title": "Allingre の使い方",
+      "home.step1": "検索・比較",
+      "home.step1d": "原料とサプライヤーを一か所で比較できます",
+      "home.step2": "サンプル・見積依頼",
+      "home.step2d": "サプライヤーに直接依頼できます",
+      "home.step3": "調達サポート",
+      "home.step3d": "見つからない原料は調達依頼を出せます",
+      "home.step4": "取引の開始",
+      "home.step4d": "サプライヤーと直接条件を調整します",
+      "home.how.cta": "無料ではじめる",
+      "home.mock.query": "ビタミン D3",
+      "home.mock.r1": "ビタミン D3 100,000 IU",
+      "home.mock.o1": "ドイツ",
+      "home.mock.r2": "ビタミン D3 オイル",
+      "home.mock.o2": "スイス",
+      "home.mock.r3": "ビタミン D3 パウダー",
+      "home.mock.o3": "インド",
+      "home.mock.cta": "サンプル・見積依頼",
+      "req.title": "調達依頼書",
+      "req.example": "記入例",
+      "req.name": "原料名",
+      "req.vitd": "ビタミン D3",
+      "req.sector": "分野",
+      "req.qty": "必要数量",
+      "req.qtyv": "月 500kg",
+      "req.sample": "サンプル数量",
+      "req.docs": "必要書類",
+      "req.submit": "登録する",
+      "req.s1": "依頼を登録",
+      "req.s2": "Allingre 確認",
+      "req.s3": "回答を確認",
+      "req.toast": "回答が登録されました",
+      "req.toastd": "ビタミン D3 · 進捗を更新",
+      "home.dark.eyebrow": "原料の調達依頼",
+      "home.dark.title": "探している原料が<br />見つかりませんか",
+      "home.dark.desc": "原料名・数量・規格をお知らせいただければ、供給可能な企業をお探しします。",
+      "home.dark.p1": "依頼と進捗はご本人にのみ表示",
+      "home.dark.p2": "必要数量・サンプル・書類条件をまとめて",
+      "home.dark.p3": "回答は調達依頼ページですぐ確認",
+      "home.dark.cta": "調達を依頼する",
+      "home.guide.title": "原料の購入・供給案内",
+      "home.guide.sub": "必要な原料を探し、供給条件を確認しましょう。",
+      "home.g1": "原料検索",
+      "home.g1d": "食品・医薬品・化粧品原料のメーカーと供給情報を確認できます。",
+      "home.g2": "原料のお問い合わせ",
+      "home.g2d": "見つからない原料は、お問い合わせで供給可否を確認できます。",
+      "home.g3": "サンプル・見積",
+      "home.g3d": "原料一覧からサプライヤーにサンプルと見積を依頼できます。",
+      "home.g4": "サプライヤー登録",
+      "home.g4d": "製品リストをお送りいただければ原料登録をお手伝いします。",
+      "home.cta.title": "もっと知りたいですか？",
+      "home.cta.about": "Allingre について",
+      "home.cta.contact": "お問い合わせ",
+      "search.title": "原料を探す",
+      "search.desc": "食品・医薬品・化粧品の原料を検索し、サンプルと見積を依頼できます。",
+      "filter.title": "絞り込み",
+      "filter.reset": "リセット",
+      "filter.type": "分野",
+      "sector.food": "食品",
+      "sector.pharma": "医薬品",
+      "sector.cosmetic": "化粧品",
+      "gb.title": "共同購入",
+      "gb.desc": "数量が少なく単独では購入しにくい原料を、<br class=\"po-br\" />複数のバイヤーで最低発注数量まで集めます。",
+      "gb.hero.cta": "共同購入を依頼する",
+      "gb.step1": "品目を依頼",
+      "gb.step2": "Allingre が MOQ を設定",
+      "gb.step3": "バイヤーが数量を登録",
+      "gb.step4": "達成したら発注",
+      "gb.privacy": "参加したバイヤー同士は互いに誰か分かりません。数量のみ匿名で表示されます。",
+      "gb.search": "共同購入を検索",
+      "gb.write": "共同購入を依頼",
+    },
+    vi: {
+      "home.hero.title": "Tìm nguồn nguyên liệu<br />nhanh và dễ dàng",
+      "home.hero.desc": "Tìm nguyên liệu và nhà cung cấp thực phẩm, dược phẩm, mỹ phẩm tại một nơi.<br class=\"po-br\" /> Yêu cầu mẫu và báo giá ngay.",
+      "home.search.placeholder": "Tìm theo tên nguyên liệu hoặc từ khóa",
+      "search.button": "Tìm kiếm",
+      "home.popular": "Phổ biến:",
+      "home.check1": "Miễn phí cho người mua",
+      "home.check2": "Yêu cầu mẫu &amp; báo giá ngay",
+      "home.check3": "Nhà cung cấp trong và ngoài nước",
+      "home.aud.title": "Allingre dành cho ai",
+      "home.aud1": "Nhà sản xuất<br />thực phẩm",
+      "home.aud2": "Công ty dược ·<br />mua nguyên liệu API",
+      "home.aud3": "Thương hiệu ·<br />nhà sản xuất mỹ phẩm",
+      "home.aud4": "R&amp;D ·<br />OEM · ODM",
+      "home.aud5": "Nhà cung cấp ·<br />nhà phân phối",
+      "home.how.title": "Cách Allingre hoạt động",
+      "home.step1": "Tìm &amp; so sánh",
+      "home.step1d": "Tìm và so sánh nguyên liệu, nhà cung cấp tại một nơi",
+      "home.step2": "Yêu cầu mẫu &amp; báo giá",
+      "home.step2d": "Liên hệ trực tiếp với nhà cung cấp",
+      "home.step3": "Hỗ trợ tìm nguồn",
+      "home.step3d": "Không tìm thấy? Gửi yêu cầu tìm nguồn",
+      "home.step4": "Chốt giao dịch",
+      "home.step4d": "Thỏa thuận điều kiện trực tiếp với nhà cung cấp",
+      "home.how.cta": "Bắt đầu miễn phí",
+      "home.mock.query": "Vitamin D3",
+      "home.mock.r1": "Vitamin D3 100,000 IU",
+      "home.mock.o1": "Đức",
+      "home.mock.r2": "Dầu Vitamin D3",
+      "home.mock.o2": "Thụy Sĩ",
+      "home.mock.r3": "Bột Vitamin D3",
+      "home.mock.o3": "Ấn Độ",
+      "home.mock.cta": "Yêu cầu mẫu · báo giá",
+      "req.title": "Phiếu yêu cầu tìm nguồn",
+      "req.example": "Ví dụ",
+      "req.name": "Nguyên liệu",
+      "req.vitd": "Vitamin D3",
+      "req.sector": "Lĩnh vực",
+      "req.qty": "Số lượng",
+      "req.qtyv": "500 kg / tháng",
+      "req.sample": "Lượng mẫu",
+      "req.docs": "Hồ sơ",
+      "req.submit": "Gửi",
+      "req.s1": "Đã gửi",
+      "req.s2": "Allingre xác nhận",
+      "req.s3": "Xem phản hồi",
+      "req.toast": "Đã nhận phản hồi",
+      "req.toastd": "Vitamin D3 · cập nhật tiến độ",
+      "home.dark.eyebrow": "Yêu cầu tìm nguồn",
+      "home.dark.title": "Không tìm thấy<br />nguyên liệu bạn cần?",
+      "home.dark.desc": "Để lại tên, số lượng và quy cách — chúng tôi sẽ tìm nhà cung cấp phù hợp.",
+      "home.dark.p1": "Chỉ bạn thấy yêu cầu của mình",
+      "home.dark.p2": "Số lượng, mẫu và hồ sơ trong một biểu mẫu",
+      "home.dark.p3": "Phản hồi hiện trên trang tìm nguồn của bạn",
+      "home.dark.cta": "Gửi yêu cầu tìm nguồn",
+      "home.guide.title": "Mua &amp; cung cấp nguyên liệu",
+      "home.guide.sub": "Tìm nguyên liệu và kiểm tra điều kiện cung cấp.",
+      "home.g1": "Tìm nguyên liệu",
+      "home.g1d": "Xem nhà sản xuất và thông tin cung cấp nguyên liệu thực phẩm, dược phẩm, mỹ phẩm.",
+      "home.g2": "Hỏi đáp nguyên liệu",
+      "home.g2d": "Không tìm thấy? Gửi câu hỏi để kiểm tra khả năng cung cấp.",
+      "home.g3": "Mẫu &amp; báo giá",
+      "home.g3d": "Yêu cầu mẫu và báo giá từ nhà cung cấp trong danh sách.",
+      "home.g4": "Đăng ký nhà cung cấp",
+      "home.g4d": "Gửi danh mục sản phẩm, chúng tôi sẽ hỗ trợ đăng nguyên liệu.",
+      "home.cta.title": "Muốn biết thêm?",
+      "home.cta.about": "Về Allingre",
+      "home.cta.contact": "Liên hệ",
+      "search.title": "Tìm nguyên liệu",
+      "search.desc": "Tìm nguyên liệu thực phẩm, dược phẩm, mỹ phẩm rồi yêu cầu mẫu và báo giá.",
+      "filter.title": "Bộ lọc",
+      "filter.reset": "Đặt lại",
+      "filter.type": "Lĩnh vực",
+      "sector.food": "Thực phẩm",
+      "sector.pharma": "Dược phẩm",
+      "sector.cosmetic": "Mỹ phẩm",
+      "gb.title": "Mua chung",
+      "gb.desc": "Gộp đơn với những người mua khác<br class=\"po-br\" /> để đạt số lượng đặt hàng tối thiểu của nhà cung cấp.",
+      "gb.hero.cta": "Tạo đơn mua chung",
+      "gb.step1": "Gửi yêu cầu mặt hàng",
+      "gb.step2": "Allingre đặt MOQ",
+      "gb.step3": "Người mua đăng ký số lượng",
+      "gb.step4": "Đạt MOQ – tiến hành đặt hàng",
+      "gb.privacy": "Những người mua tham gia không biết nhau là ai. Chỉ số lượng được hiển thị ẩn danh.",
+      "gb.search": "Tìm đơn mua chung",
+      "gb.write": "Tạo đơn mua chung",
     },
   };
 
@@ -198,6 +481,36 @@
   const current = LANGUAGES.find((lang) => lang.prefix === (prefixMatch ? prefixMatch[1] : "")) || LANGUAGES[0];
   const prefixPath = current.prefix ? `/${current.prefix}` : "";
   const basePath = window.location.pathname.replace(PREFIX_PATTERN, "") || "/";
+
+  // Google Translate rewrites the page in bursts of hundreds of mutations.
+  // Reacting to each one ran a TreeWalker per mutation and rewrote text while
+  // the translator was still moving it — the page stuttered and Chinese text
+  // landed in the wrong place. Work is collected and run once per frame, with
+  // the observer detached while it writes so it never re-triggers itself.
+  const observeBatched = (target, options, handle) => {
+    let pending = new Set();
+    let scheduled = false;
+    const observer = new MutationObserver((records) => {
+      records.forEach((record) => {
+        if (record.type === "characterData") pending.add(record.target.parentElement);
+        else record.addedNodes.forEach((node) => pending.add(node.nodeType === 3 ? node.parentElement : node));
+      });
+      if (scheduled || !pending.size) return;
+      scheduled = true;
+      requestAnimationFrame(() => {
+        scheduled = false;
+        const roots = pending;
+        pending = new Set();
+        observer.disconnect();
+        roots.forEach((root) => {
+          if (root) handle(root);
+        });
+        observer.observe(target, options);
+      });
+    });
+    observer.observe(target, options);
+    return observer;
+  };
 
   // "/en" → "/en/" so relative links (search.html) stay under the prefix.
   if (current.prefix && window.location.pathname === prefixPath) {
@@ -286,11 +599,7 @@
     };
     const main = document.querySelector("main") || document.body;
     applyGlossary(main);
-    new MutationObserver((records) => {
-      records.forEach((record) =>
-        record.addedNodes.forEach((node) => applyGlossary(node.nodeType === 3 ? node.parentElement : node)),
-      );
-    }).observe(main, { childList: true, subtree: true });
+    observeBatched(main, { childList: true, subtree: true }, applyGlossary);
   }
 
   // Internal absolute links (also ones rendered later) keep the prefix.
@@ -457,7 +766,19 @@
     };
     relabel();
     // script.js rewrites the account links after sign-in checks.
-    new MutationObserver(relabel).observe(header, { childList: true, subtree: true, characterData: true });
+    const headerOptions = { childList: true, subtree: true, characterData: true };
+    let relabelScheduled = false;
+    const headerObserver = new MutationObserver(() => {
+      if (relabelScheduled) return;
+      relabelScheduled = true;
+      requestAnimationFrame(() => {
+        relabelScheduled = false;
+        headerObserver.disconnect();
+        relabel();
+        headerObserver.observe(header, headerOptions);
+      });
+    });
+    headerObserver.observe(header, headerOptions);
     loadGoogleTranslate();
   }
 
@@ -465,18 +786,15 @@
   // fussy in short UI text. Mid-text ones become a space.
   if (current.prefix === "zh") {
     const stripStops = (root) => {
+      if (!root || root.nodeType !== 1) return;
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) {
         if (!node.nodeValue.includes("。")) continue;
         node.nodeValue = node.nodeValue.replace(/。\s*$/, "").replace(/。\s*/g, " ");
       }
     };
-    new MutationObserver((records) => {
-      records.forEach((record) => {
-        if (record.type === "characterData") stripStops(record.target.parentNode || document.body);
-        record.addedNodes.forEach((node) => stripStops(node.nodeType === 3 ? node.parentNode : node));
-      });
-    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+    stripStops(document.body);
+    observeBatched(document.body, { childList: true, subtree: true, characterData: true }, stripStops);
   }
 
   function loadGoogleTranslate() {

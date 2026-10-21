@@ -474,14 +474,160 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   background: var(--po-gray);
 }
 
-.po-how-video {
-  display: block;
+/* The "how it works" mock. It replaced a screen-recorded mp4, which had
+   Korean copy and the old purple palette burned into the pixels: the markup
+   version follows the site's colors and translates with the page. */
+.po-mock {
+  display: grid;
+  gap: 0;
   width: 100%;
-  height: auto;
-  aspect-ratio: 8 / 5;
+  overflow: hidden;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 16px 40px rgba(16, 40, 46, 0.14);
+}
+
+.po-mock-chrome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 14px;
+  border-bottom: 1px solid #eceef3;
+  background: #fafbfd;
+}
+
+.po-mock-chrome span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #dfe2ea;
+}
+
+.po-mock-chrome em {
+  flex: 1;
+  margin-left: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #eef0f5;
+  color: var(--po-muted);
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: 0.02em;
+}
+
+.po-mock-body {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.po-mock-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1.5px solid var(--po-teal);
+  border-radius: 999px;
+  color: var(--po-teal);
+}
+
+.po-mock-search b {
+  color: var(--po-text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* The caret blinks instead of the whole row animating, so nothing reflows. */
+.po-mock-search b::after {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-left: 2px;
+  background: var(--po-teal);
+  vertical-align: -0.15em;
+  animation: po-mock-caret 1.1s step-end infinite;
+}
+
+.po-mock-rows {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.po-mock-rows li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--po-gray);
+  animation: po-mock-row 4.8s ease-out calc(var(--i) * 0.35s) infinite;
+}
+
+.po-mock-dot {
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.po-mock-dot.s-food { background: #13795b; }
+.po-mock-dot.s-pharma { background: #2459a6; }
+.po-mock-dot.s-cos { background: #7c3aed; }
+
+.po-mock-rows b {
+  flex: 1;
+  overflow: hidden;
+  color: var(--po-text);
+  font-size: 13px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.po-mock-rows em {
+  color: var(--po-muted);
+  font-size: 12px;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.po-mock-cta {
+  justify-self: start;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--po-teal);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+@keyframes po-mock-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes po-mock-row {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  12%,
+  88% {
+    opacity: 1;
+    transform: none;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 }
 
 /* Dark promo band: a product mock-up of the sourcing request flow */
@@ -2947,5 +3093,258 @@ html body.po-page .favorites-page .empty-state {
 
   html body.po-page :is(.register-form, .signup-form, .legal-document) {
     padding: 24px 18px;
+  }
+}
+
+/* ---------- 공동구매 (group buy) ----------
+   Same board furniture as 소싱요청, plus a progress meter and an anonymous
+   breakdown. Nothing here renders a buyer name: the data never has one. */
+.po-board-steps em {
+  font-style: normal;
+}
+
+html body.po-board .po-board-hero .po-board-note {
+  max-width: 560px;
+  margin: 22px 0 0;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.gb-status {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  padding: 0 9px;
+  min-height: 24px;
+  border-radius: 999px;
+  background: #eef0f5;
+  color: var(--po-muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+html body .gb-status-모집중 { background: #e8ecff; color: #3a4bb5; }
+html body .gb-status-달성 { background: #d9f5e8; color: #13795b; }
+html body .gb-status-진행 { background: #dbeafe; color: #2459a6; }
+html body .gb-status-취소 { background: #f3f4f6; color: #9ca3af; }
+
+.gb-joined-flag {
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--po-teal);
+  color: #fff;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  vertical-align: 2px;
+}
+
+.gb-progress {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 4px;
+}
+
+.gb-progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e9ebf2;
+}
+
+.gb-progress-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--po-teal);
+  transition: width 240ms ease-out;
+}
+
+.gb-progress-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  color: var(--po-muted);
+  font-size: 13px;
+}
+
+.gb-progress-meta strong {
+  color: var(--po-text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.gb-progress-pending {
+  margin: 18px 0 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--po-gray);
+  color: var(--po-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.gb-admin-note {
+  padding: 12px 14px;
+  border-left: 3px solid var(--po-teal);
+  background: var(--po-gray);
+  color: var(--po-text);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.gb-breakdown {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.gb-breakdown li {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 10px;
+}
+
+.gb-breakdown-name {
+  color: var(--po-muted);
+  font-size: 12px;
+}
+
+.gb-breakdown-bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e9ebf2;
+}
+
+.gb-breakdown-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--po-accent);
+}
+
+.gb-breakdown strong {
+  color: var(--po-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.gb-join-form {
+  display: grid;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.gb-join-form label {
+  display: grid;
+  gap: 6px;
+  max-width: 260px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.gb-admin-buyers {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.gb-admin-buyers li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--po-gray);
+  font-size: 13px;
+}
+
+.gb-admin-buyers span {
+  overflow: hidden;
+  color: var(--po-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .gb-join-form label {
+    max-width: none;
+  }
+
+  .gb-breakdown li {
+    grid-template-columns: 60px minmax(0, 1fr) max-content;
+    gap: 8px;
+  }
+
+  .gb-progress-meta {
+    font-size: 12px;
+  }
+
+  .gb-admin-buyers li {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .gb-admin-buyers span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* The 공동구매 row trades title width for the progress column; "1,250 /
+   2,000kg · 62%" does not fit the 116px the other boards give it. */
+html body.po-board .community-post.gb-row {
+  grid-template-columns: max-content minmax(180px, 1fr) 92px 64px 186px;
+}
+
+html body.po-board .community-post.gb-row .post-stats {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+html body.po-board .community-post.gb-row .post-stats span {
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  /* Other boards hide .post-stats on a phone. Here it carries the progress,
+     which is the whole point of the row, so it gets its own line instead. */
+  html body.po-board .community-post.gb-row,
+  html body.po-board .community-post.gb-row:last-child {
+    /* Repeated because the desktop gb-row rule above outranks the shared
+       phone rule that would otherwise collapse this to two columns. */
+    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-areas:
+      "badge title"
+      "badge meta"
+      "stats stats";
+  }
+
+  html body.po-board .community-post.gb-row .post-stats {
+    display: flex;
+    grid-area: stats;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+  }
+
+  html body.po-board .community-post.gb-row h3 {
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }

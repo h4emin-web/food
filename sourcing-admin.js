@@ -94,11 +94,19 @@
     render();
   }
 
+  // Two admin tabs share this bar (소싱요청, 공동구매). Opening one hides the
+  // other's panel and the inbox; only the 쪽지 filters bring the inbox back,
+  // so the two tabs cannot fight over layout.hidden on the same click.
   function show(on) {
+    if (on) {
+      document.querySelectorAll(".sourcing-admin-panel").forEach((other) => {
+        if (other !== panel) other.hidden = true;
+      });
+      tabs.querySelectorAll("button").forEach((button) => button.classList.remove("active"));
+      layout.hidden = true;
+    }
     panel.hidden = !on;
-    layout.hidden = on;
     tab.classList.toggle("active", on);
-    if (on) tabs.querySelectorAll("[data-message-filter]").forEach((button) => button.classList.remove("active"));
   }
 
   tab.addEventListener("click", () => {
@@ -106,9 +114,19 @@
     load();
   });
 
+  tabs.addEventListener("click", (event) => {
+    const button = event.target.closest("button");
+    if (button && button !== tab) show(false);
+  });
+
   // The existing 쪽지 tabs switch the regular inbox back on.
   tabs.querySelectorAll("[data-message-filter]").forEach((button) =>
-    button.addEventListener("click", () => show(false))
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".sourcing-admin-panel").forEach((other) => {
+        other.hidden = true;
+      });
+      layout.hidden = false;
+    })
   );
 
   panel.addEventListener("submit", async (event) => {

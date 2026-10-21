@@ -800,16 +800,34 @@ html body {
     gap: 4px;
   }
 
-  /* Empty inbox states: centred, not a big box with text in the corner */
+  /* On a phone an empty pane shrinks to its text instead of holding 320px. */
   html body .message-thread-list:has(> .empty-mini:only-child),
   html body .message-conversation:has(> .empty-mini:only-child),
   html body .message-conversation:has(> .primary-button:only-child),
   html body .message-room:has(> .message-conversation > .primary-button:only-child) {
-    display: grid;
     min-height: 0;
-    place-items: center;
-    padding: 28px 16px;
   }
+}
+
+/* Empty inbox states: centred, not a big box with text in the corner.
+   place-content is needed too — both panes set align-content: start. */
+html body .message-thread-list:has(> .empty-mini:only-child),
+html body .message-conversation:has(> .empty-mini:only-child),
+html body .message-conversation:has(> .primary-button:only-child),
+html body .message-room:has(> .message-conversation > .primary-button:only-child) {
+  display: grid;
+  place-items: center;
+  place-content: center;
+  padding: 28px 16px;
+  text-align: center;
+}
+
+html body .message-thread-list > .empty-mini:only-child,
+html body .message-conversation > .empty-mini:only-child {
+  max-width: 30ch;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.7;
 }
 
 /* ---------- News (소개 페이지) ---------- */
@@ -1387,4 +1405,22 @@ html body .intro-page .official-info-section {
     flex: 1 1 auto;
     justify-content: center;
   }
+}
+
+/* ---------- Scroll performance ----------
+   Full-width blocks below the fold skip layout and paint until they are
+   scrolled near. They are block-level children of <main>, so skipping them
+   cannot shift anything above. Deliberately NOT applied to ingredient rows:
+   those sit in a grid with max-content columns, and size containment would
+   make the column widths jump as rows scroll in. */
+html body .po-section,
+html body .po-dark,
+html body .seo-topic-section,
+html body .po-cta,
+html body .news-section,
+html body .intro-steps,
+html body .intro-sectors,
+html body .intro-features {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
 }
