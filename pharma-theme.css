@@ -3429,32 +3429,90 @@ html body.po-board .community-post.gb-row .post-stats {
     font-size: 22px;
   }
 
-  /* 이용 방법: four steps two-up instead of a tall list */
+  /* The four steps become a slider that advances itself, so the section is
+     one step tall instead of four. The heading and the sign-up button go:
+     the steps say what this is, and the menu already offers sign-up. */
+  html body.po-home .po-how .po-section-title,
+  html body.po-home .po-how .po-btn {
+    display: none;
+  }
+
+  html body.po-home .po-how-copy {
+    overflow: hidden;
+  }
+
   html body.po-home .po-steps {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px 10px;
-    margin: 22px 0;
+    display: flex;
+    width: 400%;
+    margin: 0 0 20px;
+    animation: po-steps-slide 14s ease-in-out infinite;
   }
 
   html body.po-home .po-steps li {
-    flex-direction: column;
-    gap: 8px;
-    padding-bottom: 0;
+    flex: 0 0 25%;
+    width: 25%;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 0 10px 0 0;
   }
 
-  /* The connector line only reads down a single column. */
+  /* The connector line joined a vertical list; there is no list now. */
   html body.po-home .po-steps li:not(:last-child)::before {
     content: none;
   }
 
   html body.po-home .po-steps strong {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   html body.po-home .po-steps p {
-    font-size: 13px;
-    line-height: 1.55;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  /* Holds each step, then slides. The last hold runs to the end so the jump
+     back to the first is the only cut in the loop. */
+  @keyframes po-steps-slide {
+    0%,
+    21% {
+      transform: translateX(0);
+    }
+
+    25%,
+    46% {
+      transform: translateX(-25%);
+    }
+
+    50%,
+    71% {
+      transform: translateX(-50%);
+    }
+
+    75%,
+    100% {
+      transform: translateX(-75%);
+    }
+  }
+
+  /* No motion: fall back to seeing all four at once. The animation has to be
+     cancelled outright — the global reduced-motion rule only shortens it,
+     which would leave the track parked on the last slide, off screen. */
+  @media (prefers-reduced-motion: reduce) {
+    html body.po-home .po-steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: auto;
+      gap: 14px 10px;
+      animation: none !important;
+      transform: none !important;
+    }
+
+    html body.po-home .po-steps li {
+      flex: none;
+      width: auto;
+      flex-direction: column;
+      gap: 8px;
+    }
   }
 
   html body.po-home .po-cta {
