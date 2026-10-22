@@ -632,8 +632,7 @@ function getFilteredItems({ ignoreSector = false } = {}) {
   return visibleIngredients.filter((item) => {
     const matchesSector =
       ignoreSector || !activeIngredientSectors.size || activeIngredientSectors.has(normalizeSector(item.sector));
-    const searchText = getIngredientSearchText(item);
-    const matchesQuery = !query || searchText.includes(query);
+    const matchesQuery = !query || getIngredientSearchText(item).includes(query);
 
     const matchesFilters = checked.every((tag) => item.tags.includes(tag));
     return matchesSector && matchesQuery && matchesFilters;
@@ -641,6 +640,14 @@ function getFilteredItems({ ignoreSector = false } = {}) {
 }
 
 function getIngredientSearchText(item) {
+  const cached = ingredientSearchTextCache.get(item);
+  if (cached !== undefined) return cached;
+  const text = buildIngredientSearchText(item);
+  ingredientSearchTextCache.set(item, text);
+  return text;
+}
+
+function buildIngredientSearchText(item) {
   const aliases = getIngredientSearchAliases(item);
   return [
     item.name,
@@ -745,7 +752,15 @@ function setIngredientPage(page) {
   updateGrid();
 }
 
+const countryFlagCodeCache = new Map();
+
 function getCountryFlagCode(origin) {
+  const key = origin || "";
+  if (!countryFlagCodeCache.has(key)) countryFlagCodeCache.set(key, computeCountryFlagCode(key));
+  return countryFlagCodeCache.get(key);
+}
+
+function computeCountryFlagCode(origin) {
   const normalized = (origin || "").trim().toLowerCase();
   const compact = normalized
     .replace(/\s+/g, " ")
@@ -923,6 +938,32 @@ function invalidateIngredientCache() {
   visibleIngredientsCache = null;
 }
 
+// Per-row caches. Rows are never edited in place — every load or save swaps
+// in new row objects — so a WeakMap entry stays valid for as long as its row
+// object exists. This keeps a re-render (a checkbox, a page change) from
+// rebuilding all ~5,000 rows and their search text each time.
+const normalizedIngredientCache = new WeakMap();
+const ingredientIdentityCache = new WeakMap();
+const ingredientSearchTextCache = new WeakMap();
+
+function getCachedIngredientIdentity(item) {
+  let identity = ingredientIdentityCache.get(item);
+  if (identity === undefined) {
+    identity = getIngredientIdentity(item);
+    ingredientIdentityCache.set(item, identity);
+  }
+  return identity;
+}
+
+function getCachedNormalizedIngredient(item) {
+  let normalized = normalizedIngredientCache.get(item);
+  if (!normalized) {
+    normalized = normalizeRegisteredIngredient(item);
+    normalizedIngredientCache.set(item, normalized);
+  }
+  return normalized;
+}
+
 function getVisibleIngredients() {
   if (visibleIngredientsCache) return visibleIngredientsCache;
 
@@ -930,11 +971,11 @@ function getVisibleIngredients() {
   const seenIdentities = new Set();
   const registered = [];
   for (const item of [...remoteRegisteredIngredients, ...getAllRegisteredIngredientsByMember()]) {
-    const identity = getIngredientIdentity(item);
+    const identity = getCachedIngredientIdentity(item);
     if (seenIds.has(item.id) || seenIdentities.has(identity)) continue;
     seenIds.add(item.id);
     seenIdentities.add(identity);
-    registered.push(normalizeRegisteredIngredient(item));
+    registered.push(getCachedNormalizedIngredient(item));
   }
   visibleIngredientsCache = [...registered, ...ingredients];
   return visibleIngredientsCache;
@@ -1290,6 +1331,14 @@ async function loadIngredientRowsByIds(ids) {
   return error ? [] : data || [];
 }
 
+// Building an Intl.DateTimeFormat is expensive; one shared instance instead
+// of one per row (the search page maps ~7,000 rows on load).
+const ingredientDateFormat = new Intl.DateTimeFormat("ko-KR", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
 function mapIngredientRow(row) {
   const createdAt = row.created_at || new Date().toISOString();
   return {
@@ -1314,11 +1363,7 @@ function mapIngredientRow(row) {
     ownerName: row.owner_name || "",
     ownerEmail: row.owner_email || "",
     createdAt,
-    createdAtText: new Intl.DateTimeFormat("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date(createdAt)),
+    createdAtText: ingredientDateFormat.format(new Date(createdAt)),
   };
 }
 

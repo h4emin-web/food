@@ -563,6 +563,18 @@
     });
   }
 
+  // Autoplaying video keeps decoding frames even when scrolled away; play it
+  // only while it is on screen.
+  if ("IntersectionObserver" in window) {
+    const videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (isIntersecting) target.play().catch(() => {});
+        else target.pause();
+      });
+    });
+    document.querySelectorAll("video[autoplay]").forEach((video) => videoObserver.observe(video));
+  }
+
   const glossary = GLOSSARY[current.prefix];
   if (glossary) {
     const lookup = (text) => {

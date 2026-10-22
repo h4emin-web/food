@@ -1408,19 +1408,8 @@ html body .intro-page .official-info-section {
 }
 
 /* ---------- Scroll performance ----------
-   Full-width blocks below the fold skip layout and paint until they are
-   scrolled near. They are block-level children of <main>, so skipping them
-   cannot shift anything above. Deliberately NOT applied to ingredient rows:
-   those sit in a grid with max-content columns, and size containment would
-   make the column widths jump as rows scroll in. */
-html body .po-section,
-html body .po-dark,
-html body .seo-topic-section,
-html body .po-cta,
-html body .news-section,
-html body .intro-steps,
-html body .intro-sectors,
-html body .intro-features {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 560px;
-}
+   No content-visibility: auto on page sections. It skips layout for
+   off-screen sections at load, but then lays each one out the moment it
+   scrolls into view, which is exactly when a frame is due — measured as
+   up to ~600 ms stalls on the 소개 page (4x CPU throttle). Laying the page
+   out once up front is cheaper overall and keeps scrolling smooth. */

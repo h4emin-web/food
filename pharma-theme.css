@@ -60,6 +60,10 @@ html[lang="vi"] {
 html body .site-header {
   position: sticky;
   top: 10px;
+  /* The bar is opaque, so the base stylesheet's backdrop blur only cost a
+     re-blur of everything under it on every scrolled frame. */
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   z-index: 50;
   margin: 10px 16px 0;
   height: 46px;
@@ -604,9 +608,8 @@ html body :is(.po-hero, .po-search-hero) .search-field input {
   list-style: none;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 16px;
-  background: rgba(29, 37, 71, 0.92);
+  background: rgba(29, 37, 71, 0.96);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(8px);
   font-size: 14px;
 }
 
